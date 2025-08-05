@@ -22,4 +22,10 @@ public interface StudentMapper {
     
     // 插入学生信息
     int insertStudent(Student student);
+    
+    // 更新学生信息
+    int updateStudent(Student student);
+    
+    // 根据ID查找学生
+    Student findStudentById(@Param("id") Integer id);
 }

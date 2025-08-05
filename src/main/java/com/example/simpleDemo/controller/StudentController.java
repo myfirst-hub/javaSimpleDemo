@@ -43,14 +43,14 @@ public class StudentController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
+    
     @PostMapping("/student/create")
     public ResponseEntity<ApiResponse<Student>> createStudent(@RequestBody Student student) {
         logger.info("Create student endpoint accessed with student: {}", student);
         try {
             // 调用服务创建学生
             int result = studentService.createStudent(student);
-
+            
             if (result > 0) {
                 // 创建成功
                 ApiResponse<Student> response = ApiResponse.success(student, "Student created successfully");
@@ -63,6 +63,42 @@ public class StudentController {
         } catch (Exception e) {
             logger.error("Error occurred while creating student", e);
             ApiResponse<Student> response = ApiResponse.error("Failed to create student: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    
+    @PutMapping("/student/update")
+    public ResponseEntity<ApiResponse<Student>> updateStudent(@RequestBody Student student) {
+        logger.info("Update student endpoint accessed with student: {}", student);
+        try {
+            // 检查学生ID是否存在
+            if (student.getId() == null) {
+                ApiResponse<Student> response = ApiResponse.error("Student ID is required for update");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+            
+            // 检查学生是否存在
+            Student existingStudent = studentService.findStudentById(student.getId());
+            if (existingStudent == null) {
+                ApiResponse<Student> response = ApiResponse.error("Student not found with ID: " + student.getId());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+            
+            // 调用服务更新学生
+            int result = studentService.updateStudent(student);
+            
+            if (result > 0) {
+                // 更新成功
+                ApiResponse<Student> response = ApiResponse.success(student, "Student updated successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                // 更新失败
+                ApiResponse<Student> response = ApiResponse.error("Failed to update student");
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            logger.error("Error occurred while updating student", e);
+            ApiResponse<Student> response = ApiResponse.error("Failed to update student: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

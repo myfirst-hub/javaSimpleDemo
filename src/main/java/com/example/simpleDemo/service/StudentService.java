@@ -45,4 +45,16 @@ public class StudentService {
         // 插入学生信息
         return studentMapper.insertStudent(student);
     }
+    
+    public Student findStudentById(Integer id) {
+        return studentMapper.findStudentById(id);
+    }
+    
+    public int updateStudent(Student student) {
+        // 设置更新时间
+        student.setUpdatedAt(new java.util.Date());
+        
+        // 更新学生信息
+        return studentMapper.updateStudent(student);
+    }
 }

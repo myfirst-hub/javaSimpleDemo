@@ -38,4 +38,26 @@
         INSERT INTO students (name, sex, className, height, weight, birthday, native_place, nationality, created_at, updated_at)
         VALUES (#{name}, #{sex}, #{className}, #{height}, #{weight}, #{birthday}, #{nativePlace}, #{nationality}, NOW(), NOW())
     </insert>
+    
+    <update id="updateStudent" parameterType="com.example.simpleDemo.entity.Student">
+        UPDATE students
+        <set>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="sex != null and sex != ''">sex = #{sex},</if>
+            <if test="className != null and className != ''">className = #{className},</if>
+            <if test="height != null">height = #{height},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="birthday != null">birthday = #{birthday},</if>
+            <if test="nativePlace != null and nativePlace != ''">native_place = #{nativePlace},</if>
+            <if test="nationality != null and nationality != ''">nationality = #{nationality},</if>
+            updated_at = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <select id="findStudentById" parameterType="int" resultMap="StudentResultMap">
+        SELECT id, name, sex, className, height, weight, birthday, native_place, nationality, created_at, updated_at
+        FROM students
+        WHERE id = #{id}
+    </select>
 </mapper>
