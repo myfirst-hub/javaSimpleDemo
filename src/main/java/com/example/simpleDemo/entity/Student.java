@@ -2,6 +2,7 @@ package com.example.simpleDemo.entity;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.text.SimpleDateFormat;
 
 public class Student {
     private Integer id;
@@ -15,6 +16,9 @@ public class Student {
     private String nationality;
     private Date createdAt;
     private Date updatedAt;
+    
+    // birthday的字符串格式，用于接口返回
+    private String birthdayStr;
 
     // Constructors
     public Student() {
@@ -90,6 +94,24 @@ public class Student {
 
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
+        // 同时更新birthdayStr字段
+        if (birthday != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            this.birthdayStr = sdf.format(birthday);
+        }
+    }
+    
+    public String getBirthdayStr() {
+        // 如果birthdayStr为空但birthday不为空，则生成格式化字符串
+        if (birthdayStr == null && birthday != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            birthdayStr = sdf.format(birthday);
+        }
+        return birthdayStr;
+    }
+
+    public void setBirthdayStr(String birthdayStr) {
+        this.birthdayStr = birthdayStr;
     }
 
     public String getNativePlace() {
@@ -134,6 +156,7 @@ public class Student {
                 ", height=" + height +
                 ", weight=" + weight +
                 ", birthday=" + birthday +
+                ", birthdayStr='" + birthdayStr + '\'' +
                 ", nativePlace='" + nativePlace + '\'' +
                 ", nationality='" + nationality + '\'' +
                 ", createdAt=" + createdAt +

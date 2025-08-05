@@ -20,4 +20,17 @@
         SELECT id, name, sex, className, height, weight, birthday, native_place, nationality, created_at, updated_at FROM students
     </select>
     
+    <select id="findStudents" resultMap="StudentResultMap" parameterType="map">
+        SELECT id, name, sex, className, height, weight, birthday, native_place, nationality, created_at, updated_at 
+        FROM students
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="className != null and className != ''">
+                AND className LIKE CONCAT('%', #{className}, '%')
+            </if>
+        </where>
+        ORDER BY id
+    </select>
 </mapper>

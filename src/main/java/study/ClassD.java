@@ -1,10 +1,10 @@
 package study;
 
-import com.example.simpleDemo.HelloController;
+import com.example.simpleDemo.controller.StudentController;
 
 public class ClassD {
     public static void main(String[] args) {
-        HelloController helloController = new HelloController();
+        StudentController StudentController = new StudentController();
         Person ming = new Person();
         // ming.age = 6; // 编译错误： age 在 study.Person 中是 private 访问控制
 
