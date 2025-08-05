@@ -36,4 +36,13 @@ public class StudentService {
         PageInfo<Student> pageInfo = new PageInfo<>(students);
         return new PageInfoResult<>(pageInfo);
     }
+    
+    public int createStudent(Student student) {
+        // 设置创建和更新时间
+        student.setCreatedAt(new java.util.Date());
+        student.setUpdatedAt(new java.util.Date());
+        
+        // 插入学生信息
+        return studentMapper.insertStudent(student);
+    }
 }

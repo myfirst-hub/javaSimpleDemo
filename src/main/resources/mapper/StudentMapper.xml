@@ -33,4 +33,9 @@
         </where>
         ORDER BY id
     </select>
+    
+    <insert id="insertStudent" parameterType="com.example.simpleDemo.entity.Student" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO students (name, sex, className, height, weight, birthday, native_place, nationality, created_at, updated_at)
+        VALUES (#{name}, #{sex}, #{className}, #{height}, #{weight}, #{birthday}, #{nativePlace}, #{nationality}, NOW(), NOW())
+    </insert>
 </mapper>

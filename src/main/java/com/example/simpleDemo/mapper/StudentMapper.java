@@ -19,4 +19,7 @@ public interface StudentMapper {
     
     // 支持PageHelper的查询方法
     List<Student> findStudents(@Param("name") String name, @Param("className") String className);
+    
+    // 插入学生信息
+    int insertStudent(Student student);
 }
