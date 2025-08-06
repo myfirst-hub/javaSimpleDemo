@@ -28,4 +28,7 @@ public interface StudentMapper {
     
     // 根据ID查找学生
     Student findStudentById(@Param("id") Integer id);
+    
+    // 根据ID删除学生
+    int deleteStudentById(@Param("id") Integer id);
 }

@@ -1,4 +1,4 @@
-package com.example.simpleDemo.entity;
+package com.example.simpleDemo.utils;
 
 public class ApiResponse<T> {
     private int code;

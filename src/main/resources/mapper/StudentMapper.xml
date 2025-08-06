@@ -60,4 +60,8 @@
         FROM students
         WHERE id = #{id}
     </select>
+    
+    <delete id="deleteStudentById" parameterType="int">
+        DELETE FROM students WHERE id = #{id}
+    </delete>
 </mapper>

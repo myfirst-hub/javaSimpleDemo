@@ -1,10 +1,11 @@
 package com.example.simpleDemo.controller;
 
 import com.example.simpleDemo.entity.Student;
-import com.example.simpleDemo.entity.ApiResponse;
-import com.example.simpleDemo.entity.PageInfoResult;
 import com.example.simpleDemo.entity.StudentPageRequest;
 import com.example.simpleDemo.service.StudentService;
+import com.example.simpleDemo.utils.ApiResponse;
+import com.example.simpleDemo.utils.PageInfoResult;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,42 @@ public class StudentController {
         } catch (Exception e) {
             logger.error("Error occurred while updating student", e);
             ApiResponse<Student> response = ApiResponse.error("Failed to update student: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/student/delete")
+    public ResponseEntity<ApiResponse<String>> deleteStudent(@RequestBody Student student) {
+        logger.info("Delete student endpoint accessed with id: {}", student.getId());
+        try {
+            // 检查学生ID是否存在
+            if (student.getId() == null) {
+                ApiResponse<String> response = ApiResponse.error("Student ID is required for delete");
+                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            }
+
+            // 检查学生是否存在
+            Student existingStudent = studentService.findStudentById(student.getId());
+            if (existingStudent == null) {
+                ApiResponse<String> response = ApiResponse.error("Student not found with ID: " + student.getId());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+            // 调用服务删除学生
+            int result = studentService.deleteStudentById(student.getId());
+
+            if (result > 0) {
+                // 删除成功
+                ApiResponse<String> response = ApiResponse.success("Student deleted successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                // 删除失败
+                ApiResponse<String> response = ApiResponse.error("Failed to delete student");
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting student", e);
+            ApiResponse<String> response = ApiResponse.error("Failed to delete student: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

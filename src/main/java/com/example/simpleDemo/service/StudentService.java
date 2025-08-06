@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.simpleDemo.entity.Student;
-import com.example.simpleDemo.entity.PageInfoResult;
 import com.example.simpleDemo.mapper.StudentMapper;
+import com.example.simpleDemo.utils.PageInfoResult;
 
 import java.util.List;
 
@@ -24,37 +24,41 @@ public class StudentService {
     public List<Student> findAllStudentsWithXml() {
         return studentMapper.findAllStudents();
     }
-    
+
     public PageInfoResult<Student> findStudentsWithPageHelper(int page, int size, String name, String className) {
         // 开启分页
         PageHelper.startPage(page, size);
-        
+
         // 查询数据
         List<Student> students = studentMapper.findStudents(name, className);
-        
+
         // 封装分页结果
         PageInfo<Student> pageInfo = new PageInfo<>(students);
         return new PageInfoResult<>(pageInfo);
     }
-    
+
     public int createStudent(Student student) {
         // 设置创建和更新时间
         student.setCreatedAt(new java.util.Date());
         student.setUpdatedAt(new java.util.Date());
-        
+
         // 插入学生信息
         return studentMapper.insertStudent(student);
     }
-    
+
     public Student findStudentById(Integer id) {
         return studentMapper.findStudentById(id);
     }
-    
+
     public int updateStudent(Student student) {
         // 设置更新时间
         student.setUpdatedAt(new java.util.Date());
-        
+
         // 更新学生信息
         return studentMapper.updateStudent(student);
+    }
+
+    public int deleteStudentById(Integer id) {
+        return studentMapper.deleteStudentById(id);
     }
 }

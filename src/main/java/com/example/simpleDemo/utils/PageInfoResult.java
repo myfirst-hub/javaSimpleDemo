@@ -1,9 +1,10 @@
-package com.example.simpleDemo.entity;
+package com.example.simpleDemo.utils;
 
 import java.util.List;
 
 /**
  * 分页结果封装类
+ * 
  * @param <T>
  */
 public class PageInfoResult<T> {
