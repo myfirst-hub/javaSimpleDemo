@@ -1,0 +1,82 @@
+package com.example.simpleDemo.entity;
+
+import java.util.Date;
+
+public class Subject {
+    private Integer id;
+    private String name;
+    private String semester;
+    private String subjectDescribe;
+    private Date createdAt;
+    private Date updatedAt;
+
+    // 构造函数
+    public Subject() {}
+
+    public Subject(String name, String semester, String subjectDescribe) {
+        this.name = name;
+        this.semester = semester;
+        this.subjectDescribe = subjectDescribe;
+    }
+
+    // Getter和Setter方法
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getSemester() {
+        return semester;
+    }
+
+    public void setSemester(String semester) {
+        this.semester = semester;
+    }
+
+    public String getSubjectDescribe() {
+        return subjectDescribe;
+    }
+
+    public void setSubjectDescribe(String subjectDescribe) {
+        this.subjectDescribe = subjectDescribe;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "Subject{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", semester='" + semester + '\'' +
+                ", subjectDescribe='" + subjectDescribe + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.simpleDemo.mapper.SubjectMapper">
+    
+    <resultMap id="SubjectResultMap" type="com.example.simpleDemo.entity.Subject">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="semester" column="semester"/>
+        <result property="subjectDescribe" column="subject_describe"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+    
+    <select id="findSubjectsByName" resultMap="SubjectResultMap">
+        SELECT id, name, semester, subject_describe, created_at, updated_at 
+        FROM subjects
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+        </where>
+        ORDER BY id
+    </select>
+</mapper>
