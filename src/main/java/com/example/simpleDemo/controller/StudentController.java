@@ -1,7 +1,6 @@
 package com.example.simpleDemo.controller;
 
 import com.example.simpleDemo.entity.Student;
-import com.example.simpleDemo.entity.StudentPageRequest;
 import com.example.simpleDemo.service.StudentService;
 import com.example.simpleDemo.utils.ApiResponse;
 import com.example.simpleDemo.utils.PageInfoResult;
@@ -21,21 +20,20 @@ public class StudentController {
     @Autowired
     private StudentService studentService;
 
-    @PostMapping("/students")
+    @GetMapping("/students")
     public ResponseEntity<ApiResponse<PageInfoResult<Student>>> getStudents(
-            @RequestBody(required = false) StudentPageRequest request) {
-        logger.info("Get students endpoint accessed with request: {}", request);
+            @RequestParam(required = true, defaultValue = "1") Integer pageNum,
+            @RequestParam(required = true, defaultValue = "10") Integer pageSize,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String className) {
+        logger.info("Get students endpoint accessed with params: pageNum={}, pageSize={}, name={}, className={}",
+                pageNum, pageSize, name, className);
         try {
-            // throw new Exception("Testing error handling");
-            if (request == null) {
-                request = new StudentPageRequest();
-            }
-
             PageInfoResult<Student> result = studentService.findStudentsWithPageHelper(
-                    request.getPageNum(),
-                    request.getPageSize(),
-                    request.getName(),
-                    request.getClassName());
+                    pageNum,
+                    pageSize,
+                    name,
+                    className);
             ApiResponse<PageInfoResult<Student>> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
