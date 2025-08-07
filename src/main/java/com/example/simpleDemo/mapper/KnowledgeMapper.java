@@ -24,4 +24,12 @@ public interface KnowledgeMapper {
      * @return 影响的行数
      */
     int insertKnowledge(Knowledge knowledge);
+    
+    /**
+     * 根据ID更新知识点
+     * 
+     * @param knowledge 知识点对象
+     * @return 影响的行数
+     */
+    int updateKnowledgeById(Knowledge knowledge);
 }

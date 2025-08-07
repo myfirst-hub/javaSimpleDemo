@@ -27,4 +27,12 @@
         INSERT INTO knowledges(name, mastery_level, knowledge_describe)
         VALUES(#{name}, #{masteryLevel}, #{knowledgeDescribe})
     </insert>
+    
+    <update id="updateKnowledgeById" parameterType="com.example.simpleDemo.entity.Knowledge">
+        UPDATE knowledges
+        SET name = #{name}, 
+            mastery_level = #{masteryLevel}, 
+            knowledge_describe = #{knowledgeDescribe}
+        WHERE id = #{id}
+    </update>
 </mapper>

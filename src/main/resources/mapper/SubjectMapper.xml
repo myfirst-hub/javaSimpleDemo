@@ -24,4 +24,9 @@
         </where>
         ORDER BY id
     </select>
+    
+    <insert id="insertSubject" parameterType="com.example.simpleDemo.entity.Subject" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO subjects(name, semester, subject_describe)
+        VALUES (#{name}, #{semester}, #{subjectDescribe})
+    </insert>
 </mapper>

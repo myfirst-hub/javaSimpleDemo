@@ -10,4 +10,7 @@ import java.util.List;
 public interface SubjectMapper {
     // 支持PageHelper的查询方法
     List<Subject> findSubjects(@Param("name") String name, @Param("semester") String semester);
+    
+    // 新增科目
+    int insertSubject(Subject subject);
 }
