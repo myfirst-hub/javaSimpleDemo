@@ -25,24 +25,22 @@ public class SubjectController {
      * 
      * @param pageNum  页码，默认为1
      * @param pageSize 每页大小，默认为10
+     * @param name     科目名称（可选）
+     * @param semester 学期（可选）
      * @return 分页结果
      */
     @GetMapping("/subjects")
     public ResponseEntity<ApiResponse<PageInfoResult<Subject>>> findSubjects(
             @RequestParam(required = false, defaultValue = "1") Integer pageNum,
             @RequestParam(required = false, defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) String name) {
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String semester) {
         
-        logger.info("Get subjects endpoint accessed with params: pageNum={}, pageSize={}, name={}", 
-                pageNum, pageSize, name);
+        logger.info("Get subjects endpoint accessed with params: pageNum={}, pageSize={}, name={}, semester={}", 
+                pageNum, pageSize, name, semester);
         
         try {
-            PageInfoResult<Subject> result;
-            if (name != null && !name.trim().isEmpty()) {
-                result = subjectService.findSubjectsByName(name.trim(), pageNum, pageSize);
-            } else {
-                result = subjectService.findSubjects(pageNum, pageSize);
-            }
+            PageInfoResult<Subject> result = subjectService.findSubjectsWithPageHelper(pageNum, pageSize, name, semester);
             
             ApiResponse<PageInfoResult<Subject>> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);

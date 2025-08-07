@@ -11,12 +11,15 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
     
-    <select id="findSubjectsByName" resultMap="SubjectResultMap">
+    <select id="findSubjects" resultMap="SubjectResultMap" parameterType="map">
         SELECT id, name, semester, subject_describe, created_at, updated_at 
         FROM subjects
         <where>
             <if test="name != null and name != ''">
                 AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="semester != null and semester != ''">
+                AND semester LIKE CONCAT('%', #{semester}, '%')
             </if>
         </where>
         ORDER BY id

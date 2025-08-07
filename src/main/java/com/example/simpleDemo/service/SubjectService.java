@@ -12,38 +12,26 @@ import java.util.List;
 
 @Service
 public class SubjectService {
-    
+
     @Autowired
     private SubjectMapper subjectMapper;
-    
+
     /**
-     * 分页查询科目列表
-     * @param pageNum 页码
+     * 分页查询科目列表，支持按名称和学期查询
+     * 
+     * @param pageNum  页码
      * @param pageSize 每页大小
+     * @param name     科目名称（可选）
+     * @param semester 学期（可选）
      * @return 分页结果
      */
-    public PageInfoResult<Subject> findSubjects(int pageNum, int pageSize) {
+    public PageInfoResult<Subject> findSubjectsWithPageHelper(int pageNum, int pageSize, String name, String semester) {
         // 开启分页
         PageHelper.startPage(pageNum, pageSize);
-        // 查询所有科目
-        List<Subject> subjects = subjectMapper.findAllSubjects();
-        // 封装分页结果
-        PageInfo<Subject> pageInfo = new PageInfo<>(subjects);
-        return new PageInfoResult<>(pageInfo);
-    }
-    
-    /**
-     * 根据名称分页查询科目列表
-     * @param name 科目名称
-     * @param pageNum 页码
-     * @param pageSize 每页大小
-     * @return 分页结果
-     */
-    public PageInfoResult<Subject> findSubjectsByName(String name, int pageNum, int pageSize) {
-        // 开启分页
-        PageHelper.startPage(pageNum, pageSize);
-        // 根据名称查询科目
-        List<Subject> subjects = subjectMapper.findSubjectsByName(name);
+
+        // 查询数据
+        List<Subject> subjects = subjectMapper.findSubjects(name, semester);
+
         // 封装分页结果
         PageInfo<Subject> pageInfo = new PageInfo<>(subjects);
         return new PageInfoResult<>(pageInfo);
