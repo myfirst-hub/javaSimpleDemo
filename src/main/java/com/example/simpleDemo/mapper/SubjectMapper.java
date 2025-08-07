@@ -13,4 +13,7 @@ public interface SubjectMapper {
     
     // 新增科目
     int insertSubject(Subject subject);
+    
+    // 更新科目
+    int updateSubject(Subject subject);
 }

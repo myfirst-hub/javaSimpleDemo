@@ -77,4 +77,28 @@ public class SubjectController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * 编辑科目，同时处理知识点和科目知识点映射关系
+     * 
+     * @param subjectWithKnowledgesDTO 包含科目和知识点信息的DTO对象
+     * @return 是否编辑成功
+     */
+    @PostMapping("/subject/update")
+    public ResponseEntity<ApiResponse<Boolean>> updateSubjectWithKnowledges(
+            @RequestBody SubjectWithKnowledgesDTO subjectWithKnowledgesDTO) {
+
+        logger.info("Update subject with knowledges endpoint accessed with params: subjectWithKnowledgesDTO={}",
+                subjectWithKnowledgesDTO);
+
+        try {
+            boolean result = subjectService.updateSubjectWithKnowledges(subjectWithKnowledgesDTO);
+            ApiResponse<Boolean> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while updating subject with knowledges", e);
+            ApiResponse<Boolean> response = ApiResponse.error("Failed to update subject with knowledges");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

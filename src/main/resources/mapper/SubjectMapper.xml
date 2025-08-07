@@ -29,4 +29,12 @@
         INSERT INTO subjects(name, semester, subject_describe)
         VALUES (#{name}, #{semester}, #{subjectDescribe})
     </insert>
+    
+    <update id="updateSubject" parameterType="com.example.simpleDemo.entity.Subject">
+        UPDATE subjects
+        SET name = #{name},
+            semester = #{semester},
+            subject_describe = #{subjectDescribe}
+        WHERE id = #{id}
+    </update>
 </mapper>
