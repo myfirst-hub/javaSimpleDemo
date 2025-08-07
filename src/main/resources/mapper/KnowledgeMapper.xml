@@ -35,4 +35,8 @@
             knowledge_describe = #{knowledgeDescribe}
         WHERE id = #{id}
     </update>
+    
+    <delete id="deleteKnowledgeById">
+        DELETE FROM knowledges WHERE id = #{id}
+    </delete>
 </mapper>

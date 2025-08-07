@@ -32,4 +32,12 @@ public interface KnowledgeMapper {
      * @return 影响的行数
      */
     int updateKnowledgeById(Knowledge knowledge);
+    
+    /**
+     * 根据ID删除知识点
+     * 
+     * @param id 知识点ID
+     * @return 影响的行数
+     */
+    int deleteKnowledgeById(@Param("id") Integer id);
 }
