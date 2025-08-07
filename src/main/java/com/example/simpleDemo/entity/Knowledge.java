@@ -2,30 +2,21 @@ package com.example.simpleDemo.entity;
 
 import java.util.Date;
 
-public class Subject {
+public class Knowledge {
     private Integer id;
     private String name;
-    private String semester;
-    private String subjectDescribe;
+    private Integer masteryLevel;
+    private String knowledgeDescribe;
     private Date createdAt;
     private Date updatedAt;
 
     // 构造函数
-    public Subject() {}
+    public Knowledge() {}
 
-    public Subject(String name, String semester, String subjectDescribe) {
+    public Knowledge(String name, Integer masteryLevel, String knowledgeDescribe) {
         this.name = name;
-        this.semester = semester;
-        this.subjectDescribe = subjectDescribe;
-    }
-    
-    public Subject(Integer id, String name, String semester, String subjectDescribe, Date createdAt, Date updatedAt) {
-        this.id = id;
-        this.name = name;
-        this.semester = semester;
-        this.subjectDescribe = subjectDescribe;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.masteryLevel = masteryLevel;
+        this.knowledgeDescribe = knowledgeDescribe;
     }
 
     // Getter和Setter方法
@@ -45,20 +36,20 @@ public class Subject {
         this.name = name;
     }
 
-    public String getSemester() {
-        return semester;
+    public Integer getMasteryLevel() {
+        return masteryLevel;
     }
 
-    public void setSemester(String semester) {
-        this.semester = semester;
+    public void setMasteryLevel(Integer masteryLevel) {
+        this.masteryLevel = masteryLevel;
     }
 
-    public String getSubjectDescribe() {
-        return subjectDescribe;
+    public String getKnowledgeDescribe() {
+        return knowledgeDescribe;
     }
 
-    public void setSubjectDescribe(String subjectDescribe) {
-        this.subjectDescribe = subjectDescribe;
+    public void setKnowledgeDescribe(String knowledgeDescribe) {
+        this.knowledgeDescribe = knowledgeDescribe;
     }
 
     public Date getCreatedAt() {
@@ -79,11 +70,11 @@ public class Subject {
 
     @Override
     public String toString() {
-        return "Subject{" +
+        return "Knowledge{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", semester='" + semester + '\'' +
-                ", subjectDescribe='" + subjectDescribe + '\'' +
+                ", masteryLevel=" + masteryLevel +
+                ", knowledgeDescribe='" + knowledgeDescribe + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

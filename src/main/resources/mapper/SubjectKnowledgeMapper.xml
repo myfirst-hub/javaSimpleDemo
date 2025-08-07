@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.simpleDemo.mapper.SubjectKnowledgeMapper">
+    
+    <resultMap id="KnowledgeResultMap" type="com.example.simpleDemo.entity.Knowledge">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="masteryLevel" column="mastery_level"/>
+        <result property="knowledgeDescribe" column="knowledge_describe"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+    
+    <resultMap id="SubjectKnowledgeResultMap" type="com.example.simpleDemo.entity.SubjectKnowledge">
+        <id property="id" column="id"/>
+        <result property="subjectId" column="subject_id"/>
+        <result property="knowledgeId" column="knowledge_id"/>
+        <result property="masteryLevel" column="mastery_level"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+    
+    <select id="findKnowledgesBySubjectId" resultMap="KnowledgeResultMap">
+        SELECT k.id, k.name, k.mastery_level, k.knowledge_describe, k.created_at, k.updated_at
+        FROM knowledges k
+        INNER JOIN subject_knowledge sk ON k.id = sk.knowledge_id
+        WHERE sk.subject_id = #{subjectId}
+        ORDER BY k.id
+    </select>
+    
+    <select id="findSubjectKnowledges" resultMap="SubjectKnowledgeResultMap">
+        SELECT id, subject_id, knowledge_id, mastery_level, created_at, updated_at
+        FROM subject_knowledge
+        <where>
+            <if test="subjectId != null">
+                AND subject_id = #{subjectId}
+            </if>
+            <if test="knowledgeId != null">
+                AND knowledge_id = #{knowledgeId}
+            </if>
+        </where>
+        ORDER BY id
+    </select>
+    
+    <insert id="insertSubjectKnowledge" parameterType="com.example.simpleDemo.entity.SubjectKnowledge">
+        INSERT INTO subject_knowledge(subject_id, knowledge_id, mastery_level)
+        VALUES (#{subjectId}, #{knowledgeId}, #{masteryLevel})
+    </insert>
+    
+    <delete id="deleteSubjectKnowledgeById">
+        DELETE FROM subject_knowledge WHERE id = #{id}
+    </delete>
+    
+    <delete id="deleteSubjectKnowledgeBySubjectId">
+        DELETE FROM subject_knowledge WHERE subject_id = #{subjectId}
+    </delete>
+</mapper>
