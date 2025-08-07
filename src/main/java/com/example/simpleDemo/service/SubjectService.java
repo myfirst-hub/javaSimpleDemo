@@ -156,6 +156,38 @@ public class SubjectService {
         }
     }
 
+    /**
+     * 删除科目及其关联的知识点
+     * 
+     * @param subjectId 科目ID
+     * @return 是否删除成功
+     */
+    public boolean deleteSubjectWithKnowledges(Integer subjectId) {
+        try {
+            // 1. 获取当前数据库中该科目的知识点ID列表
+            List<Knowledge> existingKnowledges = subjectKnowledgeMapper.findKnowledgesBySubjectId(subjectId);
+            List<Integer> existingKnowledgeIds = existingKnowledges.stream()
+                    .map(Knowledge::getId)
+                    .collect(Collectors.toList());
+
+            // 2. 删除科目和知识点的映射关系
+            subjectKnowledgeMapper.deleteSubjectKnowledgeBySubjectId(subjectId);
+
+            // 3. 删除科目关联的知识点
+            for (Integer knowledgeId : existingKnowledgeIds) {
+                knowledgeMapper.deleteKnowledgeById(knowledgeId);
+            }
+
+            // 4. 删除科目本身
+            subjectMapper.deleteSubjectById(subjectId);
+
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     // 内部类，用于封装科目和知识点信息
     public static class SubjectWithKnowledges extends Subject {
         private List<Knowledge> knowledges;

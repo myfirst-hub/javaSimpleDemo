@@ -1,5 +1,6 @@
 package com.example.simpleDemo.controller;
 
+import com.example.simpleDemo.entity.Subject;
 import com.example.simpleDemo.entity.SubjectWithKnowledgesDTO;
 import com.example.simpleDemo.service.SubjectService;
 import com.example.simpleDemo.utils.ApiResponse;
@@ -98,6 +99,27 @@ public class SubjectController {
         } catch (Exception e) {
             logger.error("Error occurred while updating subject with knowledges", e);
             ApiResponse<Boolean> response = ApiResponse.error("Failed to update subject with knowledges");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /**
+     * 删除科目及其关联的知识点
+     * 
+     * @param subjectId 科目ID
+     * @return 是否删除成功
+     */
+    @PostMapping("/subject/delete")
+    public ResponseEntity<ApiResponse<Boolean>> deleteSubjectByIdWithKnowledges(@RequestBody Subject subject) {
+        logger.info("Delete subject with knowledges endpoint accessed with params: subjectId={}", subject.getId());
+
+        try {
+            boolean result = subjectService.deleteSubjectWithKnowledges(subject.getId());
+            ApiResponse<Boolean> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting subject with knowledges", e);
+            ApiResponse<Boolean> response = ApiResponse.error("Failed to delete subject with knowledges");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
