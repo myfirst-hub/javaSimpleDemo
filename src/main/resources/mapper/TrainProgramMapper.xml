@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.simpleDemo.mapper.TrainProgramMapper">
+    
+    <resultMap id="TrainProgramMap" type="com.example.simpleDemo.entity.TrainProgram">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="semester" property="semester"/>
+        <result column="train_describe" property="trainDescribe"/>
+        <result column="train_time" property="trainTime"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+    
+    <select id="findAll" resultMap="TrainProgramMap">
+        SELECT * FROM train_program
+    </select>
+    
+    <select id="findTrainPrograms" resultMap="TrainProgramMap">
+        SELECT * FROM train_program
+        <where>
+            <if test="name != null and name != ''">
+                AND name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="semester != null and semester != ''">
+                AND semester = #{semester}
+            </if>
+        </where>
+        ORDER BY id DESC
+    </select>
+    
+</mapper>
