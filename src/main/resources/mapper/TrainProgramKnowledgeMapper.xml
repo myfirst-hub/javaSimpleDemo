@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.simpleDemo.mapper.TrainProgramKnowledgeMapper">
+    
+    <resultMap id="KnowledgeMap" type="com.example.simpleDemo.entity.Knowledge">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="mastery_level" property="masteryLevel"/>
+        <result column="knowledge_describe" property="knowledgeDescribe"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="updated_at" property="updatedAt"/>
+    </resultMap>
+    
+    <resultMap id="TrainProgramKnowledgeMap" type="com.example.simpleDemo.entity.TrainProgramKnowledge">
+        <id column="id" property="id"/>
+        <result column="train_id" property="trainId"/>
+        <result column="knowledge_id" property="knowledgeId"/>
+        <result column="created_at" property="createdAt"/>
+    </resultMap>
+    
+    <select id="findKnowledgesByTrainId" resultMap="KnowledgeMap">
+        SELECT k.* 
+        FROM knowledges k
+        INNER JOIN train_program_knowledge tpk ON k.id = tpk.knowledge_id
+        WHERE tpk.train_id = #{trainId}
+        ORDER BY k.id
+    </select>
+    
+</mapper>
