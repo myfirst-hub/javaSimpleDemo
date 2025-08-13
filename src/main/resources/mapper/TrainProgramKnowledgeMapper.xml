@@ -26,4 +26,9 @@
         ORDER BY k.id
     </select>
     
+    <insert id="insertTrainProgramKnowledge" parameterType="com.example.simpleDemo.entity.TrainProgramKnowledge">
+        INSERT INTO train_program_knowledge (train_id, knowledge_id, created_at)
+        VALUES (#{trainId}, #{knowledgeId}, NOW())
+    </insert>
+    
 </mapper>

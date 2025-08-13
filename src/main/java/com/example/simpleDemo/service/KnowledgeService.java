@@ -32,4 +32,24 @@ public class KnowledgeService {
     public boolean addKnowledge(Knowledge knowledge) {
         return knowledgeMapper.insertKnowledge(knowledge) > 0;
     }
+    
+    /**
+     * 插入知识点
+     *
+     * @param knowledge 知识点对象
+     * @return 影响的行数
+     */
+    public int insertKnowledge(Knowledge knowledge) {
+        return knowledgeMapper.insertKnowledge(knowledge);
+    }
+    
+    /**
+     * 根据ID更新知识点
+     *
+     * @param knowledge 知识点对象
+     * @return 影响的行数
+     */
+    public int updateKnowledgeById(Knowledge knowledge) {
+        return knowledgeMapper.updateKnowledgeById(knowledge);
+    }
 }

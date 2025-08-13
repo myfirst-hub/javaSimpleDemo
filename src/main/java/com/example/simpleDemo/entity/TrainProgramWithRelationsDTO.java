@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 public class TrainProgramWithRelationsDTO extends TrainProgram {
-    private List<Student> students;
+    private List<Integer> studentIds;
     private List<Knowledge> knowledges;
 
     public TrainProgramWithRelationsDTO() {
@@ -17,12 +17,12 @@ public class TrainProgramWithRelationsDTO extends TrainProgram {
         super(id, name, semester, trainDescribe, trainTime, createdAt, updatedAt);
     }
 
-    public List<Student> getStudents() {
-        return students;
+    public List<Integer> getStudentIds() {
+        return studentIds;
     }
 
-    public void setStudents(List<Student> students) {
-        this.students = students;
+    public void setStudentIds(List<Integer> studentIds) {
+        this.studentIds = studentIds;
     }
 
     public List<Knowledge> getKnowledges() {
@@ -36,7 +36,7 @@ public class TrainProgramWithRelationsDTO extends TrainProgram {
     @Override
     public String toString() {
         return "TrainProgramWithRelationsDTO{" +
-                "students=" + students +
+                "studentIds=" + studentIds +
                 ", knowledges=" + knowledges +
                 "} " + super.toString();
     }

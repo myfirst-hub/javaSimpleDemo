@@ -1,5 +1,7 @@
 package com.example.simpleDemo.controller;
 
+import com.example.simpleDemo.entity.TrainProgram;
+import com.example.simpleDemo.entity.TrainProgramCreateDTO;
 import com.example.simpleDemo.entity.TrainProgramWithRelationsDTO;
 import com.example.simpleDemo.service.TrainProgramService;
 import com.example.simpleDemo.utils.ApiResponse;
@@ -41,6 +43,20 @@ public class TrainProgramController {
             logger.error("Error occurred while fetching train programs with relations", e);
             ApiResponse<PageInfoResult<TrainProgramWithRelationsDTO>> response = ApiResponse
                     .error("Failed to fetch train programs with relations");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping("/trainProgram/create")
+    public ResponseEntity<ApiResponse<TrainProgram>> createTrainProgram(@RequestBody TrainProgramCreateDTO createDTO) {
+        logger.info("Create train program endpoint accessed with data: {}", createDTO);
+        try {
+            TrainProgram result = trainProgramService.createTrainProgram(createDTO);
+            ApiResponse<TrainProgram> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while creating train program", e);
+            ApiResponse<TrainProgram> response = ApiResponse.error("Failed to create train program");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

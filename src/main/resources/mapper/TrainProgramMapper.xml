@@ -29,4 +29,9 @@
         ORDER BY id DESC
     </select>
     
+    <insert id="insertTrainProgram" parameterType="com.example.simpleDemo.entity.TrainProgram" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO train_program (name, semester, train_describe, train_time, created_at, updated_at)
+        VALUES (#{name}, #{semester}, #{trainDescribe}, #{trainTime}, NOW(), NOW())
+    </insert>
+    
 </mapper>

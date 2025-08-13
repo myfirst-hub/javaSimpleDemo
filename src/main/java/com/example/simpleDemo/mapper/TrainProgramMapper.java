@@ -1,9 +1,8 @@
 package com.example.simpleDemo.mapper;
 
+import com.example.simpleDemo.entity.TrainProgram;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import com.example.simpleDemo.entity.TrainProgram;
 
 import java.util.List;
 
@@ -15,4 +14,7 @@ public interface TrainProgramMapper {
 
     // 查询所有训练项目
     List<TrainProgram> findAll();
+    
+    // 插入训练项目
+    int insertTrainProgram(TrainProgram trainProgram);
 }
