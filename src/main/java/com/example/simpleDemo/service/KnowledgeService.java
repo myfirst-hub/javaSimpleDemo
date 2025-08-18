@@ -159,7 +159,7 @@ public class KnowledgeService {
             nameHeaderCell.setCellStyle(headerCellStyle);
 
             Cell masteryLevelHeaderCell = headerRow.createCell(1);
-            masteryLevelHeaderCell.setCellValue("掌握程度（0-记忆,1-理解,2-应用,3-分析,4-评价,5-创造）");
+            masteryLevelHeaderCell.setCellValue("掌握程度0-记忆,1-理解,2-应用,3-分析,4-评价,5-创造");
             masteryLevelHeaderCell.setCellStyle(headerCellStyle);
 
             Cell descriptionHeaderCell = headerRow.createCell(2);
@@ -167,8 +167,8 @@ public class KnowledgeService {
             descriptionHeaderCell.setCellStyle(headerCellStyle);
 
             // 设置列宽
-            sheet.setColumnWidth(0, 50 * 256); // 知识点名称
-            sheet.setColumnWidth(1, 52 * 256); // 掌握程度
+            sheet.setColumnWidth(0, 20 * 256); // 知识点名称
+            sheet.setColumnWidth(1, 35 * 256); // 掌握程度
             sheet.setColumnWidth(2, 50 * 256); // 知识点描述
 
             // 设置响应头
