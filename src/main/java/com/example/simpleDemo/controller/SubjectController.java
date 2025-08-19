@@ -50,63 +50,63 @@ public class SubjectController {
                 pageNum, pageSize, name, semester);
 
         try {
-            String json = """
-                    {
-                        "name": "高等数学",
-                        "children": [
-                            {
-                                "name": "第一章 函数与极限",
-                                "children": [
-                                    {
-                                        "name": "1.1 函数",
-                                        "children": [
-                                            {"name": "函数的定义", "type": "concept"},
-                                            {"name": "函数的性质", "type": "concept"},
-                                            {"name": "反函数与复合函数", "type": "concept"},
-                                            {"name": "初等函数", "type": "concept"}
-                                        ]
-                                    },
-                                    {
-                                        "name": "1.2 数列的极限",
-                                        "children": [
-                                            {"name": "数列极限的定义", "type": "concept"},
-                                            {"name": "收敛数列的性质", "type": "concept"},
-                                            {"name": "极限存在准则", "type": "concept"},
-                                            {"name": "重要极限 lim(1+1/n)^n=e", "type": "formula"}
-                                        ]
-                                    },
-                                    {
-                                        "name": "1.3 函数的极限",
-                                        "children": [
-                                            {"name": "函数极限的定义", "type": "concept"},
-                                            {"name": "函数极限的性质", "type": "concept"},
-                                            {"name": "无穷小与无穷大", "type": "concept"},
-                                            {"name": "极限运算法则", "type": "method"}
-                                        ]
-                                    },
-                                    {
-                                        "name": "1.4 连续函数",
-                                        "children": [
-                                            {"name": "连续性的定义", "type": "concept"},
-                                            {"name": "间断点分类", "type": "concept"},
-                                            {"name": "闭区间上连续函数的性质", "type": "theorem"}
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                    """;
+            // String json = """
+            // {
+            // "name": "高等数学",
+            // "children": [
+            // {
+            // "name": "第一章 函数与极限",
+            // "children": [
+            // {
+            // "name": "1.1 函数",
+            // "children": [
+            // {"name": "函数的定义", "type": "concept"},
+            // {"name": "函数的性质", "type": "concept"},
+            // {"name": "反函数与复合函数", "type": "concept"},
+            // {"name": "初等函数", "type": "concept"}
+            // ]
+            // },
+            // {
+            // "name": "1.2 数列的极限",
+            // "children": [
+            // {"name": "数列极限的定义", "type": "concept"},
+            // {"name": "收敛数列的性质", "type": "concept"},
+            // {"name": "极限存在准则", "type": "concept"},
+            // {"name": "重要极限 lim(1+1/n)^n=e", "type": "formula"}
+            // ]
+            // },
+            // {
+            // "name": "1.3 函数的极限",
+            // "children": [
+            // {"name": "函数极限的定义", "type": "concept"},
+            // {"name": "函数极限的性质", "type": "concept"},
+            // {"name": "无穷小与无穷大", "type": "concept"},
+            // {"name": "极限运算法则", "type": "method"}
+            // ]
+            // },
+            // {
+            // "name": "1.4 连续函数",
+            // "children": [
+            // {"name": "连续性的定义", "type": "concept"},
+            // {"name": "间断点分类", "type": "concept"},
+            // {"name": "闭区间上连续函数的性质", "type": "theorem"}
+            // ]
+            // }
+            // ]
+            // }
+            // ]
+            // }
+            // """;
 
             // 解析JSON
-            ObjectMapper mapper = new ObjectMapper();
-            JsonNode rootNode = mapper.readTree(json);
+            // ObjectMapper mapper = new ObjectMapper();
+            // JsonNode rootNode = mapper.readTree(json);
 
-            System.out.println("知识点树形结构遍历结果:");
-            System.out.println("==========================");
+            // System.out.println("知识点树形结构遍历结果:");
+            // System.out.println("==========================");
 
             // 从根节点开始遍历
-            saveKnowledgeTree(rootNode, null, 0);
+            // saveKnowledgeTree(rootNode, null, 0);
 
             PageInfoResult<SubjectService.SubjectWithKnowledges> result = subjectService
                     .findSubjectsWithKnowledges(pageNum, pageSize, name, semester);
