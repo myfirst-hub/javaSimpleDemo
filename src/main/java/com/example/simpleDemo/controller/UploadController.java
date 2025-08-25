@@ -2,6 +2,8 @@ package com.example.simpleDemo.controller;
 
 import com.example.simpleDemo.utils.ApiResponse;
 import com.example.simpleDemo.service.TransferService;
+import com.example.simpleDemo.service.SubjectOutlineService;
+import com.example.simpleDemo.entity.SubjectOutline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
 import java.util.UUID;
 
 // 添加Jackson的ObjectMapper导入
@@ -29,6 +32,9 @@ public class UploadController {
 
     @Autowired
     private TransferService transferService;
+
+    @Autowired
+    private SubjectOutlineService subjectOutlineService;
 
     // 注入ObjectMapper用于JSON解析
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -67,7 +73,6 @@ public class UploadController {
             // ApiResponse<String> response = ApiResponse.success("File uploaded
             // successfully: " + uniqueFilename);
             // 记录subjectId的值
-
             logger.info("Received subjectId: {}", subjectId);
 
             // 直接将MultipartFile传递给TransferService
@@ -80,13 +85,28 @@ public class UploadController {
                 if (resultsArray != null && resultsArray.isArray() && resultsArray.size() > 0) {
                     JsonNode firstResult = resultsArray.get(0);
                     JsonNode originalFilenameNode = firstResult.get("original_filename");
+                    // 使用更精确的时间戳
+                    long currentTimeMillis = Instant.now().toEpochMilli();
                     if (originalFilenameNode != null) {
                         String originalFilename = originalFilenameNode.asText();
                         logger.info("Extracted original filename: {}", originalFilename);
+                        // 使用构造函数创建SubjectOutline对象
+                        SubjectOutline st = new SubjectOutline(subjectId, currentTimeMillis, originalFilename, 2);
+                        // 插入记录并检查结果
+                        int insertResult = subjectOutlineService.insertSubjectOutline(st);
+                        if (insertResult > 0) {
+                            logger.info("Successfully inserted SubjectOutline record with id: {}", st.getId());
+                        } else {
+                            logger.warn("Failed to insert SubjectOutline record");
+                        }
+                    } else {
+                        logger.warn("Original filename not found in the response");
                     }
+                } else {
+                    logger.warn("Results array is empty or null in the response");
                 }
             } catch (Exception e) {
-                logger.error("Failed to parse JSON result", e);
+                logger.error("Failed to parse JSON result or insert SubjectOutline record", e);
             }
 
             logger.info("result uploaded successfully: {}", result);

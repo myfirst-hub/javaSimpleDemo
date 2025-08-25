@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.simpleDemo.mapper.SubjectOutlineMapper">
+    
+    <resultMap id="SubjectOutlineResultMap" type="com.example.simpleDemo.entity.SubjectOutline">
+        <id property="id" column="id"/>
+        <result property="subjectId" column="subject_id"/>
+        <result property="outlineId" column="outline_id"/>
+        <result property="outlineName" column="outline_name"/>
+        <result property="uploadStatus" column="upload_status"/>
+        <result property="reservedField1" column="reserved_field1"/>
+        <result property="reservedField2" column="reserved_field2"/>
+        <result property="reservedField3" column="reserved_field3"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+    
+    <insert id="insertSubjectOutline" parameterType="com.example.simpleDemo.entity.SubjectOutline" 
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO subject_outline(subject_id, outline_id, outline_name, upload_status, reserved_field1, reserved_field2, reserved_field3, created_at, updated_at)
+        VALUES (#{subjectId}, #{outlineId}, #{outlineName}, #{uploadStatus}, #{reservedField1}, #{reservedField2}, #{reservedField3}, #{createdAt}, #{updatedAt})
+    </insert>
+</mapper>
