@@ -4,7 +4,13 @@ import org.springframework.stereotype.Service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DefaultDataBufferFactory;
+import org.springframework.http.MediaType;
+import org.springframework.http.client.MultipartBodyBuilder;
+import reactor.core.publisher.Flux;
 
 @Service
 public class TransferService {
@@ -14,7 +20,7 @@ public class TransferService {
 
     public TransferService() {
         this.webClient = WebClient.builder()
-                .baseUrl("http://localhost:3000")
+                .baseUrl("http://192.168.107.126:8965")
                 .build();
     }
 
@@ -39,17 +45,21 @@ public class TransferService {
     /**
      * 上传附件到外部服务
      * 
-     * @param fileContent 文件内容
-     * @param filename    文件名
+     * @param file MultipartFile对象
      * @return 上传结果
      */
-    public String uploadFile(byte[] fileContent, String filename) {
+    public String uploadFile(MultipartFile file) {
         try {
+            // 使用MultipartBodyBuilder构建multipart/form-data请求体
+            MultipartBodyBuilder builder = new MultipartBodyBuilder();
+            builder.part("files[]", file.getResource())
+                    .header("Content-Disposition",
+                            "form-data; name=\"files[]\"; filename=\"" + file.getOriginalFilename() + "\"");
+
             return webClient.post()
-                    .uri("/upload")
-                    .bodyValue(fileContent)
-                    .header("Content-Type", "application/octet-stream")
-                    .header("X-Filename", filename)
+                    .uri("/extract_knowledge")
+                    .contentType(MediaType.MULTIPART_FORM_DATA)
+                    .bodyValue(builder.build())
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();

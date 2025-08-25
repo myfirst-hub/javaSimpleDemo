@@ -18,6 +18,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
 
+// 添加Jackson的ObjectMapper导入
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
+
 @RestController
 public class UploadController {
 
@@ -26,9 +30,14 @@ public class UploadController {
     @Autowired
     private TransferService transferService;
 
+    // 注入ObjectMapper用于JSON解析
+    private final ObjectMapper objectMapper = new ObjectMapper();
+
     @PostMapping("/upload")
-    public ResponseEntity<ApiResponse<String>> uploadFile(@RequestParam("file") MultipartFile file) {
-        logger.info("File upload endpoint accessed with file: {}", file.getOriginalFilename());
+    public ResponseEntity<ApiResponse<String>> uploadFile(@RequestParam("files[]") MultipartFile file,
+            @RequestParam("subjectId") Long subjectId) {
+        logger.info("File upload endpoint accessed with file: {} and subjectId: {}", file.getOriginalFilename(),
+                subjectId);
 
         try {
             // // 获取项目根目录
@@ -57,19 +66,33 @@ public class UploadController {
             // logger.info("File uploaded successfully: {}", uniqueFilename);
             // ApiResponse<String> response = ApiResponse.success("File uploaded
             // successfully: " + uniqueFilename);
-            byte[] fileContent = file.getBytes();
-            String originalFilename = file.getOriginalFilename();
+            // 记录subjectId的值
 
-            // 调用TransferService的uploadFile方法
-            String result = transferService.uploadFile(fileContent, originalFilename);
+            logger.info("Received subjectId: {}", subjectId);
 
-            logger.info("File uploaded successfully: {}", originalFilename);
+            // 直接将MultipartFile传递给TransferService
+            String result = transferService.uploadFile(file);
+
+            // 解析JSON结果并提取original_filename
+            try {
+                JsonNode jsonNode = objectMapper.readTree(result);
+                JsonNode resultsArray = jsonNode.get("results");
+                if (resultsArray != null && resultsArray.isArray() && resultsArray.size() > 0) {
+                    JsonNode firstResult = resultsArray.get(0);
+                    JsonNode originalFilenameNode = firstResult.get("original_filename");
+                    if (originalFilenameNode != null) {
+                        String originalFilename = originalFilenameNode.asText();
+                        logger.info("Extracted original filename: {}", originalFilename);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Failed to parse JSON result", e);
+            }
+
+            logger.info("result uploaded successfully: {}", result);
+            logger.info("File uploaded successfully: {}", file.getOriginalFilename());
             ApiResponse<String> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (IOException e) {
-            logger.error("Error occurred while uploading file", e);
-            ApiResponse<String> response = ApiResponse.error("Failed to upload file: " + e.getMessage());
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
             logger.error("Unexpected error occurred while uploading file", e);
             ApiResponse<String> response = ApiResponse.error("Failed to upload file due to unexpected error");
