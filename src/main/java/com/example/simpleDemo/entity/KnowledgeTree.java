@@ -1,6 +1,7 @@
 package com.example.simpleDemo.entity;
 
 import java.util.Date;
+import java.util.List;
 
 public class KnowledgeTree {
     private Long id;
@@ -11,6 +12,11 @@ public class KnowledgeTree {
     private Boolean leaf;
     private Date createdAt;
     private Date updatedAt;
+    // 添加level字段
+    private Integer level;
+    
+    // 添加children字段用于存储子节点
+    private List<KnowledgeTree> children;
 
     // Constructors
     public KnowledgeTree() {
@@ -93,6 +99,24 @@ public class KnowledgeTree {
         this.updatedAt = updatedAt;
     }
 
+    // 添加level的getter和setter
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+    
+    // 添加children的getter和setter
+    public List<KnowledgeTree> getChildren() {
+        return children;
+    }
+    
+    public void setChildren(List<KnowledgeTree> children) {
+        this.children = children;
+    }
+
     @Override
     public String toString() {
         return "KnowledgeTree{" +
@@ -104,6 +128,8 @@ public class KnowledgeTree {
                 ", leaf=" + leaf +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", level=" + level +
+                ", children=" + children +
                 '}';
     }
 }

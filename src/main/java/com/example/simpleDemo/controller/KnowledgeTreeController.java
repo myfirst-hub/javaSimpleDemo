@@ -13,50 +13,12 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/knowledge-tree")
 public class KnowledgeTreeController {
 
     private static final Logger logger = LoggerFactory.getLogger(KnowledgeTreeController.class);
 
     @Autowired
     private KnowledgeTreeService knowledgeTreeService;
-
-    // 查询所有知识点
-    @GetMapping
-    public ResponseEntity<ApiResponse<List<KnowledgeTree>>> getAllKnowledgeTrees() {
-        logger.info("Get all knowledge trees endpoint accessed");
-
-        try {
-            List<KnowledgeTree> knowledgeTrees = knowledgeTreeService.findAll();
-            ApiResponse<List<KnowledgeTree>> response = ApiResponse.success(knowledgeTrees);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        } catch (Exception e) {
-            logger.error("Error occurred while fetching knowledge trees", e);
-            ApiResponse<List<KnowledgeTree>> response = ApiResponse.error("Failed to fetch knowledge trees");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    // 根据ID查询知识点
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<KnowledgeTree>> getKnowledgeTreeById(@PathVariable Long id) {
-        logger.info("Get knowledge tree by id endpoint accessed with id: {}", id);
-
-        try {
-            KnowledgeTree knowledgeTree = knowledgeTreeService.findById(id);
-            if (knowledgeTree != null) {
-                ApiResponse<KnowledgeTree> response = ApiResponse.success(knowledgeTree);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            } else {
-                ApiResponse<KnowledgeTree> response = ApiResponse.error("Knowledge tree not found");
-                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-            }
-        } catch (Exception e) {
-            logger.error("Error occurred while fetching knowledge tree by id: {}", id, e);
-            ApiResponse<KnowledgeTree> response = ApiResponse.error("Failed to fetch knowledge tree");
-            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     // 插入新的知识点
     @PostMapping
@@ -70,6 +32,22 @@ public class KnowledgeTreeController {
         } catch (Exception e) {
             logger.error("Error occurred while creating knowledge tree", e);
             ApiResponse<KnowledgeTree> response = ApiResponse.error("Failed to create knowledge tree");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 获取树形结构的知识点
+    @GetMapping("/knowledgeTree")
+    public ResponseEntity<ApiResponse<List<KnowledgeTree>>> getKnowledgeTreeStructure() {
+        logger.info("Get knowledge tree structure endpoint accessed");
+
+        try {
+            List<KnowledgeTree> treeStructure = knowledgeTreeService.buildKnowledgeTree();
+            ApiResponse<List<KnowledgeTree>> response = ApiResponse.success(treeStructure);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while building knowledge tree structure", e);
+            ApiResponse<List<KnowledgeTree>> response = ApiResponse.error("Failed to build knowledge tree structure");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

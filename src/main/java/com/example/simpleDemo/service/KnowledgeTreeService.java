@@ -11,4 +11,10 @@ public interface KnowledgeTreeService {
     KnowledgeTree findById(Long id);
     
     KnowledgeTree createKnowledgeTree(KnowledgeTree knowledgeTree);
+    
+    // 添加构建树形结构的方法
+    List<KnowledgeTree> buildKnowledgeTree();
+    
+    // 添加根据父ID查找子节点的方法
+    List<KnowledgeTree> findByParentId(Long parentId);
 }

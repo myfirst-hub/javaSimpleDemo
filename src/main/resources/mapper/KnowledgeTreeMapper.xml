@@ -10,25 +10,40 @@
         <result property="masteryLevel" column="mastery_level"/>
         <result property="createdAt" column="created_at"/>
         <result property="updatedAt" column="updated_at"/>
+        <result property="level" column="level"/>
     </resultMap>
     
     <!-- 查询所有知识点 -->
     <select id="findAll" resultMap="KnowledgeTreeMap">
-        SELECT id, name, knowledge_describe, parent_id, mastery_level, created_at, updated_at
+        SELECT id, name, knowledge_describe, parent_id, mastery_level, created_at, updated_at, level
         FROM knowledges_tree
     </select>
     
     <!-- 根据ID查询知识点 -->
     <select id="findById" parameterType="long" resultMap="KnowledgeTreeMap">
-        SELECT id, name, knowledge_describe, parent_id, mastery_level, created_at, updated_at
+        SELECT id, name, knowledge_describe, parent_id, mastery_level, created_at, updated_at, level
         FROM knowledges_tree
         WHERE id = #{id}
     </select>
     
     <!-- 插入新的知识点 -->
     <insert id="insert" parameterType="com.example.simpleDemo.entity.KnowledgeTree" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO knowledges_tree (name, knowledge_describe, parent_id, mastery_level, created_at, updated_at)
-        VALUES (#{name}, #{knowledgeDescribe}, #{parentId}, #{masteryLevel}, #{createdAt}, #{updatedAt})
+        INSERT INTO knowledges_tree (name, knowledge_describe, parent_id, mastery_level, created_at, updated_at, level)
+        VALUES (#{name}, #{knowledgeDescribe}, #{parentId}, #{masteryLevel}, #{createdAt}, #{updatedAt}, #{level})
     </insert>
+    
+    <!-- 添加查询根节点的方法（parentId为null的节点） -->
+    <select id="findRootNodes" resultMap="KnowledgeTreeMap">
+        SELECT id, name, knowledge_describe, parent_id, mastery_level, created_at, updated_at, level
+        FROM knowledges_tree
+        WHERE parent_id IS NULL
+    </select>
+    
+    <!-- 添加按父ID查询子节点的方法 -->
+    <select id="findByParentId" parameterType="long" resultMap="KnowledgeTreeMap">
+        SELECT id, name, knowledge_describe, parent_id, mastery_level, created_at, updated_at, level
+        FROM knowledges_tree
+        WHERE parent_id = #{parentId}
+    </select>
     
 </mapper>
