@@ -1,7 +1,6 @@
 package com.example.simpleDemo.service;
 
 import com.example.simpleDemo.entity.*;
-import com.example.simpleDemo.mapper.KnowledgeMapper;
 import com.example.simpleDemo.mapper.SubjectKnowledgeMapper;
 import com.example.simpleDemo.mapper.SubjectMapper;
 import com.example.simpleDemo.utils.PageInfoResult;
@@ -18,9 +17,6 @@ public class SubjectService {
 
     @Autowired
     private SubjectMapper subjectMapper;
-
-    @Autowired
-    private KnowledgeMapper knowledgeMapper;
 
     @Autowired
     private SubjectKnowledgeMapper subjectKnowledgeMapper;
@@ -92,7 +88,7 @@ public class SubjectService {
             // 1. 插入科目信息
             Subject subject = subjectWithKnowledgesDTO.getSubject();
             subjectMapper.insertSubject(subject);
-            // Integer subjectId = subject.getId(); // 获取生成的科目ID
+            // Long subjectId = subject.getId(); // 获取生成的科目ID
 
             // // 2. 处理知识点：插入新的知识点
             // List<Knowledge> knowledges = subjectWithKnowledgesDTO.getKnowledges();
@@ -127,12 +123,12 @@ public class SubjectService {
             // 1. 更新科目信息
             Subject subject = subjectWithKnowledgesDTO.getSubject();
             subjectMapper.updateSubject(subject);
-            // Integer subjectId = subject.getId(); // 获取科目ID
+            // Long subjectId = subject.getId(); // 获取科目ID
 
             // // 2. 获取当前数据库中该科目的知识点ID列表
             // List<Knowledge> existingKnowledges =
             // subjectKnowledgeMapper.findKnowledgesBySubjectId(subjectId);
-            // List<Integer> existingKnowledgeIds = existingKnowledges.stream()
+            // List<Long> existingKnowledgeIds = existingKnowledges.stream()
             // .map(Knowledge::getId)
             // .collect(Collectors.toList());
 
@@ -141,7 +137,7 @@ public class SubjectService {
 
             // // 4. 处理知识点：更新已存在的知识点，插入新的知识点
             // List<Knowledge> knowledges = subjectWithKnowledgesDTO.getKnowledges();
-            // List<Integer> newKnowledgeIds = knowledges.stream()
+            // List<Long> newKnowledgeIds = knowledges.stream()
             // .map(Knowledge::getId)
             // .collect(Collectors.toList());
 
@@ -156,7 +152,7 @@ public class SubjectService {
             // }
 
             // // 5. 删除在新列表中不存在但在数据库中存在知识点
-            // for (Integer existingKnowledgeId : existingKnowledgeIds) {
+            // for (Long existingKnowledgeId : existingKnowledgeIds) {
             // // 如果旧知识点ID不在新知识点列表中，则删除该知识点
             // if (!newKnowledgeIds.contains(existingKnowledgeId)) {
             // knowledgeMapper.deleteKnowledgeById(existingKnowledgeId);
@@ -180,35 +176,29 @@ public class SubjectService {
     }
 
     /**
-     * 删除科目及其关联的知识点
+     * 根据ID查询科目详情，包含知识点信息
      * 
-     * @param subjectId 科目ID
-     * @return 是否删除成功
+     * @param id 科目ID
+     * @return 科目详情信息
      */
-    public boolean deleteSubjectWithKnowledges(Integer subjectId) {
-        try {
-            // 1. 获取当前数据库中该科目的知识点ID列表
-            List<Knowledge> existingKnowledges = subjectKnowledgeMapper.findKnowledgesBySubjectId(subjectId);
-            List<Integer> existingKnowledgeIds = existingKnowledges.stream()
-                    .map(Knowledge::getId)
-                    .collect(Collectors.toList());
+    public SubjectWithKnowledges findSubjectByIdWithKnowledges(Long id) {
+        // 查询指定ID的科目数据
+        List<Subject> subjects = subjectMapper.findSubjects(null, null);
+        Subject subject = subjects.stream()
+                .filter(s -> s.getId().equals(id))
+                .findFirst()
+                .orElse(null);
 
-            // 2. 删除科目和知识点的映射关系
-            subjectKnowledgeMapper.deleteSubjectKnowledgeBySubjectId(subjectId);
-
-            // 3. 删除科目关联的知识点
-            for (Integer knowledgeId : existingKnowledgeIds) {
-                knowledgeMapper.deleteKnowledgeById(knowledgeId);
-            }
-
-            // 4. 删除科目本身
-            subjectMapper.deleteSubjectById(subjectId);
-
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+        if (subject == null) {
+            return null;
         }
+
+        // 为科目查询关联的知识点
+        SubjectWithKnowledges subjectWithKnowledges = new SubjectWithKnowledges(subject);
+        List<Knowledge> knowledges = subjectKnowledgeMapper.findKnowledgesBySubjectId(subject.getId());
+        subjectWithKnowledges.setKnowledges(knowledges);
+
+        return subjectWithKnowledges;
     }
 
     // 内部类，用于封装科目和知识点信息

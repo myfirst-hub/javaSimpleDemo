@@ -54,4 +54,10 @@
     <delete id="deleteSubjectKnowledgeBySubjectId">
         DELETE FROM subject_knowledge WHERE subject_id = #{subjectId}
     </delete>
+    
+    <select id="findKnowledgeIdsBySubjectId" resultType="java.lang.Integer">
+        SELECT knowledge_id
+        FROM subject_knowledge
+        WHERE subject_id = #{subjectId}
+    </select>
 </mapper>

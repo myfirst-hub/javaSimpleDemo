@@ -27,4 +27,8 @@
             updated_at = #{updatedAt}
         WHERE id = #{id}
     </update>
+    
+    <select id="selectOutlineIdsBySubjectId" parameterType="long" resultType="long">
+        SELECT outline_id FROM subject_outline WHERE subject_id = #{subjectId}
+    </select>
 </mapper>

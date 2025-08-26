@@ -4,10 +4,13 @@ import com.example.simpleDemo.entity.KnowledgeTree;
 import com.example.simpleDemo.entity.Subject;
 import com.example.simpleDemo.entity.SubjectWithKnowledgesDTO;
 import com.example.simpleDemo.service.KnowledgeTreeService;
+import com.example.simpleDemo.service.SubjectOutlineService;
 import com.example.simpleDemo.service.SubjectService;
 import com.example.simpleDemo.utils.ApiResponse;
 import com.example.simpleDemo.utils.PageInfoResult;
 import com.fasterxml.jackson.databind.JsonNode;
+
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +30,9 @@ public class SubjectController {
 
   @Autowired
   private KnowledgeTreeService knowledgeTreeService;
+
+  @Autowired
+  private SubjectOutlineService subjectOutlineService;
 
   /**
    * 分页查询科目列表，包含知识点信息
@@ -150,18 +156,50 @@ public class SubjectController {
    * @param subjectId 科目ID
    * @return 是否删除成功
    */
-  @PostMapping("/subject/delete")
-  public ResponseEntity<ApiResponse<Boolean>> deleteSubjectByIdWithKnowledges(@RequestBody Subject subject) {
-    logger.info("Delete subject with knowledges endpoint accessed with params: subjectId={}", subject.getId());
+  // @PostMapping("/subject/delete")
+  // public ResponseEntity<ApiResponse<Boolean>>
+  // deleteSubjectByIdWithKnowledges(@RequestBody Subject subject) {
+  // logger.info("Delete subject with knowledges endpoint accessed with params:
+  // subjectId={}", subject.getId());
+
+  // try {
+  // boolean result = subjectService.deleteSubjectWithKnowledges(subject.getId());
+  // ApiResponse<Boolean> response = ApiResponse.success(result);
+  // return new ResponseEntity<>(response, HttpStatus.OK);
+  // } catch (Exception e) {
+  // logger.error("Error occurred while deleting subject with knowledges", e);
+  // ApiResponse<Boolean> response = ApiResponse.error("Failed to delete subject
+  // with knowledges");
+  // return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+  // }
+  // }
+
+  /**
+   * 根据ID查询科目详情，包含知识点信息
+   * 
+   * @param id 科目ID
+   * @return 科目详情信息
+   */
+  @GetMapping("/subject/detail")
+  public ResponseEntity<ApiResponse<List<KnowledgeTree>>> findSubjectById(
+      @RequestParam(required = true) Long id) {
+
+    logger.info("Get subject detail endpoint accessed with params: id={}", id);
 
     try {
-      boolean result = subjectService.deleteSubjectWithKnowledges(subject.getId());
-      ApiResponse<Boolean> response = ApiResponse.success(result);
+      List<Long> ids = subjectOutlineService.findOutlineIdsBySubjectId(id);
+
+      logger.info("Get subject detail endpoint accessed with params: ids={}", ids);
+
+      List<KnowledgeTree> knowledgeTrees = knowledgeTreeService.buildKnowledgeTree(ids);
+
+      ApiResponse<List<KnowledgeTree>> response = ApiResponse.success(knowledgeTrees);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
-      logger.error("Error occurred while deleting subject with knowledges", e);
-      ApiResponse<Boolean> response = ApiResponse.error("Failed to delete subject with knowledges");
+      logger.error("Error occurred while fetching subject detail", e);
+      ApiResponse<List<KnowledgeTree>> response = ApiResponse.error("Failed to fetch subject detail");
       return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+    // return null;
   }
 }

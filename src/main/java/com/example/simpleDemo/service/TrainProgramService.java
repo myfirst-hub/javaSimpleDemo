@@ -26,9 +26,9 @@ public class TrainProgramService {
 
     @Autowired
     private TrainProgramKnowledgeMapper trainProgramKnowledgeMapper;
-    
+
     @Autowired
-    private KnowledgeService knowledgeService;
+    // private KnowledgeService knowledgeService;
 
     public List<TrainProgram> findAllTrainPrograms() {
         return trainProgramMapper.findAll();
@@ -69,7 +69,7 @@ public class TrainProgramService {
         PageInfo<TrainProgramWithRelationsDTO> pageInfo = new PageInfo<>(trainProgramsWithRelations);
         return new PageInfoResult<>(pageInfo);
     }
-    
+
     public TrainProgram createTrainProgram(TrainProgramCreateDTO createDTO) {
         // 创建训练项目
         TrainProgram trainProgram = new TrainProgram();
@@ -79,10 +79,10 @@ public class TrainProgramService {
         trainProgram.setTrainTime(createDTO.getTrainTime());
         trainProgram.setCreatedAt(new Date());
         trainProgram.setUpdatedAt(new Date());
-        
+
         // 插入训练项目
         trainProgramMapper.insertTrainProgram(trainProgram);
-        
+
         // 创建学生关联
         if (createDTO.getStudentIds() != null && !createDTO.getStudentIds().isEmpty()) {
             createDTO.getStudentIds().forEach(studentId -> {
@@ -93,7 +93,7 @@ public class TrainProgramService {
                 trainProgramStudentMapper.insertTrainProgramStudent(trainProgramStudent);
             });
         }
-        
+
         // 创建知识点关联
         if (createDTO.getKnowledges() != null && !createDTO.getKnowledges().isEmpty()) {
             createDTO.getKnowledges().forEach(knowledge -> {
@@ -102,13 +102,13 @@ public class TrainProgramService {
                     // 插入新知识点
                     knowledge.setCreatedAt(new Date());
                     knowledge.setUpdatedAt(new Date());
-                    knowledgeService.insertKnowledge(knowledge);
+                    // knowledgeService.insertKnowledge(knowledge);
                 } else {
                     // 更新现有知识点
                     knowledge.setUpdatedAt(new Date());
-                    knowledgeService.updateKnowledgeById(knowledge);
+                    // knowledgeService.updateKnowledgeById(knowledge);
                 }
-                
+
                 // 创建训练项目与知识点的关联
                 TrainProgramKnowledge trainProgramKnowledge = new TrainProgramKnowledge();
                 trainProgramKnowledge.setTrainId(trainProgram.getId());
@@ -117,7 +117,7 @@ public class TrainProgramService {
                 trainProgramKnowledgeMapper.insertTrainProgramKnowledge(trainProgramKnowledge);
             });
         }
-        
+
         return trainProgram;
     }
 }

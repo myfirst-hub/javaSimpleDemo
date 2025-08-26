@@ -2,6 +2,8 @@ package com.example.simpleDemo.mapper;
 
 import com.example.simpleDemo.entity.SubjectOutline;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import java.util.List;
 
 @Mapper
 public interface SubjectOutlineMapper {
@@ -19,4 +21,11 @@ public interface SubjectOutlineMapper {
      * @return 更新成功的记录数
      */
     int updateUploadStatusById(SubjectOutline subjectOutline);
+    
+    /**
+     * 根据科目ID查找所有关联的大纲ID
+     * @param subjectId 科目ID
+     * @return 大纲ID列表
+     */
+    List<Long> selectOutlineIdsBySubjectId(@Param("subjectId") Long subjectId);
 }

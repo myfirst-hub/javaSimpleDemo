@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -152,5 +153,14 @@ public class SubjectOutlineService {
     }
 
     return savedNode;
+  }
+
+  /**
+   * 根据科目ID查找所有关联的大纲ID
+   * @param subjectId 科目ID
+   * @return 大纲ID列表
+   */
+  public List<Long> findOutlineIdsBySubjectId(Long subjectId) {
+    return subjectOutlineMapper.selectOutlineIdsBySubjectId(subjectId);
   }
 }

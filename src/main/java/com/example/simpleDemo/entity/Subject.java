@@ -3,7 +3,7 @@ package com.example.simpleDemo.entity;
 import java.util.Date;
 
 public class Subject {
-    private Integer id;
+    private Long id;
     private String name;
     private String semester;
     private String subjectDescribe;
@@ -11,15 +11,16 @@ public class Subject {
     private Date updatedAt;
 
     // 构造函数
-    public Subject() {}
+    public Subject() {
+    }
 
     public Subject(String name, String semester, String subjectDescribe) {
         this.name = name;
         this.semester = semester;
         this.subjectDescribe = subjectDescribe;
     }
-    
-    public Subject(Integer id, String name, String semester, String subjectDescribe, Date createdAt, Date updatedAt) {
+
+    public Subject(Long id, String name, String semester, String subjectDescribe, Date createdAt, Date updatedAt) {
         this.id = id;
         this.name = name;
         this.semester = semester;
@@ -29,11 +30,11 @@ public class Subject {
     }
 
     // Getter和Setter方法
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
