@@ -20,4 +20,7 @@ public interface KnowledgeTreeMapper {
     
     // 添加查询根节点的方法（parentId为null的节点）
     List<KnowledgeTree> findRootNodes();
+    
+    // 添加根据ID列表查询根节点的方法
+    List<KnowledgeTree> findRootNodesByIds(@Param("ids") List<Long> ids);
 }

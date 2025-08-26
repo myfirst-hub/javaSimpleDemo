@@ -60,6 +60,28 @@ public class SubjectService {
     }
 
     /**
+     * 分页查询科目列表
+     * 
+     * @param pageNum  页码
+     * @param pageSize 每页大小
+     * @param name     科目名称（可选）
+     * @param semester 学期（可选）
+     * @return 分页结果
+     */
+    public PageInfoResult<Subject> findSubjects(int pageNum, int pageSize, String name,
+            String semester) {
+        // 开启分页
+        PageHelper.startPage(pageNum, pageSize);
+
+        // 查询科目数据
+        List<Subject> subjects = subjectMapper.findSubjects(name, semester);
+
+        // 获取分页信息
+        PageInfo<Subject> subjectPageInfo = new PageInfo<>(subjects);
+        return new PageInfoResult<>(subjectPageInfo);
+    }
+
+    /**
      * 新增科目，同时处理知识点和科目知识点映射关系
      * 
      * @param subjectWithKnowledgesDTO 包含科目和知识点信息的DTO对象
@@ -70,22 +92,22 @@ public class SubjectService {
             // 1. 插入科目信息
             Subject subject = subjectWithKnowledgesDTO.getSubject();
             subjectMapper.insertSubject(subject);
-            Integer subjectId = subject.getId(); // 获取生成的科目ID
+            // Integer subjectId = subject.getId(); // 获取生成的科目ID
 
-            // 2. 处理知识点：插入新的知识点
-            List<Knowledge> knowledges = subjectWithKnowledgesDTO.getKnowledges();
-            for (Knowledge knowledge : knowledges) {
-                knowledgeMapper.insertKnowledge(knowledge);
-            }
+            // // 2. 处理知识点：插入新的知识点
+            // List<Knowledge> knowledges = subjectWithKnowledgesDTO.getKnowledges();
+            // for (Knowledge knowledge : knowledges) {
+            // knowledgeMapper.insertKnowledge(knowledge);
+            // }
 
-            // 3. 处理科目和知识点的映射关系
-            for (Knowledge knowledge : knowledges) {
-                SubjectKnowledge subjectKnowledge = new SubjectKnowledge();
-                subjectKnowledge.setSubjectId(subjectId);
-                subjectKnowledge.setKnowledgeId(knowledge.getId());
-                subjectKnowledge.setMasteryLevel(knowledge.getMasteryLevel());
-                subjectKnowledgeMapper.insertSubjectKnowledge(subjectKnowledge);
-            }
+            // // 3. 处理科目和知识点的映射关系
+            // for (Knowledge knowledge : knowledges) {
+            // SubjectKnowledge subjectKnowledge = new SubjectKnowledge();
+            // subjectKnowledge.setSubjectId(subjectId);
+            // subjectKnowledge.setKnowledgeId(knowledge.getId());
+            // subjectKnowledge.setMasteryLevel(knowledge.getMasteryLevel());
+            // subjectKnowledgeMapper.insertSubjectKnowledge(subjectKnowledge);
+            // }
 
             return true;
         } catch (Exception e) {
@@ -105,49 +127,50 @@ public class SubjectService {
             // 1. 更新科目信息
             Subject subject = subjectWithKnowledgesDTO.getSubject();
             subjectMapper.updateSubject(subject);
-            Integer subjectId = subject.getId(); // 获取科目ID
+            // Integer subjectId = subject.getId(); // 获取科目ID
 
-            // 2. 获取当前数据库中该科目的知识点ID列表
-            List<Knowledge> existingKnowledges = subjectKnowledgeMapper.findKnowledgesBySubjectId(subjectId);
-            List<Integer> existingKnowledgeIds = existingKnowledges.stream()
-                    .map(Knowledge::getId)
-                    .collect(Collectors.toList());
+            // // 2. 获取当前数据库中该科目的知识点ID列表
+            // List<Knowledge> existingKnowledges =
+            // subjectKnowledgeMapper.findKnowledgesBySubjectId(subjectId);
+            // List<Integer> existingKnowledgeIds = existingKnowledges.stream()
+            // .map(Knowledge::getId)
+            // .collect(Collectors.toList());
 
-            // 3. 删除原有的科目和知识点的映射关系
-            subjectKnowledgeMapper.deleteSubjectKnowledgeBySubjectId(subjectId);
+            // // 3. 删除原有的科目和知识点的映射关系
+            // subjectKnowledgeMapper.deleteSubjectKnowledgeBySubjectId(subjectId);
 
-            // 4. 处理知识点：更新已存在的知识点，插入新的知识点
-            List<Knowledge> knowledges = subjectWithKnowledgesDTO.getKnowledges();
-            List<Integer> newKnowledgeIds = knowledges.stream()
-                    .map(Knowledge::getId)
-                    .collect(Collectors.toList());
+            // // 4. 处理知识点：更新已存在的知识点，插入新的知识点
+            // List<Knowledge> knowledges = subjectWithKnowledgesDTO.getKnowledges();
+            // List<Integer> newKnowledgeIds = knowledges.stream()
+            // .map(Knowledge::getId)
+            // .collect(Collectors.toList());
 
-            for (Knowledge knowledge : knowledges) {
-                if (knowledge.getId() != null) {
-                    // 如果知识点ID存在，则更新知识点
-                    knowledgeMapper.updateKnowledgeById(knowledge);
-                } else {
-                    // 如果知识点ID不存在，则插入新的知识点
-                    knowledgeMapper.insertKnowledge(knowledge);
-                }
-            }
+            // for (Knowledge knowledge : knowledges) {
+            // if (knowledge.getId() != null) {
+            // // 如果知识点ID存在，则更新知识点
+            // knowledgeMapper.updateKnowledgeById(knowledge);
+            // } else {
+            // // 如果知识点ID不存在，则插入新的知识点
+            // knowledgeMapper.insertKnowledge(knowledge);
+            // }
+            // }
 
-            // 5. 删除在新列表中不存在但在数据库中存在知识点
-            for (Integer existingKnowledgeId : existingKnowledgeIds) {
-                // 如果旧知识点ID不在新知识点列表中，则删除该知识点
-                if (!newKnowledgeIds.contains(existingKnowledgeId)) {
-                    knowledgeMapper.deleteKnowledgeById(existingKnowledgeId);
-                }
-            }
+            // // 5. 删除在新列表中不存在但在数据库中存在知识点
+            // for (Integer existingKnowledgeId : existingKnowledgeIds) {
+            // // 如果旧知识点ID不在新知识点列表中，则删除该知识点
+            // if (!newKnowledgeIds.contains(existingKnowledgeId)) {
+            // knowledgeMapper.deleteKnowledgeById(existingKnowledgeId);
+            // }
+            // }
 
-            // 6. 处理科目和知识点的映射关系
-            for (Knowledge knowledge : knowledges) {
-                SubjectKnowledge subjectKnowledge = new SubjectKnowledge();
-                subjectKnowledge.setSubjectId(subjectId);
-                subjectKnowledge.setKnowledgeId(knowledge.getId());
-                subjectKnowledge.setMasteryLevel(knowledge.getMasteryLevel());
-                subjectKnowledgeMapper.insertSubjectKnowledge(subjectKnowledge);
-            }
+            // // 6. 处理科目和知识点的映射关系
+            // for (Knowledge knowledge : knowledges) {
+            // SubjectKnowledge subjectKnowledge = new SubjectKnowledge();
+            // subjectKnowledge.setSubjectId(subjectId);
+            // subjectKnowledge.setKnowledgeId(knowledge.getId());
+            // subjectKnowledge.setMasteryLevel(knowledge.getMasteryLevel());
+            // subjectKnowledgeMapper.insertSubjectKnowledge(subjectKnowledge);
+            // }
 
             return true;
         } catch (Exception e) {

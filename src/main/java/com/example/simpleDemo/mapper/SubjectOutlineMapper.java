@@ -12,4 +12,11 @@ public interface SubjectOutlineMapper {
      * @return 插入成功的记录数
      */
     int insertSubjectOutline(SubjectOutline subjectOutline);
+    
+    /**
+     * 根据ID更新SubjectOutline的uploadStatus
+     * @param subjectOutline 包含ID和新uploadStatus的对象
+     * @return 更新成功的记录数
+     */
+    int updateUploadStatusById(SubjectOutline subjectOutline);
 }

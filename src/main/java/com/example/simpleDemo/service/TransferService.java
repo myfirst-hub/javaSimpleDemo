@@ -68,4 +68,22 @@ public class TransferService {
             return "Error uploading file: " + e.getMessage();
         }
     }
+
+    /**
+     * 调用外部新闻接口获取新闻数据
+     * 
+     * @return 新闻数据的字符串形式
+     */
+    public String fetchKnowledge() {
+        try {
+            return webClient.get()
+                    .uri("/knowledge/苏科版9年级物理上册【高清教材】_knowledge.json")
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        } catch (Exception e) {
+            logger.error("Failed to fetch news from external API", e);
+            return "Error fetching news: " + e.getMessage();
+        }
+    }
 }

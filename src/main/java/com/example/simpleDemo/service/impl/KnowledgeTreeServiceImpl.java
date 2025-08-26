@@ -62,6 +62,19 @@ public class KnowledgeTreeServiceImpl implements KnowledgeTreeService {
         return rootNodes;
     }
     
+    @Override
+    public List<KnowledgeTree> buildKnowledgeTree(List<Long> ids) {
+        // 根据ID列表获取指定的根节点
+        List<KnowledgeTree> rootNodes = knowledgeTreeMapper.findRootNodesByIds(ids);
+        
+        // 为每个根节点递归构建子树
+        for (KnowledgeTree rootNode : rootNodes) {
+            buildChildren(rootNode);
+        }
+        
+        return rootNodes;
+    }
+    
     /**
      * 递归构建知识点树的子节点
      * @param parent 父节点

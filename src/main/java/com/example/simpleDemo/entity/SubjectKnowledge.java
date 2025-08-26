@@ -3,9 +3,9 @@ package com.example.simpleDemo.entity;
 import java.util.Date;
 
 public class SubjectKnowledge {
-    private Integer id;
-    private Integer subjectId;
-    private Integer knowledgeId;
+    private Long id;
+    private Long subjectId;
+    private Long knowledgeId;
     private Integer masteryLevel;
     private Date createdAt;
     private Date updatedAt;
@@ -13,34 +13,34 @@ public class SubjectKnowledge {
     // 构造函数
     public SubjectKnowledge() {}
 
-    public SubjectKnowledge(Integer subjectId, Integer knowledgeId, Integer masteryLevel) {
+    public SubjectKnowledge(Long subjectId, Long knowledgeId, Integer masteryLevel) {
         this.subjectId = subjectId;
         this.knowledgeId = knowledgeId;
         this.masteryLevel = masteryLevel;
     }
 
     // Getter和Setter方法
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public Integer getSubjectId() {
+    public Long getSubjectId() {
         return subjectId;
     }
 
-    public void setSubjectId(Integer subjectId) {
+    public void setSubjectId(Long subjectId) {
         this.subjectId = subjectId;
     }
 
-    public Integer getKnowledgeId() {
+    public Long getKnowledgeId() {
         return knowledgeId;
     }
 
-    public void setKnowledgeId(Integer knowledgeId) {
+    public void setKnowledgeId(Long knowledgeId) {
         this.knowledgeId = knowledgeId;
     }
 

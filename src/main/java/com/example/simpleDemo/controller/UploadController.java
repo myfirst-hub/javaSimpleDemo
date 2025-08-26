@@ -46,32 +46,6 @@ public class UploadController {
                 subjectId);
 
         try {
-            // // 获取项目根目录
-            // String projectRoot = System.getProperty("user.dir");
-            // String uploadDir = projectRoot + File.separator + "uploads";
-
-            // // 创建上传目录（如果不存在）
-            // File directory = new File(uploadDir);
-            // if (!directory.exists()) {
-            // directory.mkdirs();
-            // }
-
-            // // 生成唯一文件名
-            // String originalFilename = file.getOriginalFilename();
-            // String fileExtension = "";
-            // if (originalFilename != null && originalFilename.contains(".")) {
-            // fileExtension =
-            // originalFilename.substring(originalFilename.lastIndexOf("."));
-            // }
-            // String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
-
-            // // 保存文件
-            // Path filePath = Paths.get(uploadDir, uniqueFilename);
-            // Files.write(filePath, file.getBytes());
-
-            // logger.info("File uploaded successfully: {}", uniqueFilename);
-            // ApiResponse<String> response = ApiResponse.success("File uploaded
-            // successfully: " + uniqueFilename);
             // 记录subjectId的值
             logger.info("Received subjectId: {}", subjectId);
 
@@ -96,6 +70,8 @@ public class UploadController {
                         int insertResult = subjectOutlineService.insertSubjectOutline(st);
                         if (insertResult > 0) {
                             logger.info("Successfully inserted SubjectOutline record with id: {}", st.getId());
+                            // 插入成功后启动轮询任务，每10秒检查一次，3分钟后停止并修改uploadStatus为1
+                            subjectOutlineService.startPollingToUpdateStatus(st.getId(), subjectId);
                         } else {
                             logger.warn("Failed to insert SubjectOutline record");
                         }

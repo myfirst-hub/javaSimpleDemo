@@ -51,4 +51,20 @@ public class KnowledgeTreeController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // 根据ID数组获取指定的知识点树
+    @GetMapping("/knowledgeTreeByIds")
+    public ResponseEntity<ApiResponse<List<KnowledgeTree>>> getKnowledgeTreeByIds(@RequestParam List<Long> ids) {
+        logger.info("Get knowledge tree by ids endpoint accessed with params: ids={}", ids);
+
+        try {
+            List<KnowledgeTree> treeStructure = knowledgeTreeService.buildKnowledgeTree(ids);
+            ApiResponse<List<KnowledgeTree>> response = ApiResponse.success(treeStructure);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while building knowledge tree structure by ids", e);
+            ApiResponse<List<KnowledgeTree>> response = ApiResponse.error("Failed to build knowledge tree structure by ids");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

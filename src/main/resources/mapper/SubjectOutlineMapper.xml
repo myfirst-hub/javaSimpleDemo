@@ -20,4 +20,11 @@
         INSERT INTO subject_outline(subject_id, outline_id, outline_name, upload_status, reserved_field1, reserved_field2, reserved_field3, created_at, updated_at)
         VALUES (#{subjectId}, #{outlineId}, #{outlineName}, #{uploadStatus}, #{reservedField1}, #{reservedField2}, #{reservedField3}, #{createdAt}, #{updatedAt})
     </insert>
+    
+    <update id="updateUploadStatusById" parameterType="com.example.simpleDemo.entity.SubjectOutline">
+        UPDATE subject_outline
+        SET upload_status = #{uploadStatus},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
 </mapper>
