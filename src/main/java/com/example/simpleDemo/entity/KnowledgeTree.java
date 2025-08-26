@@ -9,12 +9,12 @@ public class KnowledgeTree {
     private Long parentId;
     private Integer masteryLevel;
     private String knowledgeDescribe;
-    private Boolean leaf;
+    private Boolean isLeaf;
     private Date createdAt;
     private Date updatedAt;
     // 添加level字段
     private Integer level;
-    
+
     // 添加children字段用于存储子节点
     private List<KnowledgeTree> children;
 
@@ -23,13 +23,13 @@ public class KnowledgeTree {
     }
 
     public KnowledgeTree(Long id, String name, Long parentId, Integer masteryLevel,
-            String knowledgeDescribe, Boolean leaf, Date createdAt, Date updatedAt) {
+            String knowledgeDescribe, Boolean isLeaf, Date createdAt, Date updatedAt) {
         this.id = id;
         this.name = name;
         this.parentId = parentId;
         this.masteryLevel = masteryLevel;
         this.knowledgeDescribe = knowledgeDescribe;
-        this.leaf = leaf;
+        this.isLeaf = isLeaf;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -76,11 +76,11 @@ public class KnowledgeTree {
     }
 
     public Boolean getLeaf() {
-        return leaf;
+        return isLeaf;
     }
 
-    public void setLeaf(Boolean leaf) {
-        this.leaf = leaf;
+    public void setIsLeaf(Boolean isLeaf) {
+        this.isLeaf = isLeaf;
     }
 
     public Date getCreatedAt() {
@@ -107,12 +107,12 @@ public class KnowledgeTree {
     public void setLevel(Integer level) {
         this.level = level;
     }
-    
+
     // 添加children的getter和setter
     public List<KnowledgeTree> getChildren() {
         return children;
     }
-    
+
     public void setChildren(List<KnowledgeTree> children) {
         this.children = children;
     }
@@ -125,7 +125,7 @@ public class KnowledgeTree {
                 ", parentId=" + parentId +
                 ", masteryLevel=" + masteryLevel +
                 ", knowledgeDescribe='" + knowledgeDescribe + '\'' +
-                ", leaf=" + leaf +
+                ", isLeaf=" + isLeaf +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", level=" + level +

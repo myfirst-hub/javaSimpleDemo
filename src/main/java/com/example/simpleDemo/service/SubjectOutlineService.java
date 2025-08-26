@@ -139,6 +139,12 @@ public class SubjectOutlineService {
     // 设置层级信息
     knowledgeTree.setLevel(level);
 
+    knowledgeTree.setIsLeaf(false);
+
+    if (!node.has("children")) {
+      knowledgeTree.setIsLeaf(true);
+    }
+
     // 保存当前节点
     KnowledgeTree savedNode = knowledgeTreeService.createKnowledgeTree(knowledgeTree);
 
@@ -157,6 +163,7 @@ public class SubjectOutlineService {
 
   /**
    * 根据科目ID查找所有关联的大纲ID
+   * 
    * @param subjectId 科目ID
    * @return 大纲ID列表
    */

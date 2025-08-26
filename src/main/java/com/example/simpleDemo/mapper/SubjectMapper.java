@@ -18,5 +18,5 @@ public interface SubjectMapper {
     int updateSubject(Subject subject);
 
     // 删除科目
-    int deleteSubjectById(@Param("id") Integer id);
+    int deleteSubjectById(@Param("id") Long id);
 }

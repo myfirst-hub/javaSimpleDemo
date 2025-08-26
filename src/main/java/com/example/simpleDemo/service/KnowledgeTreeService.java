@@ -64,14 +64,54 @@ public class KnowledgeTreeService {
     private void buildChildren(KnowledgeTree parent) {
         List<KnowledgeTree> children = knowledgeTreeMapper.findByParentId(parent.getId());
         if (children != null && !children.isEmpty()) {
-            parent.setLeaf(false);
             // 设置子节点集合
             parent.setChildren(children);
             for (KnowledgeTree child : children) {
                 buildChildren(child);
             }
-        } else {
-            parent.setLeaf(true);
         }
+    }
+
+    /**
+     * 计算指定根节点列表中所有叶子节点的数量总和
+     * 
+     * @param ids 根节点ID列表
+     * @return 叶子节点总数
+     */
+    public int countLeafNodes(List<Long> ids) {
+        // 获取指定的根节点
+        List<KnowledgeTree> rootNodes = knowledgeTreeMapper.findRootNodesByIds(ids);
+
+        int totalLeafCount = 0;
+        // 为每个根节点递归计算叶子节点数量
+        for (KnowledgeTree rootNode : rootNodes) {
+            totalLeafCount += countLeafNodesRecursive(rootNode);
+        }
+
+        return totalLeafCount;
+    }
+
+    /**
+     * 递归计算单个节点下所有叶子节点的数量
+     * 
+     * @param node 知识点节点
+     * @return 该节点下叶子节点的数量
+     */
+    private int countLeafNodesRecursive(KnowledgeTree node) {
+        // 主动从数据库查询子节点，确保数据完整性
+        List<KnowledgeTree> children = knowledgeTreeMapper.findByParentId(node.getId());
+
+        // 如果没有子节点，说明是叶子节点
+        if (children == null || children.isEmpty()) {
+            return 1;
+        }
+
+        int count = 0;
+        // 递归计算每个子节点的叶子节点数量
+        for (KnowledgeTree child : children) {
+            count += countLeafNodesRecursive(child);
+        }
+
+        return count;
     }
 }

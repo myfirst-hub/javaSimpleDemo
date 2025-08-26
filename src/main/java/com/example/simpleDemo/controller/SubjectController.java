@@ -2,8 +2,9 @@ package com.example.simpleDemo.controller;
 
 import com.example.simpleDemo.entity.KnowledgeTree;
 import com.example.simpleDemo.entity.Subject;
-import com.example.simpleDemo.entity.SubjectWithKnowledgesDTO;
+import com.example.simpleDemo.entity.Subject;
 import com.example.simpleDemo.service.KnowledgeTreeService;
+import com.example.simpleDemo.service.SubjectKnowledgeService;
 import com.example.simpleDemo.service.SubjectOutlineService;
 import com.example.simpleDemo.service.SubjectService;
 import com.example.simpleDemo.utils.ApiResponse;
@@ -32,41 +33,7 @@ public class SubjectController {
   private KnowledgeTreeService knowledgeTreeService;
 
   @Autowired
-  private SubjectOutlineService subjectOutlineService;
-
-  /**
-   * 分页查询科目列表，包含知识点信息
-   * 
-   * @param pageNum  页码，默认为1
-   * @param pageSize 每页大小，默认为10
-   * @param name     科目名称（可选）
-   * @param semester 学期（可选）
-   * @return 分页结果，包含知识点信息
-   */
-  @GetMapping("/subjects")
-  public ResponseEntity<ApiResponse<PageInfoResult<SubjectService.SubjectWithKnowledges>>> findSubjectsWithKnowledges(
-      @RequestParam(required = true, defaultValue = "1") Integer pageNum,
-      @RequestParam(required = true, defaultValue = "10") Integer pageSize,
-      @RequestParam(required = false) String name,
-      @RequestParam(required = false) String semester) {
-
-    logger.info(
-        "Get subjects with knowledges endpoint accessed with params: pageNum={}, pageSize={}, name={}, semester={}",
-        pageNum, pageSize, name, semester);
-
-    try {
-      PageInfoResult<SubjectService.SubjectWithKnowledges> result = subjectService
-          .findSubjectsWithKnowledges(pageNum, pageSize, name, semester);
-
-      ApiResponse<PageInfoResult<SubjectService.SubjectWithKnowledges>> response = ApiResponse.success(result);
-      return new ResponseEntity<>(response, HttpStatus.OK);
-    } catch (Exception e) {
-      logger.error("Error occurred while fetching subjects with knowledges", e);
-      ApiResponse<PageInfoResult<SubjectService.SubjectWithKnowledges>> response = ApiResponse
-          .error("Failed to fetch subjects with knowledges");
-      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+  private SubjectKnowledgeService subjectKnowledgeService;
 
   /**
    * 分页查询科目列表
@@ -103,20 +70,20 @@ public class SubjectController {
   }
 
   /**
-   * 新增科目，同时处理知识点和科目知识点映射关系
+   * 新增科目，只处理科目信息
    * 
-   * @param subjectWithKnowledgesDTO 包含科目和知识点信息的DTO对象
+   * @param subject 科目对象
    * @return 是否添加成功
    */
   @PostMapping("/subject/create")
-  public ResponseEntity<ApiResponse<Boolean>> addSubjectWithKnowledges(
-      @RequestBody SubjectWithKnowledgesDTO subjectWithKnowledgesDTO) {
+  public ResponseEntity<ApiResponse<Boolean>> addSubject(
+      @RequestBody Subject subject) {
 
-    logger.info("Add subject with knowledges endpoint accessed with params: subjectWithKnowledgesDTO={}",
-        subjectWithKnowledgesDTO);
+    logger.info("Add subject with knowledges endpoint accessed with params: subject={}",
+        subject);
 
     try {
-      boolean result = subjectService.addSubjectWithKnowledges(subjectWithKnowledgesDTO);
+      boolean result = subjectService.addSubject(subject);
       ApiResponse<Boolean> response = ApiResponse.success(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
@@ -127,20 +94,20 @@ public class SubjectController {
   }
 
   /**
-   * 编辑科目，同时处理知识点和科目知识点映射关系
+   * 编辑科目，只处理科目信息
    * 
-   * @param subjectWithKnowledgesDTO 包含科目和知识点信息的DTO对象
+   * @param subject 包含科目和知识点信息的DTO对象
    * @return 是否编辑成功
    */
   @PostMapping("/subject/update")
-  public ResponseEntity<ApiResponse<Boolean>> updateSubjectWithKnowledges(
-      @RequestBody SubjectWithKnowledgesDTO subjectWithKnowledgesDTO) {
+  public ResponseEntity<ApiResponse<Boolean>> updateSubject(
+      @RequestBody Subject subject) {
 
-    logger.info("Update subject with knowledges endpoint accessed with params: subjectWithKnowledgesDTO={}",
-        subjectWithKnowledgesDTO);
+    logger.info("Update subject with knowledges endpoint accessed with params: subject={}",
+        subject);
 
     try {
-      boolean result = subjectService.updateSubjectWithKnowledges(subjectWithKnowledgesDTO);
+      boolean result = subjectService.updateSubject(subject);
       ApiResponse<Boolean> response = ApiResponse.success(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
@@ -151,28 +118,25 @@ public class SubjectController {
   }
 
   /**
-   * 删除科目及其关联的知识点
+   * 删除科目
    * 
    * @param subjectId 科目ID
    * @return 是否删除成功
    */
-  // @PostMapping("/subject/delete")
-  // public ResponseEntity<ApiResponse<Boolean>>
-  // deleteSubjectByIdWithKnowledges(@RequestBody Subject subject) {
-  // logger.info("Delete subject with knowledges endpoint accessed with params:
-  // subjectId={}", subject.getId());
+  @PostMapping("/subject/delete")
+  public ResponseEntity<ApiResponse<Boolean>> deleteSubjectById(@RequestBody Subject subject) {
+    logger.info("Delete subject with knowledges endpoint accessed with params: subjectId={}", subject.getId());
 
-  // try {
-  // boolean result = subjectService.deleteSubjectWithKnowledges(subject.getId());
-  // ApiResponse<Boolean> response = ApiResponse.success(result);
-  // return new ResponseEntity<>(response, HttpStatus.OK);
-  // } catch (Exception e) {
-  // logger.error("Error occurred while deleting subject with knowledges", e);
-  // ApiResponse<Boolean> response = ApiResponse.error("Failed to delete subject
-  // with knowledges");
-  // return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-  // }
-  // }
+    try {
+      boolean result = subjectService.deleteSubjectById(subject.getId());
+      ApiResponse<Boolean> response = ApiResponse.success(result);
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (Exception e) {
+      logger.error("Error occurred while deleting subject with knowledges", e);
+      ApiResponse<Boolean> response = ApiResponse.error("Failed to delete subject with knowledges");
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
   /**
    * 根据ID查询科目详情，包含知识点信息
@@ -181,25 +145,31 @@ public class SubjectController {
    * @return 科目详情信息
    */
   @GetMapping("/subject/detail")
-  public ResponseEntity<ApiResponse<List<KnowledgeTree>>> findSubjectById(
+  public ResponseEntity<ApiResponse<Object>> findSubjectById(
       @RequestParam(required = true) Long id) {
 
     logger.info("Get subject detail endpoint accessed with params: id={}", id);
 
     try {
-      List<Long> ids = subjectOutlineService.findOutlineIdsBySubjectId(id);
+      List<Long> ids = subjectKnowledgeService.findKnowledgeIdsBySubjectId(id);
 
       logger.info("Get subject detail endpoint accessed with params: ids={}", ids);
 
       List<KnowledgeTree> knowledgeTrees = knowledgeTreeService.buildKnowledgeTree(ids);
 
-      ApiResponse<List<KnowledgeTree>> response = ApiResponse.success(knowledgeTrees);
+      int leafCount = knowledgeTreeService.countLeafNodes(ids);
+
+      // 创建包含知识点树和叶子节点计数的返回对象
+      java.util.Map<String, Object> result = new java.util.HashMap<>();
+      result.put("knowledgeTrees", knowledgeTrees);
+      result.put("leafCount", leafCount);
+
+      ApiResponse<Object> response = ApiResponse.success(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
       logger.error("Error occurred while fetching subject detail", e);
-      ApiResponse<List<KnowledgeTree>> response = ApiResponse.error("Failed to fetch subject detail");
+      ApiResponse<Object> response = ApiResponse.error("Failed to fetch subject detail");
       return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    // return null;
   }
 }

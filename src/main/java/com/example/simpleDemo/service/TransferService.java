@@ -25,24 +25,6 @@ public class TransferService {
     }
 
     /**
-     * 调用外部新闻接口获取新闻数据
-     * 
-     * @return 新闻数据的字符串形式
-     */
-    public String fetchNews() {
-        try {
-            return webClient.get()
-                    .uri("/news")
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-        } catch (Exception e) {
-            logger.error("Failed to fetch news from external API", e);
-            return "Error fetching news: " + e.getMessage();
-        }
-    }
-
-    /**
      * 上传附件到外部服务
      * 
      * @param file MultipartFile对象
