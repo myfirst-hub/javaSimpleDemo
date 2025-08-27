@@ -49,10 +49,10 @@ public class TeacherController {
     @GetMapping("/teacher/allList")
     public ResponseEntity<ApiResponse<List<Teacher>>> getAllTeachers(
             @RequestParam(required = false) String name,
-            @RequestParam(required = false) String subject) {
-        logger.info("Get all teachers endpoint accessed with params: name={}, subject={}", name, subject);
+            @RequestParam(required = false) String code) {
+        logger.info("Get all teachers endpoint accessed with params: name={}, code={}", name, code);
         try {
-            List<Teacher> result = teacherService.findAllTeachers(name, subject);
+            List<Teacher> result = teacherService.findAllTeachers(name, code);
             ApiResponse<List<Teacher>> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {

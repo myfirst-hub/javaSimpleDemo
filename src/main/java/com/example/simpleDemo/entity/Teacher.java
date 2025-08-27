@@ -1,9 +1,13 @@
 package com.example.simpleDemo.entity;
 
+import java.util.Date;
+
 public class Teacher {
     private Long id;
     private String name;
     private String code;
+    private Date createAt;
+    private Date updateAt;
 
     // Constructors
     public Teacher() {
@@ -40,12 +44,30 @@ public class Teacher {
         this.code = code;
     }
 
+    public Date getCreateAt() {
+        return createAt;
+    }
+
+    public void setCreateAt(Date createAt) {
+        this.createAt = createAt;
+    }
+
+    public Date getUpdateAt() {
+        return updateAt;
+    }
+
+    public void setUpdateAt(Date updateAt) {
+        this.updateAt = updateAt;
+    }
+
     @Override
     public String toString() {
         return "Teacher{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", code='" + code + '\'' +
+                ", createAt=" + createAt +
+                ", updateAt=" + updateAt +
                 '}';
     }
 }

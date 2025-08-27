@@ -1,6 +1,7 @@
 package com.example.simpleDemo.entity;
 
 import java.util.Date;
+import java.util.List;
 
 public class Classes {
     private Long id;
@@ -14,11 +15,14 @@ public class Classes {
     private Date createTime;
     private Date updateTime;
 
+    private List<Student> students;
+
     // Constructors
     public Classes() {
     }
 
-    public Classes(Long id, String name, Long teacherId, String teacherName, Integer studentNum, String subjectName, Long subjectId, String classDescribe, Date createTime, Date updateTime) {
+    public Classes(Long id, String name, Long teacherId, String teacherName, Integer studentNum, String subjectName,
+            Long subjectId, String classDescribe, Date createTime, Date updateTime, List<Student> students) {
         this.id = id;
         this.name = name;
         this.teacherId = teacherId;
@@ -29,6 +33,15 @@ public class Classes {
         this.classDescribe = classDescribe;
         this.createTime = createTime;
         this.updateTime = updateTime;
+        this.students = students;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
     }
 
     // Getters and Setters

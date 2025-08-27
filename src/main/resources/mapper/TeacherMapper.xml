@@ -5,20 +5,20 @@
     <resultMap id="TeacherResultMap" type="com.example.simpleDemo.entity.Teacher">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
-        <result property="subject" column="subject"/>
-        <result property="createdAt" column="created_at"/>
-        <result property="updatedAt" column="updated_at"/>
+        <result property="code" column="code"/>
+        <result property="createAt" column="create_at"/>
+        <result property="updateAt" column="update_at"/>
     </resultMap>
     
     <select id="findTeachers" resultMap="TeacherResultMap" parameterType="map">
-        SELECT id, name, subject, created_at, updated_at 
+        SELECT id, name, code, create_at, update_at 
         FROM teachers
         <where>
             <if test="name != null and name != ''">
                 AND name LIKE CONCAT('%', #{name}, '%')
             </if>
-            <if test="subject != null and subject != ''">
-                AND subject LIKE CONCAT('%', #{subject}, '%')
+            <if test="code != null and code != ''">
+                AND code LIKE CONCAT('%', #{code}, '%')
             </if>
         </where>
         ORDER BY id

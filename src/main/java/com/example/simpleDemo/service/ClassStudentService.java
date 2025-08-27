@@ -1,0 +1,22 @@
+package com.example.simpleDemo.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.example.simpleDemo.entity.ClassStudent;
+import com.example.simpleDemo.mapper.ClassStudentMapper;;
+
+@Service
+public class ClassStudentService {
+    @Autowired
+    private ClassStudentMapper classStudentMapper;
+
+    public int createClassStudent(ClassStudent classStudent) {
+        // 设置创建和更新时间
+        classStudent.setCreateTime(new java.util.Date());
+        classStudent.setUpdateTime(new java.util.Date());
+
+        // 插入学生信息
+        return classStudentMapper.insertClassStudent(classStudent);
+    }
+}

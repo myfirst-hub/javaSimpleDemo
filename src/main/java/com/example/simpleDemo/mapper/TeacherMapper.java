@@ -11,5 +11,5 @@ import java.util.List;
 public interface TeacherMapper {
 
     // 支持PageHelper的查询方法
-    List<Teacher> findTeachers(@Param("name") String name, @Param("subject") String subject);
+    List<Teacher> findTeachers(@Param("name") String name, @Param("code") String code);
 }

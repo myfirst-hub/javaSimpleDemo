@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.simpleDemo.mapper.ClassStudentMapper">
+    <resultMap id="ClassStudentResultMap" type="com.example.simpleDemo.entity.ClassStudent">
+        <id property="id" column="id"/>
+        <result property="classId" column="class_id"/>
+        <result property="studentId" column="student_id"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    
+    <select id="findAll" resultMap="ClassStudentResultMap">
+        SELECT id, class_id, student_id, create_time, update_time 
+        FROM class_student
+    </select>
+    
+    <select id="findById" parameterType="long" resultMap="ClassStudentResultMap">
+        SELECT id, class_id, student_id, create_time, update_time
+        FROM class_student
+        WHERE id = #{id}
+    </select>
+    
+    <select id="findByClassId" parameterType="long" resultMap="ClassStudentResultMap">
+        SELECT id, class_id, student_id, create_time, update_time
+        FROM class_student
+        WHERE class_id = #{classId}
+    </select>
+    
+    <select id="findByStudentId" parameterType="long" resultMap="ClassStudentResultMap">
+        SELECT id, class_id, student_id, create_time, update_time
+        FROM class_student
+        WHERE student_id = #{studentId}
+    </select>
+    
+    <insert id="insert" parameterType="com.example.simpleDemo.entity.ClassStudent" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO class_student (class_id, student_id)
+        VALUES (#{classId}, #{studentId})
+    </insert>
+    
+    <update id="update" parameterType="com.example.simpleDemo.entity.ClassStudent">
+        UPDATE class_student
+        <set>
+            <if test="classId != null">class_id = #{classId},</if>
+            <if test="studentId != null">student_id = #{studentId},</if>
+            update_time = NOW()
+        </set>
+        WHERE id = #{id}
+    </update>
+    
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM class_student WHERE id = #{id}
+    </delete>
+    
+    <delete id="deleteByClassId" parameterType="long">
+        DELETE FROM class_student WHERE class_id = #{classId}
+    </delete>
+    
+    <delete id="deleteByStudentId" parameterType="long">
+        DELETE FROM class_student WHERE student_id = #{studentId}
+    </delete>
+</mapper>
