@@ -31,4 +31,8 @@
     <select id="selectOutlineIdsBySubjectId" parameterType="long" resultType="long">
         SELECT outline_id FROM subject_outline WHERE subject_id = #{subjectId}
     </select>
+    
+    <delete id="deleteBySubjectId" parameterType="long">
+        DELETE FROM subject_outline WHERE subject_id = #{subjectId}
+    </delete>
 </mapper>

@@ -170,4 +170,17 @@ public class SubjectOutlineService {
   public List<Long> findOutlineIdsBySubjectId(Long subjectId) {
     return subjectOutlineMapper.selectOutlineIdsBySubjectId(subjectId);
   }
+
+  /**
+   * 根据科目ID删除数据
+   * 
+   * @param subjectId 科目ID
+   * @return 删除的记录数
+   */
+  public int deleteBySubjectId(Long subjectId) {
+      if (subjectId == null) {
+          throw new IllegalArgumentException("科目ID不能为空");
+      }
+      return subjectOutlineMapper.deleteBySubjectId(subjectId);
+  }
 }

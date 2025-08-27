@@ -55,7 +55,7 @@
         DELETE FROM subject_knowledge WHERE subject_id = #{subjectId}
     </delete>
     
-    <select id="findKnowledgeIdsBySubjectId" resultType="java.lang.Integer">
+    <select id="findKnowledgeIdsBySubjectId" resultType="java.lang.Long">
         SELECT knowledge_id
         FROM subject_knowledge
         WHERE subject_id = #{subjectId}

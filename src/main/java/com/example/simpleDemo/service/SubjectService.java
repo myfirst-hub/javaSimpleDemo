@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class SubjectService {
 
@@ -20,6 +22,15 @@ public class SubjectService {
 
     @Autowired
     private SubjectKnowledgeMapper subjectKnowledgeMapper;
+
+    @Autowired
+    private SubjectOutlineService subjectOutlineService;
+
+    @Autowired
+    private KnowledgeTreeService knowledgeTreeService;
+
+    @Autowired
+    private SubjectKnowledgeService subjectKnowledgeService;
 
     /**
      * 分页查询科目列表
@@ -83,13 +94,27 @@ public class SubjectService {
      * @param id 科目ID
      * @return 是否删除成功
      */
+    @Transactional
     public boolean deleteSubjectById(Long id) {
         try {
+            // 1. 删除关联的科目大纲信息
+            subjectOutlineService.deleteBySubjectId(id);
+
+            List<Long> ids = subjectKnowledgeMapper.findKnowledgeIdsBySubjectId(id);
+
+            // 2. 删除关联的知识点信息
+            for (Long knowledgeId : ids) {
+                knowledgeTreeService.deleteKnowledgeTree(knowledgeId);
+            }
+            // 3. 删除关联的科目知识点信息
+            subjectKnowledgeService.deleteBySubjectId(id);
+
+            // 4. 删除科目信息
             subjectMapper.deleteSubjectById(id);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
+            throw e;
         }
     }
 }

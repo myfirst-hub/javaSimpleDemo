@@ -155,9 +155,17 @@ public class SubjectController {
 
       logger.info("Get subject detail endpoint accessed with params: ids={}", ids);
 
-      List<KnowledgeTree> knowledgeTrees = knowledgeTreeService.buildKnowledgeTree(ids);
-
-      int leafCount = knowledgeTreeService.countLeafNodes(ids);
+      List<KnowledgeTree> knowledgeTrees;
+      int leafCount;
+      
+      // 添加对空列表的检查，避免SQL语法错误
+      if (ids == null || ids.isEmpty()) {
+        knowledgeTrees = List.of(); // 返回空列表而不是null
+        leafCount = 0;
+      } else {
+        knowledgeTrees = knowledgeTreeService.buildKnowledgeTree(ids);
+        leafCount = knowledgeTreeService.countLeafNodes(ids);
+      }
 
       // 创建包含知识点树和叶子节点计数的返回对象
       java.util.Map<String, Object> result = new java.util.HashMap<>();

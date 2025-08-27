@@ -28,4 +28,11 @@ public interface SubjectOutlineMapper {
      * @return 大纲ID列表
      */
     List<Long> selectOutlineIdsBySubjectId(@Param("subjectId") Long subjectId);
+    
+    /**
+     * 根据科目ID删除数据
+     * @param subjectId 科目ID
+     * @return 删除的记录数
+     */
+    int deleteBySubjectId(@Param("subjectId") Long subjectId);
 }
