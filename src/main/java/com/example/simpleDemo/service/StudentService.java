@@ -17,12 +17,9 @@ public class StudentService {
     @Autowired
     private StudentMapper studentMapper;
 
-    public List<Student> findAllStudents() {
-        return studentMapper.findAll();
-    }
-
-    public List<Student> findAllStudentsWithXml() {
-        return studentMapper.findAllStudents();
+    // 新增不使用分页查询所有学生的方法
+    public List<Student> findAllStudents(String name, String className) {
+        return studentMapper.findStudents(name, className);
     }
 
     public PageInfoResult<Student> findStudentsWithPageHelper(int page, int size, String name, String className) {

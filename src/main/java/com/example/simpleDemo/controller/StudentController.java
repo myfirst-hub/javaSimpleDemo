@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 public class StudentController {
 
@@ -39,6 +41,23 @@ public class StudentController {
         } catch (Exception e) {
             logger.error("Error occurred while fetching students", e);
             ApiResponse<PageInfoResult<Student>> response = ApiResponse.error("Failed to fetch students");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 新增不使用分页查询所有学生的接口
+    @GetMapping("/students/all")
+    public ResponseEntity<ApiResponse<List<Student>>> getAllStudents(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String className) {
+        logger.info("Get all students endpoint accessed with params: name={}, className={}", name, className);
+        try {
+            List<Student> result = studentService.findAllStudents(name, className);
+            ApiResponse<List<Student>> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching all students", e);
+            ApiResponse<List<Student>> response = ApiResponse.error("Failed to fetch all students");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

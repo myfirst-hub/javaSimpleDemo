@@ -2,7 +2,6 @@ package com.example.simpleDemo.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
 
 import com.example.simpleDemo.entity.Student;
 
@@ -11,13 +10,7 @@ import java.util.List;
 @Mapper
 public interface StudentMapper {
 
-    @Select("SELECT * FROM students")
-    List<Student> findAll();
-
-    // 使用XML映射的示例方法
-    List<Student> findAllStudents();
-
-    // 支持PageHelper的查询方法
+    // 新增支持条件查询的所有学生查询方法
     List<Student> findStudents(@Param("name") String name, @Param("className") String className);
 
     // 插入学生信息
