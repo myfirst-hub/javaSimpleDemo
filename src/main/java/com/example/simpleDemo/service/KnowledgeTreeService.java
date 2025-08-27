@@ -131,4 +131,30 @@ public class KnowledgeTreeService {
 
         return count;
     }
+    
+    // 添加删除知识点的方法
+    public void deleteKnowledgeTree(Long id) {
+        // 递归删除所有子节点
+        deleteChildren(id);
+        
+        // 删除当前节点
+        knowledgeTreeMapper.deleteById(id);
+    }
+    
+    /**
+     * 递归删除节点的所有子节点
+     * 
+     * @param parentId 父节点ID
+     */
+    private void deleteChildren(Long parentId) {
+        // 查找直接子节点
+        List<KnowledgeTree> children = knowledgeTreeMapper.findByParentId(parentId);
+        
+        // 递归删除每个子节点及其子树
+        for (KnowledgeTree child : children) {
+            deleteChildren(child.getId()); // 递归删除子节点的子节点
+            knowledgeTreeMapper.deleteById(child.getId()); // 删除子节点本身
+        }
+    }
+
 }

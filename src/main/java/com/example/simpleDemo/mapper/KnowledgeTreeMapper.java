@@ -26,4 +26,7 @@ public interface KnowledgeTreeMapper {
     
     // 补充更新知识点的方法
     void update(KnowledgeTree knowledgeTree);
+    
+    // 添加删除知识点的方法
+    void deleteById(Long id);
 }

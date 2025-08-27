@@ -87,4 +87,28 @@ public class KnowledgeTreeController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // 根据知识点ID删除知识点
+    @PostMapping("/knowledgeTree/delete")
+    public ResponseEntity<ApiResponse<Boolean>> deleteKnowledgeTree(@RequestBody KnowledgeTree knowledgeTree) {
+        logger.info("Delete knowledge tree endpoint accessed with params: id={}", knowledgeTree.getId());
+
+        try {
+            KnowledgeTree existingKnowledgeTree = knowledgeTreeService.findById(knowledgeTree.getId());
+            if (existingKnowledgeTree == null) {
+                ApiResponse<Boolean> response = ApiResponse
+                        .error("Knowledge tree not found with id: " + knowledgeTree.getId());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+            // 删除知识点（需要在service层实现具体的删除逻辑）
+            knowledgeTreeService.deleteKnowledgeTree(knowledgeTree.getId());
+            ApiResponse<Boolean> response = ApiResponse.success(true);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting knowledge tree with id: " + knowledgeTree.getId(), e);
+            ApiResponse<Boolean> response = ApiResponse.error("Failed to delete knowledge tree");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

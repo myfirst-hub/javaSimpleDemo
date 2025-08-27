@@ -69,4 +69,9 @@
         WHERE parent_id = #{parentId}
     </select>
     
+    <!-- 添加删除知识点的方法 -->
+    <delete id="deleteById" parameterType="long">
+        DELETE FROM knowledges_tree WHERE id = #{id}
+    </delete>
+    
 </mapper>
