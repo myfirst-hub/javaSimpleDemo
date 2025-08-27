@@ -55,7 +55,7 @@ public class TrainProgramService {
 
             // 查询关联的学生ID列表
             List<Student> students = trainProgramStudentMapper.findStudentsByTrainId(trainProgram.getId());
-            List<Integer> studentIds = students.stream().map(Student::getId).collect(Collectors.toList());
+            List<Long> studentIds = students.stream().map(Student::getId).collect(Collectors.toList());
             dto.setStudentIds(studentIds);
 
             // 查询关联的知识点

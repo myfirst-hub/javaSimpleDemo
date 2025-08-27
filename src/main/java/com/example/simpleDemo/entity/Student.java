@@ -5,7 +5,7 @@ import java.util.Date;
 import java.text.SimpleDateFormat;
 
 public class Student {
-    private Integer id;
+    private Long id;
     private String name;
     private String sex;
     private String className;
@@ -16,7 +16,7 @@ public class Student {
     private String nationality;
     private Date createdAt;
     private Date updatedAt;
-    
+
     // birthday的字符串格式，用于接口返回
     private String birthdayStr;
 
@@ -24,7 +24,7 @@ public class Student {
     public Student() {
     }
 
-    public Student(Integer id, String name, String sex, String className, BigDecimal height, BigDecimal weight,
+    public Student(Long id, String name, String sex, String className, BigDecimal height, BigDecimal weight,
             Date birthday, String nativePlace, String nationality, Date createdAt, Date updatedAt) {
         this.id = id;
         this.name = name;
@@ -40,11 +40,11 @@ public class Student {
     }
 
     // Getters and Setters
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -100,7 +100,7 @@ public class Student {
             this.birthdayStr = sdf.format(birthday);
         }
     }
-    
+
     public String getBirthdayStr() {
         // 如果birthdayStr为空但birthday不为空，则生成格式化字符串
         if (birthdayStr == null && birthday != null) {

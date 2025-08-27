@@ -16,19 +16,19 @@ public interface StudentMapper {
 
     // 使用XML映射的示例方法
     List<Student> findAllStudents();
-    
+
     // 支持PageHelper的查询方法
     List<Student> findStudents(@Param("name") String name, @Param("className") String className);
-    
+
     // 插入学生信息
     int insertStudent(Student student);
-    
+
     // 更新学生信息
     int updateStudent(Student student);
-    
+
     // 根据ID查找学生
-    Student findStudentById(@Param("id") Integer id);
-    
+    Student findStudentById(@Param("id") Long id);
+
     // 根据ID删除学生
-    int deleteStudentById(@Param("id") Integer id);
+    int deleteStudentById(@Param("id") Long id);
 }

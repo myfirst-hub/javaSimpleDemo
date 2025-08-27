@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 public class TrainProgramWithRelationsDTO extends TrainProgram {
-    private List<Integer> studentIds;
+    private List<Long> studentIds;
     private List<Knowledge> knowledges;
 
     public TrainProgramWithRelationsDTO() {
@@ -17,11 +17,11 @@ public class TrainProgramWithRelationsDTO extends TrainProgram {
         super(id, name, semester, trainDescribe, trainTime, createdAt, updatedAt);
     }
 
-    public List<Integer> getStudentIds() {
+    public List<Long> getStudentIds() {
         return studentIds;
     }
 
-    public void setStudentIds(List<Integer> studentIds) {
+    public void setStudentIds(List<Long> studentIds) {
         this.studentIds = studentIds;
     }
 

@@ -46,7 +46,7 @@ public class StudentService {
         return studentMapper.insertStudent(student);
     }
 
-    public Student findStudentById(Integer id) {
+    public Student findStudentById(Long id) {
         return studentMapper.findStudentById(id);
     }
 
@@ -58,7 +58,7 @@ public class StudentService {
         return studentMapper.updateStudent(student);
     }
 
-    public int deleteStudentById(Integer id) {
+    public int deleteStudentById(Long id) {
         return studentMapper.deleteStudentById(id);
     }
 }
