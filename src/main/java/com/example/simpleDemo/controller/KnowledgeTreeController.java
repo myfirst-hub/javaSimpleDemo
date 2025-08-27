@@ -21,7 +21,7 @@ public class KnowledgeTreeController {
     private KnowledgeTreeService knowledgeTreeService;
 
     // 插入新的知识点
-    @PostMapping
+    @PostMapping("/knowledgeTree/add")
     public ResponseEntity<ApiResponse<KnowledgeTree>> createKnowledgeTree(@RequestBody KnowledgeTree knowledgeTree) {
         logger.info("Create knowledge tree endpoint accessed with params: knowledgeTree={}", knowledgeTree);
 
