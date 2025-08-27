@@ -52,4 +52,39 @@ public class KnowledgeTreeController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // 根据知识点ID编辑知识点
+    @PostMapping("/knowledgeTree/edit")
+    public ResponseEntity<ApiResponse<KnowledgeTree>> editKnowledgeTree(@RequestBody KnowledgeTree knowledgeTree) {
+        logger.info("Edit knowledge tree endpoint accessed with params: knowledgeTree={}", knowledgeTree);
+
+        try {
+            KnowledgeTree existingKnowledgeTree = knowledgeTreeService.findById(knowledgeTree.getId());
+            if (existingKnowledgeTree == null) {
+                ApiResponse<KnowledgeTree> response = ApiResponse
+                        .error("Knowledge tree not found with id: " + knowledgeTree.getId());
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+
+            // 更新知识点信息
+            existingKnowledgeTree.setName(knowledgeTree.getName());
+            existingKnowledgeTree.setParentId(knowledgeTree.getParentId());
+            existingKnowledgeTree.setMasteryLevel(knowledgeTree.getMasteryLevel());
+            existingKnowledgeTree.setKnowledgeDescribe(knowledgeTree.getKnowledgeDescribe());
+            existingKnowledgeTree.setIsLeaf(knowledgeTree.getLeaf());
+            existingKnowledgeTree.setLevel(knowledgeTree.getLevel());
+
+            // 更新时间设置为当前时间
+            existingKnowledgeTree.setUpdatedAt(new java.util.Date());
+
+            // 保存更新后的知识点
+            KnowledgeTree updatedKnowledgeTree = knowledgeTreeService.updateKnowledgeTree(existingKnowledgeTree);
+            ApiResponse<KnowledgeTree> response = ApiResponse.success(updatedKnowledgeTree);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while editing knowledge tree with id: " + knowledgeTree.getId(), e);
+            ApiResponse<KnowledgeTree> response = ApiResponse.error("Failed to edit knowledge tree");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

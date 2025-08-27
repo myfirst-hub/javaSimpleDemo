@@ -40,6 +40,23 @@ public class KnowledgeTreeService {
         return knowledgeTree;
     }
 
+    // 添加更新知识点的方法
+    public KnowledgeTree updateKnowledgeTree(KnowledgeTree knowledgeTree) {
+        // 设置更新时间
+        knowledgeTree.setUpdatedAt(new Date());
+        
+        // 如果parentId为null或0，设置为null表示根节点
+        if (knowledgeTree.getParentId() == null || knowledgeTree.getParentId() == 0L) {
+            knowledgeTree.setParentId(null);
+        }
+        
+        // 更新知识点到数据库
+        knowledgeTreeMapper.update(knowledgeTree);
+        
+        // 返回更新后的知识点对象
+        return knowledgeTree;
+    }
+
     public List<KnowledgeTree> findByParentId(Long parentId) {
         return knowledgeTreeMapper.findByParentId(parentId);
     }

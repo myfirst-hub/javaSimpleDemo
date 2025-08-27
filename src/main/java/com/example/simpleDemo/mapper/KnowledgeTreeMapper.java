@@ -23,4 +23,7 @@ public interface KnowledgeTreeMapper {
     
     // 添加根据ID列表查询根节点的方法
     List<KnowledgeTree> findRootNodesByIds(@Param("ids") List<Long> ids);
+    
+    // 补充更新知识点的方法
+    void update(KnowledgeTree knowledgeTree);
 }

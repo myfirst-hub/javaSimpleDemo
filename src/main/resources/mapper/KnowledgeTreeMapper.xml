@@ -40,6 +40,20 @@
         INSERT INTO knowledges_tree (name, knowledge_describe, parent_id, mastery_level, created_at, updated_at, level, is_leaf)
         VALUES (#{name}, #{knowledgeDescribe}, #{parentId}, #{masteryLevel}, #{createdAt}, #{updatedAt}, #{level}, #{isLeaf})
     </insert>
+
+    
+    <!-- 更新知识点 -->
+    <update id="update" parameterType="com.example.simpleDemo.entity.KnowledgeTree">
+        UPDATE knowledges_tree
+        SET name = #{name},
+            knowledge_describe = #{knowledgeDescribe},
+            parent_id = #{parentId},
+            mastery_level = #{masteryLevel},
+            updated_at = #{updatedAt},
+            level = #{level},
+            is_leaf = #{isLeaf}
+        WHERE id = #{id}
+    </update>
     
     <!-- 添加查询根节点的方法（parentId为null的节点） -->
     <select id="findRootNodes" resultMap="KnowledgeTreeResultMap">
