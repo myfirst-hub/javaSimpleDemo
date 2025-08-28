@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.simpleDemo.entity.ClassStudent;
-import com.example.simpleDemo.mapper.ClassStudentMapper;;
+import com.example.simpleDemo.mapper.ClassStudentMapper;
+
+import java.util.List;
 
 @Service
 public class ClassStudentService {
@@ -18,5 +20,10 @@ public class ClassStudentService {
 
         // 插入学生信息
         return classStudentMapper.insertClassStudent(classStudent);
+    }
+
+    // 根据班级ID查询学生ID列表
+    public List<Long> findStudentIdsByClassId(Long classId) {
+        return classStudentMapper.findStudentIdsByClassId(classId);
     }
 }

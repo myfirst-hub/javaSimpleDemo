@@ -13,6 +13,6 @@ public interface ClassesMapper {
     List<Classes> findClasses(@Param("name") String nameString, @Param("teacherName") String teacherName,
             @Param("subjectName") String subjectName);
 
-    // 插入班级信息
+    // 插入班级信息，确保在XML中配置了useGeneratedKeys和keyProperty
     int insertClass(Classes classes);
 }

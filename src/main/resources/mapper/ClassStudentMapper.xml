@@ -32,7 +32,13 @@
         WHERE student_id = #{studentId}
     </select>
     
-    <insert id="insert" parameterType="com.example.simpleDemo.entity.ClassStudent" useGeneratedKeys="true" keyProperty="id">
+    <select id="findStudentIdsByClassId" parameterType="long" resultType="long">
+        SELECT student_id
+        FROM class_student
+        WHERE class_id = #{classId}
+    </select>
+    
+    <insert id="insertClassStudent" parameterType="com.example.simpleDemo.entity.ClassStudent" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO class_student (class_id, student_id)
         VALUES (#{classId}, #{studentId})
     </insert>

@@ -59,16 +59,27 @@ public class ClassesService {
 
         // 插入班级信息
         int result = classesMapper.insertClass(classes);
+        
+        // 验证是否成功获取到插入后的主键ID
+        System.out.println("插入班级后的ID值: " + classes.getId());
+        
+        // 确保classes.getId()能获取到插入后的主键值，用于后续的学生关联
+        if (classes.getId() == null) {
+            throw new RuntimeException("未能获取到插入班级后的主键ID");
+        }
 
         // 遍历学生列表，为每个学生创建班级学生关联
         if (classes.getStudents() != null) {
             for (Student student : classes.getStudents()) {
-                ClassStudent classStudent = new ClassStudent();
-                classStudent.setClassId(classes.getId());
-                classStudent.setStudentId(student.getId());
-                classStudent.setCreateTime(new java.util.Date());
-                classStudent.setUpdateTime(new java.util.Date());
-                classStudentService.createClassStudent(classStudent);
+                // 添加空值检查，确保student和student.getId()不为null
+                if (student != null && student.getId() != null) {
+                    ClassStudent classStudent = new ClassStudent();
+                    classStudent.setClassId(classes.getId());
+                    classStudent.setStudentId(student.getId());
+                    classStudent.setCreateTime(new java.util.Date());
+                    classStudent.setUpdateTime(new java.util.Date());
+                    classStudentService.createClassStudent(classStudent);
+                }
             }
         }
 
