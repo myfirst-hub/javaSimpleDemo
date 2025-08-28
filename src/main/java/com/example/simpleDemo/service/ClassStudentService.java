@@ -26,4 +26,9 @@ public class ClassStudentService {
     public List<Long> findStudentIdsByClassId(Long classId) {
         return classStudentMapper.findStudentIdsByClassId(classId);
     }
+
+    // 根据班级ID删除班级学生关联
+    public int deleteClassStudentByClassId(Long classId) {
+        return classStudentMapper.deleteByClassId(classId);
+    }
 }

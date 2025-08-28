@@ -75,4 +75,27 @@ public class ClassesController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/classes/update")
+    public ResponseEntity<ApiResponse<Classes>> updateClasses(@RequestBody Classes classes) {
+        logger.info("Update classes endpoint accessed with id: {} and classes: {}", classes.getId(), classes);
+        try {
+            // 调用服务更新班级
+            int result = classesService.updateClasses(classes);
+
+            if (result > 0) {
+                // 更新成功
+                ApiResponse<Classes> response = ApiResponse.success(classes, "Classes updated successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                // 更新失败
+                ApiResponse<Classes> response = ApiResponse.error("Failed to update classes");
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            logger.error("Error occurred while updating classes", e);
+            ApiResponse<Classes> response = ApiResponse.error("Failed to update classes: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

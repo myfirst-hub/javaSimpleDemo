@@ -15,4 +15,10 @@ public interface ClassesMapper {
 
     // 插入班级信息，确保在XML中配置了useGeneratedKeys和keyProperty
     int insertClass(Classes classes);
+    
+    // 更新班级信息
+    int updateClass(Classes classes);
+    
+    // 根据ID查找班级
+    Classes findClassById(Long id);
 }

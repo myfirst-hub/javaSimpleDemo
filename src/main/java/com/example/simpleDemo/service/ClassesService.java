@@ -59,16 +59,50 @@ public class ClassesService {
 
         // 插入班级信息
         int result = classesMapper.insertClass(classes);
-        
+
         // 验证是否成功获取到插入后的主键ID
         System.out.println("插入班级后的ID值: " + classes.getId());
-        
+
         // 确保classes.getId()能获取到插入后的主键值，用于后续的学生关联
         if (classes.getId() == null) {
             throw new RuntimeException("未能获取到插入班级后的主键ID");
         }
 
         // 遍历学生列表，为每个学生创建班级学生关联
+        if (classes.getStudents() != null) {
+            for (Student student : classes.getStudents()) {
+                // 添加空值检查，确保student和student.getId()不为null
+                if (student != null && student.getId() != null) {
+                    ClassStudent classStudent = new ClassStudent();
+                    classStudent.setClassId(classes.getId());
+                    classStudent.setStudentId(student.getId());
+                    classStudent.setCreateTime(new java.util.Date());
+                    classStudent.setUpdateTime(new java.util.Date());
+                    classStudentService.createClassStudent(classStudent);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 更新班级
+     * 
+     * @param classes 班级对象
+     * @return 是否更新成功
+     */
+    public int updateClasses(Classes classes) {
+        // 设置更新时间
+        classes.setUpdateTime(new java.util.Date());
+
+        // 更新班级信息
+        int result = classesMapper.updateClass(classes);
+
+        // 删除原先的班级学生关联
+        classStudentService.deleteClassStudentByClassId(classes.getId());
+
+        // 重新创建班级学生关联
         if (classes.getStudents() != null) {
             for (Student student : classes.getStudents()) {
                 // 添加空值检查，确保student和student.getId()不为null
