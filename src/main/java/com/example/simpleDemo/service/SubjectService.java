@@ -1,6 +1,7 @@
 package com.example.simpleDemo.service;
 
 import com.example.simpleDemo.entity.*;
+import com.example.simpleDemo.mapper.ClassesMapper;
 import com.example.simpleDemo.mapper.SubjectKnowledgeMapper;
 import com.example.simpleDemo.mapper.SubjectMapper;
 import com.example.simpleDemo.utils.PageInfoResult;
@@ -32,6 +33,9 @@ public class SubjectService {
     @Autowired
     private SubjectKnowledgeService subjectKnowledgeService;
 
+    @Autowired
+    private ClassesMapper classesMapper;
+
     /**
      * 分页查询科目列表
      * 
@@ -51,6 +55,36 @@ public class SubjectService {
 
         // 获取分页信息
         PageInfo<Subject> subjectPageInfo = new PageInfo<>(subjects);
+        return new PageInfoResult<>(subjectPageInfo);
+    }
+
+    /**
+     * 通过教师id分页查询科目列表
+     * 
+     * @param pageNum  页码
+     * @param pageSize 每页大小
+     * @param name     科目名称（可选）
+     * @param semester 学期（可选）
+     * @return 分页结果
+     */
+    @Transactional(readOnly = true)
+    public PageInfoResult<Subject> findSubjectsByTeacherId(int pageNum, int pageSize, Long teacherId, String name,
+            String semester) {
+        // 开启分页
+        PageHelper.startPage(pageNum, pageSize);
+
+        List<Long> subjectIds = classesMapper.findSubjectIdsByTeacherId(teacherId);
+
+        // 查询科目数据
+        List<Subject> subjects = subjectMapper.findSubjects(name, semester);
+
+        // 过滤只保留subjectIds中存在的科目
+        List<Subject> filteredSubjects = subjects.stream()
+                .filter(subject -> subjectIds.contains(subject.getId()))
+                .collect(Collectors.toList());
+
+        // 获取分页信息
+        PageInfo<Subject> subjectPageInfo = new PageInfo<>(filteredSubjects);
         return new PageInfoResult<>(subjectPageInfo);
     }
 

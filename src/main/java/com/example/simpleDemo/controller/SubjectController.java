@@ -2,6 +2,7 @@ package com.example.simpleDemo.controller;
 
 import com.example.simpleDemo.entity.KnowledgeTree;
 import com.example.simpleDemo.entity.Subject;
+import com.example.simpleDemo.entity.Teacher;
 import com.example.simpleDemo.entity.Subject;
 import com.example.simpleDemo.service.KnowledgeTreeService;
 import com.example.simpleDemo.service.SubjectKnowledgeService;
@@ -52,7 +53,7 @@ public class SubjectController {
       @RequestParam(required = false) String semester) {
 
     logger.info(
-        "Get subjects with knowledges endpoint accessed with params: pageNum={}, pageSize={}, name={}, semester={}",
+        "Get subjects endpoint accessed with params: pageNum={}, pageSize={}, name={}, semester={}",
         pageNum, pageSize, name, semester);
 
     try {
@@ -62,9 +63,44 @@ public class SubjectController {
       ApiResponse<PageInfoResult<Subject>> response = ApiResponse.success(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
-      logger.error("Error occurred while fetching subjects with knowledges", e);
+      logger.error("Error occurred while fetching subjects", e);
       ApiResponse<PageInfoResult<Subject>> response = ApiResponse
-          .error("Failed to fetch subjects with knowledges");
+          .error("Failed to fetch subjects");
+      return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * 通过教师id分页查询科目列表
+   * 
+   * @param pageNum  页码，默认为1
+   * @param pageSize 每页大小，默认为10
+   * @param name     科目名称（可选）
+   * @param semester 学期（可选）
+   * @return 分页结果
+   */
+  @GetMapping("/subjectList/teacherId")
+  public ResponseEntity<ApiResponse<PageInfoResult<Subject>>> findSubjectsByTeacherId(
+      @RequestParam(required = true, defaultValue = "1") Integer pageNum,
+      @RequestParam(required = true, defaultValue = "10") Integer pageSize,
+      @RequestParam(required = true) Long teacherId,
+      @RequestParam(required = false) String name,
+      @RequestParam(required = false) String semester) {
+
+    logger.info(
+        "Get subjects endpoint accessed with params: pageNum={}, pageSize={}, teacherId={}, name={}, semester={}",
+        pageNum, pageSize, teacherId, name, semester);
+
+    try {
+      PageInfoResult<Subject> result = subjectService
+          .findSubjectsByTeacherId(pageNum, pageSize, teacherId, name, semester);
+
+      ApiResponse<PageInfoResult<Subject>> response = ApiResponse.success(result);
+      return new ResponseEntity<>(response, HttpStatus.OK);
+    } catch (Exception e) {
+      logger.error("Error occurred while fetching subjects", e);
+      ApiResponse<PageInfoResult<Subject>> response = ApiResponse
+          .error("Failed to fetch subjects");
       return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -79,7 +115,7 @@ public class SubjectController {
   public ResponseEntity<ApiResponse<Boolean>> addSubject(
       @RequestBody Subject subject) {
 
-    logger.info("Add subject with knowledges endpoint accessed with params: subject={}",
+    logger.info("Add subject endpoint accessed with params: subject={}",
         subject);
 
     try {
@@ -87,8 +123,8 @@ public class SubjectController {
       ApiResponse<Boolean> response = ApiResponse.success(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
-      logger.error("Error occurred while adding subject with knowledges", e);
-      ApiResponse<Boolean> response = ApiResponse.error("Failed to add subject with knowledges");
+      logger.error("Error occurred while adding subject", e);
+      ApiResponse<Boolean> response = ApiResponse.error("Failed to add subject");
       return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -103,7 +139,7 @@ public class SubjectController {
   public ResponseEntity<ApiResponse<Boolean>> updateSubject(
       @RequestBody Subject subject) {
 
-    logger.info("Update subject with knowledges endpoint accessed with params: subject={}",
+    logger.info("Update subject endpoint accessed with params: subject={}",
         subject);
 
     try {
@@ -111,8 +147,8 @@ public class SubjectController {
       ApiResponse<Boolean> response = ApiResponse.success(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
-      logger.error("Error occurred while updating subject with knowledges", e);
-      ApiResponse<Boolean> response = ApiResponse.error("Failed to update subject with knowledges");
+      logger.error("Error occurred while updating subject", e);
+      ApiResponse<Boolean> response = ApiResponse.error("Failed to update subject");
       return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -125,15 +161,15 @@ public class SubjectController {
    */
   @PostMapping("/subject/delete")
   public ResponseEntity<ApiResponse<Boolean>> deleteSubjectById(@RequestBody Subject subject) {
-    logger.info("Delete subject with knowledges endpoint accessed with params: subjectId={}", subject.getId());
+    logger.info("Delete subject endpoint accessed with params: subjectId={}", subject.getId());
 
     try {
       boolean result = subjectService.deleteSubjectById(subject.getId());
       ApiResponse<Boolean> response = ApiResponse.success(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
-      logger.error("Error occurred while deleting subject with knowledges", e);
-      ApiResponse<Boolean> response = ApiResponse.error("Failed to delete subject with knowledges");
+      logger.error("Error occurred while deleting subject", e);
+      ApiResponse<Boolean> response = ApiResponse.error("Failed to delete subject");
       return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
@@ -157,7 +193,7 @@ public class SubjectController {
 
       List<KnowledgeTree> knowledgeTrees;
       int leafCount;
-      
+
       // 添加对空列表的检查，避免SQL语法错误
       if (ids == null || ids.isEmpty()) {
         knowledgeTrees = List.of(); // 返回空列表而不是null

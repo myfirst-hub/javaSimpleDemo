@@ -62,6 +62,12 @@
         WHERE id = #{id}
     </select>
     
+    <select id="findSubjectIdsByTeacherId" parameterType="long" resultType="long">
+        SELECT DISTINCT subject_id
+        FROM classes
+        WHERE teacher_id = #{teacherId}
+    </select>
+    
     <delete id="deleteClassById" parameterType="long">
         DELETE FROM classes WHERE id = #{id}
     </delete>
