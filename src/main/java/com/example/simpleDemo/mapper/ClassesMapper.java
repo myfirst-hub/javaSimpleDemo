@@ -21,4 +21,7 @@ public interface ClassesMapper {
     
     // 根据ID查找班级
     Classes findClassById(Long id);
+    
+    // 根据ID删除班级
+    int deleteClassById(Long id);
 }

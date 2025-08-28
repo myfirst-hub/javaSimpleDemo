@@ -98,4 +98,27 @@ public class ClassesController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/classes/delete")
+    public ResponseEntity<ApiResponse<String>> deleteClasses(@RequestBody Classes classes) {
+        logger.info("Delete classes endpoint accessed with id: {}", classes.getId());
+        try {
+            // 调用服务删除班级
+            int result = classesService.deleteClasses(classes.getId());
+
+            if (result > 0) {
+                // 删除成功
+                ApiResponse<String> response = ApiResponse.success("Classes deleted successfully");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            } else {
+                // 删除失败
+                ApiResponse<String> response = ApiResponse.error("Failed to delete classes");
+                return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting classes", e);
+            ApiResponse<String> response = ApiResponse.error("Failed to delete classes: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -119,4 +119,18 @@ public class ClassesService {
 
         return result;
     }
+
+    /**
+     * 删除班级
+     * 
+     * @param classId 班级ID
+     * @return 是否删除成功
+     */
+    public int deleteClasses(Long classId) {
+        // 先删除班级学生关联
+        classStudentService.deleteClassStudentByClassId(classId);
+        
+        // 删除班级
+        return classesMapper.deleteClassById(classId);
+    }
 }
