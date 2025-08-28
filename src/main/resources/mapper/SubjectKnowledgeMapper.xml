@@ -20,28 +20,6 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
     
-    <select id="findKnowledgesBySubjectId" resultMap="KnowledgeResultMap">
-        SELECT k.id, k.name, k.mastery_level, k.knowledge_describe, k.created_at, k.updated_at
-        FROM knowledges k
-        INNER JOIN subject_knowledge sk ON k.id = sk.knowledge_id
-        WHERE sk.subject_id = #{subjectId}
-        ORDER BY k.id
-    </select>
-    
-    <select id="findSubjectKnowledges" resultMap="SubjectKnowledgeResultMap">
-        SELECT id, subject_id, knowledge_id, mastery_level, created_at, updated_at
-        FROM subject_knowledge
-        <where>
-            <if test="subjectId != null">
-                AND subject_id = #{subjectId}
-            </if>
-            <if test="knowledgeId != null">
-                AND knowledge_id = #{knowledgeId}
-            </if>
-        </where>
-        ORDER BY id
-    </select>
-    
     <insert id="insertSubjectKnowledge" parameterType="com.example.simpleDemo.entity.SubjectKnowledge">
         INSERT INTO subject_knowledge(subject_id, knowledge_id, mastery_level)
         VALUES (#{subjectId}, #{knowledgeId}, #{masteryLevel})

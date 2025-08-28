@@ -3,20 +3,22 @@ package com.example.simpleDemo.entity;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class TrainProgram {
-    private Integer id;
+public class TheoryTrainProgram {
+    private Long id;
     private String name;
     private String semester;
     private String trainDescribe;
     private BigDecimal trainTime;
+    private Long subjectId;
     private Date createdAt;
     private Date updatedAt;
 
     // Constructors
-    public TrainProgram() {
+    public TheoryTrainProgram() {
     }
 
-    public TrainProgram(Integer id, String name, String semester, String trainDescribe, BigDecimal trainTime, Date createdAt, Date updatedAt) {
+    public TheoryTrainProgram(Long id, String name, String semester, String trainDescribe, BigDecimal trainTime,
+            Date createdAt, Date updatedAt) {
         this.id = id;
         this.name = name;
         this.semester = semester;
@@ -27,12 +29,20 @@ public class TrainProgram {
     }
 
     // Getters and Setters
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getSubjectId() {
+        return subjectId;
+    }
+
+    public void setSubjectId(Long subjectId) {
+        this.subjectId = subjectId;
     }
 
     public String getName() {
@@ -91,6 +101,7 @@ public class TrainProgram {
                 ", semester='" + semester + '\'' +
                 ", trainDescribe='" + trainDescribe + '\'' +
                 ", trainTime=" + trainTime +
+                ", subjectId=" + subjectId +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';
