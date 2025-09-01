@@ -25,7 +25,7 @@ public class SubjectService {
     private SubjectKnowledgeMapper subjectKnowledgeMapper;
 
     @Autowired
-    private SubjectOutlineService subjectOutlineService;
+    private UploadService uploadService;
 
     @Autowired
     private KnowledgeTreeService knowledgeTreeService;
@@ -132,7 +132,7 @@ public class SubjectService {
     public boolean deleteSubjectById(Long id) {
         try {
             // 1. 删除关联的科目大纲信息
-            subjectOutlineService.deleteBySubjectId(id);
+            uploadService.deleteBySubjectId(id);
 
             List<Long> ids = subjectKnowledgeMapper.findKnowledgeIdsBySubjectId(id);
 

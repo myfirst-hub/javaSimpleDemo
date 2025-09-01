@@ -30,4 +30,24 @@ public class TheoryTrainProgramService {
         PageInfo<TheoryTrainProgram> theoryTrainProgramPageInfo = new PageInfo<>(theoryTrainPrograms);
         return new PageInfoResult<>(theoryTrainProgramPageInfo);
     }
+
+    // 新增理论培训计划
+    public int insertTheoryTrainProgram(TheoryTrainProgram theoryTrainProgram) {
+        // 设置创建时间和更新时间
+        theoryTrainProgram.setCreatedAt(new java.util.Date());
+        theoryTrainProgram.setUpdatedAt(new java.util.Date());
+        return theoryTrainProgramMapper.insertTheoryTrainProgram(theoryTrainProgram);
+    }
+
+    // 编辑理论培训计划
+    public int updateTheoryTrainProgram(TheoryTrainProgram theoryTrainProgram) {
+        // 设置更新时间
+        theoryTrainProgram.setUpdatedAt(new java.util.Date());
+        return theoryTrainProgramMapper.updateTheoryTrainProgram(theoryTrainProgram);
+    }
+
+    // 删除理论培训计划
+    public int deleteTheoryTrainProgram(Long id) {
+        return theoryTrainProgramMapper.deleteTheoryTrainProgram(id);
+    }
 }

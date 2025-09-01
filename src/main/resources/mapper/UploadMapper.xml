@@ -1,12 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.example.simpleDemo.mapper.SubjectOutlineMapper">
+<mapper namespace="com.example.simpleDemo.mapper.UploadMapper">
     
     <resultMap id="SubjectOutlineResultMap" type="com.example.simpleDemo.entity.SubjectOutline">
         <id property="id" column="id"/>
         <result property="subjectId" column="subject_id"/>
         <result property="outlineId" column="outline_id"/>
         <result property="outlineName" column="outline_name"/>
+        <result property="uploadStatus" column="upload_status"/>
+        <result property="reservedField1" column="reserved_field1"/>
+        <result property="reservedField2" column="reserved_field2"/>
+        <result property="reservedField3" column="reserved_field3"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+    
+    <resultMap id="SubjectQuestionResultMap" type="com.example.simpleDemo.entity.SubjectQuestion">
+        <id property="id" column="id"/>
+        <result property="subjectId" column="subject_id"/>
+        <result property="questionId" column="question_id"/>
+        <result property="questionName" column="question_name"/>
         <result property="uploadStatus" column="upload_status"/>
         <result property="reservedField1" column="reserved_field1"/>
         <result property="reservedField2" column="reserved_field2"/>
@@ -35,4 +48,19 @@
     <delete id="deleteBySubjectId" parameterType="long">
         DELETE FROM subject_outline WHERE subject_id = #{subjectId}
     </delete>
+    
+    <!-- 新增: 插入SubjectQuestion数据的SQL语句 -->
+    <insert id="insertSubjectQuestion" parameterType="com.example.simpleDemo.entity.SubjectQuestion" 
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO subject_question(subject_id, question_id, question_name, upload_status, reserved_field1, reserved_field2, reserved_field3, created_at, updated_at)
+        VALUES (#{subjectId}, #{questionId}, #{questionName}, #{uploadStatus}, #{reservedField1}, #{reservedField2}, #{reservedField3}, #{createdAt}, #{updatedAt})
+    </insert>
+    
+    <!-- 新增: 根据ID更新SubjectQuestion的uploadStatus -->
+    <update id="updateSubjectQuestionUploadStatusById" parameterType="com.example.simpleDemo.entity.SubjectQuestion">
+        UPDATE subject_question
+        SET upload_status = #{uploadStatus},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
 </mapper>

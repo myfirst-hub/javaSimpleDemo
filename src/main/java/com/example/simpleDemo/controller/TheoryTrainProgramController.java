@@ -45,4 +45,52 @@ public class TheoryTrainProgramController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // 新增理论培训计划接口
+    @PostMapping("/theoryTrainProgram/create")
+    public ResponseEntity<ApiResponse<Integer>> addTheoryTrainProgram(
+            @RequestBody TheoryTrainProgram theoryTrainProgram) {
+        logger.info("Add theory train program endpoint accessed with params: {}", theoryTrainProgram);
+        try {
+            int result = theoryTrainProgramService.insertTheoryTrainProgram(theoryTrainProgram);
+            ApiResponse<Integer> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while adding theory train program", e);
+            ApiResponse<Integer> response = ApiResponse.error("Failed to add theory train program");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 编辑理论培训计划接口
+    @PostMapping("/theoryTrainProgram/update")
+    public ResponseEntity<ApiResponse<Integer>> updateTheoryTrainProgram(
+            @RequestBody TheoryTrainProgram theoryTrainProgram) {
+        logger.info("Update theory train program endpoint accessed with params: {}", theoryTrainProgram);
+        try {
+            int result = theoryTrainProgramService.updateTheoryTrainProgram(theoryTrainProgram);
+            ApiResponse<Integer> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while updating theory train program", e);
+            ApiResponse<Integer> response = ApiResponse.error("Failed to update theory train program");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 删除理论培训计划接口
+    @PostMapping("/theoryTrainProgram/delete")
+    public ResponseEntity<ApiResponse<Integer>> deleteTheoryTrainProgram(
+            @RequestBody TheoryTrainProgram theoryTrainProgram) {
+        logger.info("Delete theory train program endpoint accessed with params: id={}", theoryTrainProgram.getId());
+        try {
+            int result = theoryTrainProgramService.deleteTheoryTrainProgram(theoryTrainProgram.getId());
+            ApiResponse<Integer> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while deleting theory train program", e);
+            ApiResponse<Integer> response = ApiResponse.error("Failed to delete theory train program");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

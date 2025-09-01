@@ -30,7 +30,7 @@ public class TransferService {
      * @param file MultipartFile对象
      * @return 上传结果
      */
-    public String uploadFile(MultipartFile file) {
+    public String uploadFile(MultipartFile file, String uri) {
         try {
             // 使用MultipartBodyBuilder构建multipart/form-data请求体
             MultipartBodyBuilder builder = new MultipartBodyBuilder();
@@ -39,7 +39,7 @@ public class TransferService {
                             "form-data; name=\"files[]\"; filename=\"" + file.getOriginalFilename() + "\"");
 
             return webClient.post()
-                    .uri("/extract_knowledge")
+                    .uri(uri)
                     .contentType(MediaType.MULTIPART_FORM_DATA)
                     .bodyValue(builder.build())
                     .retrieve()
@@ -52,9 +52,9 @@ public class TransferService {
     }
 
     /**
-     * 调用外部新闻接口获取新闻数据
+     * 调用外部知识点接口获取知识点数据
      * 
-     * @return 新闻数据的字符串形式
+     * @return 知识点数据的字符串形式
      */
     public String fetchKnowledge() {
         try {
@@ -66,6 +66,24 @@ public class TransferService {
         } catch (Exception e) {
             logger.error("Failed to fetch news from external API", e);
             return "Error fetching news: " + e.getMessage();
+        }
+    }
+
+    /**
+     * 调用外部试题接口获取试题数据
+     * 
+     * @return 试题数据的字符串形式
+     */
+    public String fetchQuestions() {
+        try {
+            return webClient.get()
+                    .uri("/get_processed_exam_json/2011—2012学年度第一学期期末学情分析_processed.json")
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        } catch (Exception e) {
+            logger.error("Failed to fetch questions from external API", e);
+            return "Error fetching questions: " + e.getMessage();
         }
     }
 }

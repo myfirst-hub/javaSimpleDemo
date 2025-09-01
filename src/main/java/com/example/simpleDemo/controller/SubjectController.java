@@ -6,7 +6,7 @@ import com.example.simpleDemo.entity.Teacher;
 import com.example.simpleDemo.entity.Subject;
 import com.example.simpleDemo.service.KnowledgeTreeService;
 import com.example.simpleDemo.service.SubjectKnowledgeService;
-import com.example.simpleDemo.service.SubjectOutlineService;
+import com.example.simpleDemo.service.UploadService;
 import com.example.simpleDemo.service.SubjectService;
 import com.example.simpleDemo.utils.ApiResponse;
 import com.example.simpleDemo.utils.PageInfoResult;

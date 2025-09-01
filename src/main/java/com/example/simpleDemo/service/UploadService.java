@@ -3,10 +3,14 @@ package com.example.simpleDemo.service;
 import com.example.simpleDemo.entity.KnowledgeTree;
 import com.example.simpleDemo.entity.SubjectKnowledge;
 import com.example.simpleDemo.entity.SubjectOutline;
+import com.example.simpleDemo.entity.SubjectQuestion;
 import com.example.simpleDemo.mapper.SubjectKnowledgeMapper;
-import com.example.simpleDemo.mapper.SubjectOutlineMapper;
+import com.example.simpleDemo.mapper.UploadMapper;
 import com.example.simpleDemo.utils.UtilCustom;
+import com.example.simpleDemo.enums.UploadType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,10 +28,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
-public class SubjectOutlineService {
+public class UploadService {
 
   @Autowired
-  private SubjectOutlineMapper subjectOutlineMapper;
+  private UploadMapper uploadMapper;
 
   @Autowired
   private KnowledgeTreeService knowledgeTreeService;
@@ -39,6 +43,8 @@ public class SubjectOutlineService {
   private TransferService transferService;
 
   private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+
+  private static final Logger logger = LoggerFactory.getLogger(UploadService.class);
 
   /**
    * 插入一个SubjectOutline数据到数据库
@@ -53,7 +59,7 @@ public class SubjectOutlineService {
     subjectOutline.setUpdatedAt(now);
 
     // 调用Mapper插入数据
-    return subjectOutlineMapper.insertSubjectOutline(subjectOutline);
+    return uploadMapper.insertSubjectOutline(subjectOutline);
   }
 
   /**
@@ -61,13 +67,13 @@ public class SubjectOutlineService {
    * 
    * @param id SubjectOutline记录的ID
    */
-  public void startPollingToUpdateStatus(Long id, Long subjectId) {
+  public void startPollingToUpdateStatus(Long id, Long subjectId, Long typeId, UploadType type) {
     AtomicInteger counter = new AtomicInteger(0);
     // 每10秒执行一次，总共执行18次（3分钟）
     scheduler.scheduleAtFixedRate(() -> {
       int count = counter.incrementAndGet();
-      // 轮询逻辑可以在这里添加实际的检查条件
-      System.out.println("Polling attempt: " + count);
+      // 轮询逻辑可以在这里添加实际的检查条件 根据typeId字段查询文件解析的状态
+      System.out.println("Polling attempt: " + count + "typeId.........:" + typeId);
 
       // 1分钟后（18次，每次10秒）停止轮询并更新状态
       if (count >= 1) {
@@ -75,48 +81,51 @@ public class SubjectOutlineService {
         // 停止轮询任务
         scheduler.shutdown();
 
-        updateUploadStatus(id);
+        if (type == UploadType.SUBJECT_OUTLINE) {
+          dealSubjectOutlineFileResultData(id, subjectId);
+        }
 
-        String jsonStr = transferService.fetchKnowledge();
-
-        // 在方法内部添加 try-catch 处理 JSON 解析异常
-        try {
-          UtilCustom uc = new UtilCustom();
-          ObjectNode rootNode = uc.JsonTransformer(jsonStr, "物理");
-
-          // // 从根节点开始遍历
-          KnowledgeTree node = saveKnowledgeTree(rootNode, null, 0);
-
-          SubjectKnowledge subjectKnowledge = new SubjectKnowledge();
-          subjectKnowledge.setSubjectId(subjectId);
-          subjectKnowledge.setKnowledgeId(node.getId());
-          subjectKnowledgeMapper.insertSubjectKnowledge(subjectKnowledge);
-        } catch (JsonProcessingException e) {
-          System.err.println("JSON解析失败: " + e.getMessage());
-          e.printStackTrace();
-        } catch (Exception e) {
-          System.err.println("处理过程中发生错误: " + e.getMessage());
-          e.printStackTrace();
+        if (type == UploadType.SUBJECT_QUESTION) {
+          dealSubjectQuestionFileResultData(id, subjectId);
         }
       }
     }, 0, 10, TimeUnit.SECONDS);
   }
 
   /**
-   * 更新指定记录的uploadStatus为1
+   * 处理大纲文件解析成功后的结果数据
    * 
-   * @param id SubjectOutline记录的ID
+   * @param id        SubjectOutline记录的ID
+   * @param subjectId 科目id
    */
-  private void updateUploadStatus(Long id) {
-    try {
-      SubjectOutline subjectOutline = new SubjectOutline();
-      subjectOutline.setId(id);
-      subjectOutline.setUploadStatus(1);
-      subjectOutline.setUpdatedAt(new Date());
+  private void dealSubjectOutlineFileResultData(Long id, Long subjectId) {
+    // 更新指定记录的uploadStatus为1
+    SubjectOutline subjectOutline = new SubjectOutline();
+    subjectOutline.setId(id);
+    subjectOutline.setUploadStatus(1);
+    subjectOutline.setUpdatedAt(new Date());
+    uploadMapper.updateUploadStatusById(subjectOutline);
 
-      // 这里需要在Mapper中添加更新方法
-      subjectOutlineMapper.updateUploadStatusById(subjectOutline);
+    // 获取所有知识点
+    String jsonStr = transferService.fetchKnowledge();
+
+    // 在方法内部添加 try-catch 处理 JSON 解析异常
+    try {
+      UtilCustom uc = new UtilCustom();
+      ObjectNode rootNode = uc.JsonTransformer(jsonStr, "物理");
+
+      // 从根节点开始遍历
+      KnowledgeTree node = saveKnowledgeTree(rootNode, null, 0);
+
+      SubjectKnowledge subjectKnowledge = new SubjectKnowledge();
+      subjectKnowledge.setSubjectId(subjectId);
+      subjectKnowledge.setKnowledgeId(node.getId());
+      subjectKnowledgeMapper.insertSubjectKnowledge(subjectKnowledge);
+    } catch (JsonProcessingException e) {
+      System.err.println("JSON解析失败: " + e.getMessage());
+      e.printStackTrace();
     } catch (Exception e) {
+      System.err.println("处理过程中发生错误: " + e.getMessage());
       e.printStackTrace();
     }
   }
@@ -168,7 +177,7 @@ public class SubjectOutlineService {
    * @return 大纲ID列表
    */
   public List<Long> findOutlineIdsBySubjectId(Long subjectId) {
-    return subjectOutlineMapper.selectOutlineIdsBySubjectId(subjectId);
+    return uploadMapper.selectOutlineIdsBySubjectId(subjectId);
   }
 
   /**
@@ -178,9 +187,46 @@ public class SubjectOutlineService {
    * @return 删除的记录数
    */
   public int deleteBySubjectId(Long subjectId) {
-      if (subjectId == null) {
-          throw new IllegalArgumentException("科目ID不能为空");
-      }
-      return subjectOutlineMapper.deleteBySubjectId(subjectId);
+    if (subjectId == null) {
+      throw new IllegalArgumentException("科目ID不能为空");
+    }
+    return uploadMapper.deleteBySubjectId(subjectId);
+  }
+
+  /**
+   * 插入一个SubjectQuestion数据到数据库
+   * 
+   * @param subjectQuestion 要插入的数据对象
+   * @return 插入成功的记录数
+   */
+  public int insertSubjectQuestion(SubjectQuestion subjectQuestion) {
+    // 设置创建时间和更新时间
+    Date now = new Date();
+    subjectQuestion.setCreatedAt(now);
+    subjectQuestion.setUpdatedAt(now);
+
+    // 调用Mapper插入数据
+    return uploadMapper.insertSubjectQuestion(subjectQuestion);
+  }
+
+  /**
+   * 处理试题文件解析成功后的结果数据
+   * 
+   * @param id        SubjectOutline记录的ID
+   * @param subjectId 科目id
+   */
+  private void dealSubjectQuestionFileResultData(Long id, Long subjectId) {
+    // 更新指定记录的uploadStatus为1
+    SubjectQuestion subjectQuestion = new SubjectQuestion();
+    subjectQuestion.setId(id);
+    subjectQuestion.setUploadStatus(1);
+    subjectQuestion.setUpdatedAt(new Date());
+
+    // 这里需要在Mapper中添加更新方法
+    uploadMapper.updateSubjectQuestionUploadStatusById(subjectQuestion);
+
+    // 获取所有知识点
+    String jsonStr = transferService.fetchQuestions();
+    logger.info("str....fetchQuestions............:" + jsonStr);
   }
 }

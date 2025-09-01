@@ -11,4 +11,13 @@ import com.example.simpleDemo.entity.TheoryTrainProgram;
 public interface TheoryTrainProgramMapper {
     List<TheoryTrainProgram> selectTheoryTrainProgramList(@Param("name") String name,
             @Param("semester") String semester);
+
+    // 新增理论培训计划
+    int insertTheoryTrainProgram(TheoryTrainProgram theoryTrainProgram);
+
+    // 编辑理论培训计划
+    int updateTheoryTrainProgram(TheoryTrainProgram theoryTrainProgram);
+
+    // 删除理论培训计划
+    int deleteTheoryTrainProgram(@Param("id") Long id);
 }
