@@ -15,7 +15,7 @@
         <result property="updatedAt" column="updated_at"/>
     </resultMap>
     
-    <resultMap id="SubjectQuestionResultMap" type="com.example.simpleDemo.entity.SubjectQuestion">
+    <resultMap id="SubjectQuestionFileResultMap" type="com.example.simpleDemo.entity.SubjectQuestionFile">
         <id property="id" column="id"/>
         <result property="subjectId" column="subject_id"/>
         <result property="questionId" column="question_id"/>
@@ -49,16 +49,16 @@
         DELETE FROM subject_outline WHERE subject_id = #{subjectId}
     </delete>
     
-    <!-- 新增: 插入SubjectQuestion数据的SQL语句 -->
-    <insert id="insertSubjectQuestion" parameterType="com.example.simpleDemo.entity.SubjectQuestion" 
+    <!-- 新增: 插入SubjectQuestionFile数据的SQL语句 -->
+    <insert id="insertSubjectQuestionFile" parameterType="com.example.simpleDemo.entity.SubjectQuestionFile" 
             useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO subject_question(subject_id, question_id, question_name, upload_status, reserved_field1, reserved_field2, reserved_field3, created_at, updated_at)
+        INSERT INTO subject_question_file(subject_id, question_id, question_name, upload_status, reserved_field1, reserved_field2, reserved_field3, created_at, updated_at)
         VALUES (#{subjectId}, #{questionId}, #{questionName}, #{uploadStatus}, #{reservedField1}, #{reservedField2}, #{reservedField3}, #{createdAt}, #{updatedAt})
     </insert>
     
-    <!-- 新增: 根据ID更新SubjectQuestion的uploadStatus -->
-    <update id="updateSubjectQuestionUploadStatusById" parameterType="com.example.simpleDemo.entity.SubjectQuestion">
-        UPDATE subject_question
+    <!-- 新增: 根据ID更新SubjectQuestionFile的uploadStatus -->
+    <update id="updateSubjectQuestionUploadStatusById" parameterType="com.example.simpleDemo.entity.SubjectQuestionFile">
+        UPDATE subject_question_file
         SET upload_status = #{uploadStatus},
             updated_at = #{updatedAt}
         WHERE id = #{id}

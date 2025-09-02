@@ -2,27 +2,30 @@ package com.example.simpleDemo.entity;
 
 import java.util.Date;
 
-public class SubjectQuestion {
+public class SubjectQuestionFile {
     private Long id;
     private Long subjectId;
     private Long questionId;
-    private String questionCode;
     private String questionName;
-    private String answer;
+    private Integer uploadStatus;
+    private String reservedField1;
+    private String reservedField2;
+    private Integer reservedField3;
     private Date createdAt;
     private Date updatedAt;
 
-    // Constructors
-    public SubjectQuestion() {
+    // 构造函数
+    public SubjectQuestionFile() {
     }
 
-    public SubjectQuestion(Long subjectId, Long questionId, String questionName) {
+    public SubjectQuestionFile(Long subjectId, Long questionId, String questionName, Integer uploadStatus) {
         this.subjectId = subjectId;
         this.questionId = questionId;
         this.questionName = questionName;
+        this.uploadStatus = uploadStatus;
     }
 
-    // Getters and Setters
+    // Getter和Setter方法
     public Long getId() {
         return id;
     }
@@ -43,14 +46,6 @@ public class SubjectQuestion {
         return questionId;
     }
 
-    public String getQuestionCode() {
-        return questionCode;
-    }
-
-    public void setQuestionCode(String questionCode) {
-        this.questionCode = questionCode;
-    }
-
     public void setQuestionId(Long questionId) {
         this.questionId = questionId;
     }
@@ -63,12 +58,36 @@ public class SubjectQuestion {
         this.questionName = questionName;
     }
 
-    public String getAnswer() {
-        return answer;
+    public Integer getUploadStatus() {
+        return uploadStatus;
     }
 
-    public void setAnswer(String answer) {
-        this.answer = answer;
+    public void setUploadStatus(Integer uploadStatus) {
+        this.uploadStatus = uploadStatus;
+    }
+
+    public String getReservedField1() {
+        return reservedField1;
+    }
+
+    public void setReservedField1(String reservedField1) {
+        this.reservedField1 = reservedField1;
+    }
+
+    public String getReservedField2() {
+        return reservedField2;
+    }
+
+    public void setReservedField2(String reservedField2) {
+        this.reservedField2 = reservedField2;
+    }
+
+    public Integer getReservedField3() {
+        return reservedField3;
+    }
+
+    public void setReservedField3(Integer reservedField3) {
+        this.reservedField3 = reservedField3;
     }
 
     public Date getCreatedAt() {
@@ -89,13 +108,15 @@ public class SubjectQuestion {
 
     @Override
     public String toString() {
-        return "SubjectQuestion{" +
+        return "SubjectQuestionFile{" +
                 "id=" + id +
                 ", subjectId=" + subjectId +
                 ", questionId=" + questionId +
-                ", questionCode='" + questionCode + '\'' +
                 ", questionName='" + questionName + '\'' +
-                ", answer='" + answer + '\'' +
+                ", uploadStatus=" + uploadStatus +
+                ", reservedField1='" + reservedField1 + '\'' +
+                ", reservedField2='" + reservedField2 + '\'' +
+                ", reservedField3=" + reservedField3 +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

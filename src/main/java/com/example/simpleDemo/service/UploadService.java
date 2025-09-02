@@ -3,9 +3,11 @@ package com.example.simpleDemo.service;
 import com.example.simpleDemo.entity.KnowledgeTree;
 import com.example.simpleDemo.entity.SubjectKnowledge;
 import com.example.simpleDemo.entity.SubjectOutline;
+import com.example.simpleDemo.entity.SubjectQuestionFile;
 import com.example.simpleDemo.entity.SubjectQuestion;
 import com.example.simpleDemo.mapper.SubjectKnowledgeMapper;
 import com.example.simpleDemo.mapper.UploadMapper;
+import com.example.simpleDemo.mapper.SubjectQuestionMapper;
 import com.example.simpleDemo.utils.UtilCustom;
 import com.example.simpleDemo.enums.UploadType;
 
@@ -41,6 +43,9 @@ public class UploadService {
 
   @Autowired
   private TransferService transferService;
+
+  @Autowired
+  private SubjectQuestionMapper subjectQuestionMapper;
 
   private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 
@@ -194,19 +199,19 @@ public class UploadService {
   }
 
   /**
-   * 插入一个SubjectQuestion数据到数据库
+   * 插入一个SubjectQuestionFile数据到数据库
    * 
-   * @param subjectQuestion 要插入的数据对象
+   * @param subjectQuestionFile 要插入的数据对象
    * @return 插入成功的记录数
    */
-  public int insertSubjectQuestion(SubjectQuestion subjectQuestion) {
+  public int insertSubjectQuestionFile(SubjectQuestionFile subjectQuestionFile) {
     // 设置创建时间和更新时间
     Date now = new Date();
-    subjectQuestion.setCreatedAt(now);
-    subjectQuestion.setUpdatedAt(now);
+    subjectQuestionFile.setCreatedAt(now);
+    subjectQuestionFile.setUpdatedAt(now);
 
     // 调用Mapper插入数据
-    return uploadMapper.insertSubjectQuestion(subjectQuestion);
+    return uploadMapper.insertSubjectQuestionFile(subjectQuestionFile);
   }
 
   /**
@@ -217,16 +222,48 @@ public class UploadService {
    */
   private void dealSubjectQuestionFileResultData(Long id, Long subjectId) {
     // 更新指定记录的uploadStatus为1
-    SubjectQuestion subjectQuestion = new SubjectQuestion();
-    subjectQuestion.setId(id);
-    subjectQuestion.setUploadStatus(1);
-    subjectQuestion.setUpdatedAt(new Date());
+    SubjectQuestionFile subjectQuestionFile = new SubjectQuestionFile();
+    subjectQuestionFile.setId(id);
+    subjectQuestionFile.setUploadStatus(1);
+    subjectQuestionFile.setUpdatedAt(new Date());
 
     // 这里需要在Mapper中添加更新方法
-    uploadMapper.updateSubjectQuestionUploadStatusById(subjectQuestion);
+    uploadMapper.updateSubjectQuestionUploadStatusById(subjectQuestionFile);
 
     // 获取所有知识点
     String jsonStr = transferService.fetchQuestions();
     logger.info("str....fetchQuestions............:" + jsonStr);
+
+    try {
+      ObjectMapper objectMapper = new ObjectMapper();
+      JsonNode jsonArray = objectMapper.readTree(jsonStr);
+
+      if (jsonArray.isArray()) {
+        // 添加日志记录数组大小
+        logger.info("Processing {} questions", jsonArray.size());
+        for (JsonNode questionNode : jsonArray) {
+          SubjectQuestion subjectQuestion = new SubjectQuestion();
+          subjectQuestion.setQuestionCode(questionNode.get("id").asText());
+          String questionName = questionNode.get("question").asText();
+          subjectQuestion.setQuestionName(questionName);
+          subjectQuestion.setAnswer(questionNode.get("answer").asText());
+          subjectQuestion.setSubjectId(subjectId);
+          // 修复：使用正确的questionId，而不是subjectId
+          subjectQuestion.setQuestionId(1l);
+          int result = subjectQuestionMapper.insertSubjectQuestion(subjectQuestion);
+          // 添加日志记录插入结果
+          logger.info("Insert question result: {}", result);
+        }
+        logger.info("Finished processing {} questions", jsonArray.size());
+      } else {
+        logger.warn("JSON is not an array");
+      }
+    } catch (JsonProcessingException e) {
+      logger.error("解析JSON失败: " + e.getMessage());
+      e.printStackTrace();
+    } catch (Exception e) {
+      logger.error("处理试题数据时发生错误: " + e.getMessage());
+      e.printStackTrace();
+    }
   }
 }

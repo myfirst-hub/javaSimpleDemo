@@ -4,7 +4,7 @@ import com.example.simpleDemo.utils.ApiResponse;
 import com.example.simpleDemo.service.TransferService;
 import com.example.simpleDemo.service.UploadService;
 import com.example.simpleDemo.entity.SubjectOutline;
-import com.example.simpleDemo.entity.SubjectQuestion;
+import com.example.simpleDemo.entity.SubjectQuestionFile;
 // 添加枚举导入
 import com.example.simpleDemo.enums.UploadType;
 import org.slf4j.Logger;
@@ -127,16 +127,20 @@ public class UploadController {
                         String originalFilename = originalFilenameNode.asText();
                         logger.info("Extracted original filename: {}", originalFilename);
                         // 使用构造函数创建SubjectOutline对象
-                        SubjectQuestion sq = new SubjectQuestion(subjectId, currentTimeMillis,
+                        SubjectQuestionFile sq = new SubjectQuestionFile(subjectId, currentTimeMillis,
                                 originalFilename, 2);
                         // 插入记录并检查结果
-                        int insertResult = uploadService.insertSubjectQuestion(sq);
+                        int insertResult = uploadService.insertSubjectQuestionFile(sq);
                         if (insertResult > 0) {
                             logger.info("Successfully inserted SubjectOutline record with id: {}",
                                     sq.getId());
                             // 插入成功后启动轮询任务，每10秒检查一次，3分钟后停止并修改uploadStatus为1
-                            uploadService.startPollingToUpdateStatus(sq.getId(), subjectId, sq.getQuestionId(),
-                                    UploadType.SUBJECT_QUESTION);
+                            try {
+                                uploadService.startPollingToUpdateStatus(sq.getId(), subjectId, sq.getQuestionId(),
+                                        UploadType.SUBJECT_QUESTION);
+                            } catch (Exception e) {
+                                logger.error("Failed to start polling task", e);
+                            }
                         } else {
                             logger.warn("Failed to insert SubjectOutline record");
                         }

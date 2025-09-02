@@ -1,6 +1,7 @@
 package com.example.simpleDemo.mapper;
 
 import com.example.simpleDemo.entity.SubjectOutline;
+import com.example.simpleDemo.entity.SubjectQuestionFile;
 import com.example.simpleDemo.entity.SubjectQuestion;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -42,18 +43,26 @@ public interface UploadMapper {
     int deleteBySubjectId(@Param("subjectId") Long subjectId);
 
     /**
-     * 插入一个SubjectOutline数据到数据库
+     * 插入一个SubjectQuestionFile数据到数据库
+     * 
+     * @param subjectQuestionFile 要插入的数据对象
+     * @return 插入成功的记录数
+     */
+    int insertSubjectQuestionFile(SubjectQuestionFile subjectQuestionFile);
+
+    /**
+     * 根据ID更新SubjectQuestionFile的uploadStatus
+     * 
+     * @param SubjectQuestionFile 包含ID和新uploadStatus的对象
+     * @return 更新成功的记录数
+     */
+    int updateSubjectQuestionUploadStatusById(SubjectQuestionFile subjectQuestionFile);
+
+    /**
+     * 插入一个SubjectQuestion数据到数据库
      * 
      * @param subjectQuestion 要插入的数据对象
      * @return 插入成功的记录数
      */
     int insertSubjectQuestion(SubjectQuestion subjectQuestion);
-
-    /**
-     * 根据ID更新SubjectQuestion的uploadStatus
-     * 
-     * @param SubjectQuestion 包含ID和新uploadStatus的对象
-     * @return 更新成功的记录数
-     */
-    int updateSubjectQuestionUploadStatusById(SubjectQuestion subjectQuestion);
 }
