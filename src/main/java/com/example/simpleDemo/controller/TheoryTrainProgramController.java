@@ -84,12 +84,33 @@ public class TheoryTrainProgramController {
             @RequestBody TheoryTrainProgram theoryTrainProgram) {
         logger.info("Delete theory train program endpoint accessed with params: id={}", theoryTrainProgram.getId());
         try {
-            int result = theoryTrainProgramService.deleteTheoryTrainProgram(theoryTrainProgram.getId());
+            int result = theoryTrainProgramService.deleteTheoryTrainProgram(theoryTrainProgram.getId(),
+                    theoryTrainProgram.getSubjectId());
             ApiResponse<Integer> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error occurred while deleting theory train program", e);
             ApiResponse<Integer> response = ApiResponse.error("Failed to delete theory train program");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 根据ID查询理论培训计划详情接口
+    @GetMapping("/theoryTrainProgram/detail")
+    public ResponseEntity<ApiResponse<TheoryTrainProgram>> getTheoryTrainProgramById(
+            @RequestParam(required = true) Long id) {
+        logger.info("Get theory train program detail endpoint accessed with id: {}", id);
+        try {
+            TheoryTrainProgram result = theoryTrainProgramService.selectTheoryTrainProgramById(id);
+            if (result == null) {
+                ApiResponse<TheoryTrainProgram> response = ApiResponse.error("Theory train program not found");
+                return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+            }
+            ApiResponse<TheoryTrainProgram> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching theory train program detail", e);
+            ApiResponse<TheoryTrainProgram> response = ApiResponse.error("Failed to fetch theory train program detail");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

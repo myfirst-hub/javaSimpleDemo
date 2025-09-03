@@ -58,11 +58,6 @@ public interface UploadMapper {
      */
     int updateSubjectQuestionUploadStatusById(SubjectQuestionFile subjectQuestionFile);
 
-    /**
-     * 插入一个SubjectQuestion数据到数据库
-     * 
-     * @param subjectQuestion 要插入的数据对象
-     * @return 插入成功的记录数
-     */
-    int insertSubjectQuestion(SubjectQuestion subjectQuestion);
+    // 新增删除与科目关联的问题文件数据
+    int deleteSubjectQuestionFileBySubjectId(@Param("subjectId") Long subjectId);
 }

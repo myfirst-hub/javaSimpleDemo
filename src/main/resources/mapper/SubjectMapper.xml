@@ -25,6 +25,12 @@
         ORDER BY id
     </select>
 
+    <select id="findSubjectById" resultMap="SubjectResultMap" parameterType="long">
+        SELECT id, name, semester, subject_describe, created_at, updated_at
+        FROM subjects
+        WHERE id = #{id}
+    </select>
+
     <insert id="insertSubject" parameterType="com.example.simpleDemo.entity.Subject" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO subjects(name, semester, subject_describe)
         VALUES (#{name}, #{semester}, #{subjectDescribe})
@@ -41,4 +47,5 @@
     <delete id="deleteSubjectById">
         DELETE FROM subjects WHERE id = #{id}
     </delete>
+    
 </mapper>

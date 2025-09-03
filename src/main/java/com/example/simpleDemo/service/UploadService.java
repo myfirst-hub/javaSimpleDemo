@@ -47,7 +47,7 @@ public class UploadService {
   @Autowired
   private SubjectQuestionMapper subjectQuestionMapper;
 
-  private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+  private ScheduledExecutorService scheduler;
 
   private static final Logger logger = LoggerFactory.getLogger(UploadService.class);
 
@@ -74,6 +74,8 @@ public class UploadService {
    */
   public void startPollingToUpdateStatus(Long id, Long subjectId, Long typeId, UploadType type) {
     AtomicInteger counter = new AtomicInteger(0);
+    // 创建新的线程池实例，避免使用已关闭的线程池
+    scheduler = Executors.newScheduledThreadPool(1);
     // 每10秒执行一次，总共执行18次（3分钟）
     scheduler.scheduleAtFixedRate(() -> {
       int count = counter.incrementAndGet();

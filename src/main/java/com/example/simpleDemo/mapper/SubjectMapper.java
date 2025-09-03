@@ -8,15 +8,13 @@ import java.util.List;
 
 @Mapper
 public interface SubjectMapper {
-    // 支持PageHelper的查询方法
     List<Subject> findSubjects(@Param("name") String name, @Param("semester") String semester);
 
-    // 新增科目
+    Subject findSubjectById(@Param("id") Long id);
+
     int insertSubject(Subject subject);
 
-    // 更新科目
     int updateSubject(Subject subject);
 
-    // 删除科目
     int deleteSubjectById(@Param("id") Long id);
 }

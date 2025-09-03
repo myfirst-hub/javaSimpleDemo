@@ -12,6 +12,9 @@ public class TheoryTrainProgram {
     private Long subjectId;
     private Date createdAt;
     private Date updatedAt;
+    
+    // 添加科目名称字段
+    private String subjectName;
 
     // Constructors
     public TheoryTrainProgram() {
@@ -92,6 +95,15 @@ public class TheoryTrainProgram {
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
     }
+    
+    // 科目名称的Getter和Setter
+    public String getSubjectName() {
+        return subjectName;
+    }
+
+    public void setSubjectName(String subjectName) {
+        this.subjectName = subjectName;
+    }
 
     @Override
     public String toString() {
@@ -102,6 +114,7 @@ public class TheoryTrainProgram {
                 ", trainDescribe='" + trainDescribe + '\'' +
                 ", trainTime=" + trainTime +
                 ", subjectId=" + subjectId +
+                ", subjectName='" + subjectName + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

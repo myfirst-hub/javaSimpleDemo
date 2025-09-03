@@ -20,4 +20,7 @@ public interface TheoryTrainProgramMapper {
 
     // 删除理论培训计划
     int deleteTheoryTrainProgram(@Param("id") Long id);
+    
+    // 根据ID查询理论培训计划详情
+    TheoryTrainProgram selectTheoryTrainProgramById(@Param("id") Long id);
 }

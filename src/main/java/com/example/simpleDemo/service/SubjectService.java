@@ -4,6 +4,8 @@ import com.example.simpleDemo.entity.*;
 import com.example.simpleDemo.mapper.ClassesMapper;
 import com.example.simpleDemo.mapper.SubjectKnowledgeMapper;
 import com.example.simpleDemo.mapper.SubjectMapper;
+import com.example.simpleDemo.mapper.UploadMapper;
+import com.example.simpleDemo.mapper.SubjectQuestionMapper;
 import com.example.simpleDemo.utils.PageInfoResult;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -22,6 +24,9 @@ public class SubjectService {
     private SubjectMapper subjectMapper;
 
     @Autowired
+    private UploadMapper uploadMapper;
+
+    @Autowired
     private SubjectKnowledgeMapper subjectKnowledgeMapper;
 
     @Autowired
@@ -35,6 +40,9 @@ public class SubjectService {
 
     @Autowired
     private ClassesMapper classesMapper;
+
+    @Autowired
+    private SubjectQuestionMapper subjectQuestionMapper;
 
     /**
      * 分页查询科目列表
@@ -143,7 +151,14 @@ public class SubjectService {
             // 3. 删除关联的科目知识点信息
             subjectKnowledgeService.deleteBySubjectId(id);
 
-            // 4. 删除科目信息
+            // 4. 删除与科目关联的问题和问题文件信息
+            // 删除subject_question_file表中与该科目关联的数据
+            uploadMapper.deleteSubjectQuestionFileBySubjectId(id);
+
+            // 删除subject_question表中与该科目关联的数据
+            subjectQuestionMapper.deleteSubjectQuestionBySubjectId(id);
+
+            // 5. 删除科目信息
             subjectMapper.deleteSubjectById(id);
             return true;
         } catch (Exception e) {

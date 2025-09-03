@@ -63,4 +63,9 @@
             updated_at = #{updatedAt}
         WHERE id = #{id}
     </update>
+
+    <!-- 新增删除与科目关联的问题文件数据 -->
+    <delete id="deleteSubjectQuestionFileBySubjectId">
+        DELETE FROM subject_question_file WHERE subject_id = #{subjectId}
+    </delete>
 </mapper>

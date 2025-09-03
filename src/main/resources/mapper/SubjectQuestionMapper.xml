@@ -18,4 +18,16 @@
         INSERT INTO subject_question(subject_id, question_id, question_code, question_name, answer, created_at, updated_at)
         VALUES (#{subjectId}, #{questionId}, #{questionCode}, #{questionName}, #{answer}, #{createdAt}, #{updatedAt})
     </insert>
+    
+    <!-- 根据subjectId查询题目列表 -->
+    <select id="selectBySubjectId" parameterType="long" resultMap="SubjectQuestionResultMap">
+        SELECT id, subject_id, question_id, question_code, question_name, answer, created_at, updated_at
+        FROM subject_question
+        WHERE subject_id = #{subjectId}
+    </select>
+
+    <!-- 新增删除与科目关联的问题数据 -->
+    <delete id="deleteSubjectQuestionBySubjectId">
+        DELETE FROM subject_question WHERE subject_id = #{subjectId}
+    </delete>
 </mapper>
