@@ -55,13 +55,13 @@
         WHERE id = #{id}
     </update>
     
-    <select id="findStudentById" parameterType="int" resultMap="StudentResultMap">
+    <select id="findStudentById" parameterType="long" resultMap="StudentResultMap">
         SELECT id, name, sex, className, height, weight, birthday, native_place, nationality, created_at, updated_at
         FROM students
         WHERE id = #{id}
     </select>
     
-    <delete id="deleteStudentById" parameterType="int">
+    <delete id="deleteStudentById" parameterType="long">
         DELETE FROM students WHERE id = #{id}
     </delete>
 </mapper>

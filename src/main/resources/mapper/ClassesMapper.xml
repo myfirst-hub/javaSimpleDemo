@@ -62,8 +62,17 @@
         WHERE id = #{id}
     </select>
     
+    <!-- 根据教师ID查询科目ID -->
     <select id="findSubjectIdsByTeacherId" parameterType="long" resultType="long">
         SELECT DISTINCT subject_id
+        FROM classes
+        WHERE teacher_id = #{teacherId}
+    </select>
+    
+    
+    <!-- 根据教师ID查询班级ID -->
+    <select id="findClassIdsByTeacherId" parameterType="long" resultType="long">
+        SELECT id
         FROM classes
         WHERE teacher_id = #{teacherId}
     </select>

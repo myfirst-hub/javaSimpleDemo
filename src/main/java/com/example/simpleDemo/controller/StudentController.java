@@ -156,4 +156,28 @@ public class StudentController {
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    /**
+     * 根据教师ID查询学生列表（分页）
+     * 通过教师ID关联查询班级ID，根据班级ID查询学生列表
+     */
+    @GetMapping("/students/byTeacherId/list")
+    public ResponseEntity<ApiResponse<PageInfoResult<Student>>> getStudentsByTeacherId(
+            @RequestParam Long teacherId,
+            @RequestParam(required = true, defaultValue = "1") Integer pageNum,
+            @RequestParam(required = true, defaultValue = "10") Integer pageSize) {
+        logger.info("Get students by teacher id endpoint accessed with teacherId: {}, pageNum: {}, pageSize: {}",
+                teacherId, pageNum, pageSize);
+        try {
+            PageInfoResult<Student> result = studentService.findStudentsByTeacherIdWithPage(teacherId, pageNum,
+                    pageSize);
+            ApiResponse<PageInfoResult<Student>> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching students by teacher id", e);
+            ApiResponse<PageInfoResult<Student>> response = ApiResponse
+                    .error("Failed to fetch students by teacher id: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

@@ -17,6 +17,7 @@ public class TeacherService {
     @Autowired
     private TeacherMapper teacherMapper;
 
+    // 查询教师列表分页
     public PageInfoResult<Teacher> findTeachersWithPageHelper(int page, int size, String name, String code) {
         // 开启分页
         PageHelper.startPage(page, size);

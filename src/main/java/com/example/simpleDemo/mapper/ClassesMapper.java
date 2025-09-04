@@ -13,7 +13,11 @@ public interface ClassesMapper {
     List<Classes> findClasses(@Param("name") String nameString, @Param("teacherName") String teacherName,
             @Param("subjectName") String subjectName);
 
+    // 根据教师id查询科目id
     List<Long> findSubjectIdsByTeacherId(@Param("teacherId") Long teacherId);
+
+    // 根据教师id查询班级id
+    List<Long> findClassIdsByTeacherId(@Param("teacherId") Long teacherId);
 
     // 插入班级信息，确保在XML中配置了useGeneratedKeys和keyProperty
     int insertClass(Classes classes);
