@@ -77,6 +77,13 @@
         WHERE teacher_id = #{teacherId}
     </select>
     
+    <!-- 根据教师ID查询班级列表 -->
+    <select id="findClassesByTeacherId" parameterType="long" resultMap="ClassesResultMap">
+        SELECT id, name, teacher_id, teacher_name, student_num, subject_name, subject_id, class_describe, create_time, update_time
+        FROM classes
+        WHERE teacher_id = #{teacherId}
+    </select>
+    
     <delete id="deleteClassById" parameterType="long">
         DELETE FROM classes WHERE id = #{id}
     </delete>

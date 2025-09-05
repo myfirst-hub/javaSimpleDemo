@@ -13,6 +13,8 @@ public interface ClassesMapper {
     List<Classes> findClasses(@Param("name") String nameString, @Param("teacherName") String teacherName,
             @Param("subjectName") String subjectName);
 
+    List<Classes> findClassesByTeacherId(@Param("teacherId") Long teacherId);
+
     // 根据教师id查询科目id
     List<Long> findSubjectIdsByTeacherId(@Param("teacherId") Long teacherId);
 

@@ -1,6 +1,7 @@
 package com.example.simpleDemo.controller;
 
 import com.example.simpleDemo.entity.Student;
+import com.example.simpleDemo.entity.StudentInfo;
 import com.example.simpleDemo.service.StudentService;
 import com.example.simpleDemo.utils.ApiResponse;
 import com.example.simpleDemo.utils.PageInfoResult;
@@ -162,20 +163,23 @@ public class StudentController {
      * 通过教师ID关联查询班级ID，根据班级ID查询学生列表
      */
     @GetMapping("/students/byTeacherId/list")
-    public ResponseEntity<ApiResponse<PageInfoResult<Student>>> getStudentsByTeacherId(
+    public ResponseEntity<ApiResponse<PageInfoResult<StudentInfo>>> getStudentsByTeacherId(
             @RequestParam Long teacherId,
+            @RequestParam(required = false) String studentName,
+            @RequestParam(required = false) String className,
             @RequestParam(required = true, defaultValue = "1") Integer pageNum,
             @RequestParam(required = true, defaultValue = "10") Integer pageSize) {
         logger.info("Get students by teacher id endpoint accessed with teacherId: {}, pageNum: {}, pageSize: {}",
                 teacherId, pageNum, pageSize);
         try {
-            PageInfoResult<Student> result = studentService.findStudentsByTeacherIdWithPage(teacherId, pageNum,
+            PageInfoResult<StudentInfo> result = studentService.findStudentsByTeacherIdWithPage(teacherId, studentName,
+                    className, pageNum,
                     pageSize);
-            ApiResponse<PageInfoResult<Student>> response = ApiResponse.success(result);
+            ApiResponse<PageInfoResult<StudentInfo>> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error occurred while fetching students by teacher id", e);
-            ApiResponse<PageInfoResult<Student>> response = ApiResponse
+            ApiResponse<PageInfoResult<StudentInfo>> response = ApiResponse
                     .error("Failed to fetch students by teacher id: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -50,6 +50,21 @@
         WHERE id = #{id}
     </select>
 
+    <!-- 根据ID查询理论培训计划详情 -->
+    <select id="selectTheoryTrainProgramBySubjectId" resultMap="TheoryTrainProgramMap" parameterType="long">
+        SELECT 
+            id,
+            name,
+            semester,
+            train_describe,
+            train_time,
+            subject_id,
+            created_at,
+            updated_at
+        FROM theory_train_program
+        WHERE subject_id = #{subjectId}
+    </select>
+
     <!-- 新增理论培训计划 -->
     <insert id="insertTheoryTrainProgram" parameterType="com.example.simpleDemo.entity.TheoryTrainProgram" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO theory_train_program (

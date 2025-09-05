@@ -9,8 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.simpleDemo.controller.TeacherController;
+import com.example.simpleDemo.entity.Classes;
 import com.example.simpleDemo.entity.Student;
+import com.example.simpleDemo.entity.StudentInfo;
+import com.example.simpleDemo.entity.TheoryTrainProgram;
 import com.example.simpleDemo.mapper.ClassStudentMapper;
+import com.example.simpleDemo.mapper.TheoryTrainProgramMapper;
 import com.example.simpleDemo.mapper.ClassesMapper;
 import com.example.simpleDemo.mapper.StudentMapper;
 import com.example.simpleDemo.utils.PageInfoResult;
@@ -29,6 +33,9 @@ public class StudentService {
 
     @Autowired
     private ClassStudentMapper classStudentMapper;
+
+    @Autowired
+    private TheoryTrainProgramMapper theoryTrainProgramMapper;
 
     private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
@@ -78,31 +85,42 @@ public class StudentService {
      * 根据教师ID查询学生列表（分页）
      * 通过教师ID关联查询班级ID，根据班级ID查询学生列表
      */
-    public PageInfoResult<Student> findStudentsByTeacherIdWithPage(Long teacherId, int pageNum, int pageSize) {
+    public PageInfoResult<StudentInfo> findStudentsByTeacherIdWithPage(Long teacherId, String studentName,
+            String className, int pageNum, int pageSize) {
         // 开启分页
         PageHelper.startPage(pageNum, pageSize);
 
-        // 获取班级classIds
-        List<Long> classIds = classesMapper.findClassIdsByTeacherId(teacherId);
+        // 获取班级classes，支持班级名称模糊匹配
+        List<Classes> classes = classesMapper.findClassesByTeacherId(teacherId);
 
-        List<Long> studentIds = new ArrayList<>();
+        List<StudentInfo> students = new ArrayList<>();
 
-        for (Long classId : classIds) {
-            List<Long> ids = classStudentMapper.findStudentIdsByClassId(classId);
-            studentIds.addAll(ids);
+        for (Classes classObj : classes) {
+            // 获取班级下的学生ID列表
+            List<Long> ids = classStudentMapper.findStudentIdsByClassId(classObj.getId());
+            TheoryTrainProgram ttp = theoryTrainProgramMapper
+                    .selectTheoryTrainProgramBySubjectId(classObj.getSubjectId());
+            for (Long id : ids) {
+                Student student = studentMapper.findStudentById(id);
+                // 支持学生姓名模糊匹配
+                if ((studentName == null || studentName.isEmpty() || student.getName().contains(studentName)) &&
+                        (className == null || className.isEmpty() || classObj.getName().contains(className))) {
+                    StudentInfo info = new StudentInfo();
+                    info.setId(student.getId());
+                    info.setName(student.getName());
+                    info.setClassName(classObj.getName());
+                    info.setClassId(classObj.getId());
+                    info.setSubjectId(classObj.getSubjectId());
+                    info.setSubjectName(classObj.getSubjectName());
+                    info.setTrainProgramId(ttp.getId());
+                    info.setTrainProgramName(ttp.getName());
+                    students.add(info);
+                }
+            }
         }
-
-        logger.info("Get all studentIds endpoint accessed with params: studentIds={}", studentIds);
-
-        List<Student> students = new ArrayList<>();
-        for (Long id : studentIds) {
-            students.add(studentMapper.findStudentById(id));
-        }
-        // 查询数据
-        // List<Student> students = studentMapper.findStudentsByTeacherId(teacherId);
 
         // 封装分页结果
-        PageInfo<Student> pageInfo = new PageInfo<>(students);
+        PageInfo<StudentInfo> pageInfo = new PageInfo<>(students);
         return new PageInfoResult<>(pageInfo);
     }
 }
