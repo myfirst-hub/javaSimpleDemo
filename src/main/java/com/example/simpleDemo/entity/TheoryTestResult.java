@@ -1,0 +1,85 @@
+package com.example.simpleDemo.entity;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Date;
+
+public class TheoryTestResult {
+    private Long id;
+    private Date testTime;
+    private String testName;
+    private String attributes;
+    private BigDecimal totalScore;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    // Getter and Setter methods
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Date getTestTime() {
+        return testTime;
+    }
+
+    public void setTestTime(Date testTime) {
+        this.testTime = testTime;
+    }
+
+    public String getTestName() {
+        return testName;
+    }
+
+    public void setTestName(String testName) {
+        this.testName = testName;
+    }
+
+    public String getAttributes() {
+        return attributes;
+    }
+
+    public void setAttributes(String attributes) {
+        this.attributes = attributes;
+    }
+
+    public BigDecimal getTotalScore() {
+        return totalScore;
+    }
+
+    public void setTotalScore(BigDecimal totalScore) {
+        this.totalScore = totalScore;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return "DynamicTheoryTestResult{" +
+                "id=" + id +
+                ", testTime=" + testTime +
+                ", testName='" + testName + '\'' +
+                ", attributes='" + attributes + '\'' +
+                ", totalScore=" + totalScore +
+                ", createdAt=" + createdAt +
+                ", updatedAt=" + updatedAt +
+                '}';
+    }
+}

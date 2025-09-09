@@ -2,6 +2,7 @@ package com.example.simpleDemo.controller;
 
 import com.example.simpleDemo.entity.Student;
 import com.example.simpleDemo.entity.StudentInfo;
+import com.example.simpleDemo.dto.TheoryTestDetailResultDTO;
 import com.example.simpleDemo.service.StudentService;
 import com.example.simpleDemo.utils.ApiResponse;
 import com.example.simpleDemo.utils.PageInfoResult;
@@ -181,6 +182,27 @@ public class StudentController {
             logger.error("Error occurred while fetching students by teacher id", e);
             ApiResponse<PageInfoResult<StudentInfo>> response = ApiResponse
                     .error("Failed to fetch students by teacher id: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 通过学生id查询理论考试详情
+    @GetMapping("/students/byTeacherId/Theory/detail")
+    public ResponseEntity<ApiResponse<List<TheoryTestDetailResultDTO>>> getTheoryTestDetailByStudentId(
+            @RequestParam(required = false) Long studentId,
+            @RequestParam(required = false) String studentName,
+            @RequestParam(required = false) String className) {
+        logger.info("Get theory test detail by teacher id endpoint accessed with studentId: {}, studentName: {}, className: {}",
+                studentId, studentName, className);
+        try {
+            List<TheoryTestDetailResultDTO> result = studentService
+                    .findTheoryTestDetailByStudentId(studentId, studentName, className);
+            ApiResponse<List<TheoryTestDetailResultDTO>> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching theory test detail by teacher id", e);
+            ApiResponse<List<TheoryTestDetailResultDTO>> response = ApiResponse
+                    .error("Failed to fetch theory test detail by teacher id: " + e.getMessage());
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

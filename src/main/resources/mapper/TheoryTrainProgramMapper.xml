@@ -115,4 +115,42 @@
         DELETE FROM theory_train_program WHERE id = #{id}
     </delete>
 
+    <!-- 插入测试结果数据 -->
+    <insert id="insertDynamicTheoryTestResult" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO theory_test_result (
+            test_time,
+            test_name,
+            attributes,
+            total_score,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{testTime},
+            #{testName},
+            #{attributes},
+            #{totalScore},
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+    
+    <!-- 插入测试结果关联数据 -->
+    <insert id="insertTheoryTestMap" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO theory_test_map (
+            theory_test_id,
+            student_id,
+            subject_id,
+            train_program_id,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{theoryTestId},
+            #{studentId},
+            #{subjectId},
+            #{trainProgramId},
+            #{createdAt},
+            #{updatedAt}
+        )
+    </insert>
+
 </mapper>

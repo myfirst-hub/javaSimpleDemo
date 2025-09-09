@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.simpleDemo.controller.TeacherController;
+import com.example.simpleDemo.dto.TheoryTestDetailResultDTO;
 import com.example.simpleDemo.entity.Classes;
 import com.example.simpleDemo.entity.Student;
 import com.example.simpleDemo.entity.StudentInfo;
@@ -122,5 +123,10 @@ public class StudentService {
         // 封装分页结果
         PageInfo<StudentInfo> pageInfo = new PageInfo<>(students);
         return new PageInfoResult<>(pageInfo);
+    }
+
+    // 通过学生id查询理论考试详情
+    public List<TheoryTestDetailResultDTO> findTheoryTestDetailByStudentId(Long studentId, String studentName, String className) {
+        return studentMapper.findTheoryTestDetailByStudentId(studentId, studentName, className);
     }
 }

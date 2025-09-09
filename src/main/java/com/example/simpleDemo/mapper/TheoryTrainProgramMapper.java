@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.example.simpleDemo.entity.TheoryTrainProgram;
+import com.example.simpleDemo.entity.TheoryTestResult;
+import com.example.simpleDemo.entity.TheoryTestMap;
 
 @Mapper
 public interface TheoryTrainProgramMapper {
@@ -26,4 +28,10 @@ public interface TheoryTrainProgramMapper {
 
     // 根据科目ID查询理论培训计划
     TheoryTrainProgram selectTheoryTrainProgramBySubjectId(@Param("subjectId") Long subjectId);
+
+    // 动态插入理论考试结果
+    int insertDynamicTheoryTestResult(TheoryTestResult theoryTestResult);
+
+    // 理论考试结果关联表插入数据
+    int insertTheoryTestMap(TheoryTestMap theoryTestMap);
 }

@@ -64,4 +64,49 @@
     <delete id="deleteStudentById" parameterType="long">
         DELETE FROM students WHERE id = #{id}
     </delete>
+
+    <resultMap id="TheoryTestDetailResultMap" type="com.example.simpleDemo.dto.TheoryTestDetailResultDTO">
+        <id property="id" column="id"/>
+        <result property="testTime" column="test_time"/>
+        <result property="testName" column="test_name"/>
+        <result property="attributes" column="attributes"/>
+        <result property="totalScore" column="total_score"/>
+        <result property="studentName" column="student_name"/>
+        <result property="className" column="class_name"/>
+        <result property="teacherName" column="teacher_name"/>
+        <result property="subjectName" column="subject_name"/>
+        <result property="theoryTrainProgramName" column="theory_train_program_name"/>
+    </resultMap>
+    
+    <select id="findTheoryTestDetailByStudentId" resultMap="TheoryTestDetailResultMap">
+        SELECT 
+            ttr.id, ttr.test_time, ttr.test_name, ttr.`attributes`, ttr.total_score, s.name as student_name,
+            c.name as class_name, c.teacher_name, c.subject_name,
+            ttp.name as theory_train_program_name
+        FROM 
+            theory_test_result ttr
+        INNER JOIN 
+            theory_test_map ttm ON ttr.id = ttm.theory_test_id
+        INNER JOIN 
+            students s ON ttm.student_id = s.id
+        INNER JOIN
+            theory_train_program ttp ON ttm.train_program_id = ttp.id
+        LEFT JOIN 
+            class_student cs ON s.id = cs.student_id
+        LEFT JOIN 
+            classes c ON cs.class_id = c.id
+        <where>
+            <if test="studentId != null">
+                s.id = #{studentId}
+            </if>
+            <if test="studentName != null and studentName != ''">
+                AND s.name LIKE CONCAT('%', #{studentName}, '%')
+            </if>
+            <if test="className != null and className != ''">
+                AND c.name LIKE CONCAT('%', #{className}, '%')
+            </if>
+        </where>
+        ORDER BY 
+            ttr.id;
+        </select>
 </mapper>

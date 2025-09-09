@@ -3,6 +3,7 @@ package com.example.simpleDemo.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.example.simpleDemo.dto.TheoryTestDetailResultDTO;
 import com.example.simpleDemo.entity.Student;
 
 import java.util.List;
@@ -24,4 +25,9 @@ public interface StudentMapper {
 
     // 根据ID删除学生
     int deleteStudentById(@Param("id") Long id);
+
+    // 通过学生id查询理论考试详情
+    List<TheoryTestDetailResultDTO> findTheoryTestDetailByStudentId(@Param("studentId") Long studentId, 
+                                                                   @Param("studentName") String studentName, 
+                                                                   @Param("className") String className);
 }
