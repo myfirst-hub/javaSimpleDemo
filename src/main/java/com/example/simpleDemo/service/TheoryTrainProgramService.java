@@ -100,7 +100,7 @@ public class TheoryTrainProgramService {
     }
 
     // 新增：从Excel导入测试结果
-    public int importTestResultFromExcel(MultipartFile file, Long subjectId, Long trainProgramId, Long studentId)
+    public int importTestResultFromExcel(MultipartFile file, Long subjectId)
             throws Exception {
         int count = 0;
         InputStream inputStream = file.getInputStream();
@@ -115,6 +115,27 @@ public class TheoryTrainProgramService {
 
             Sheet sheet = workbook.getSheetAt(0);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            // 从文件名中提取studentId
+            String fileName = file.getOriginalFilename();
+            // 移除文件扩展名
+            if (fileName.contains(".")) {
+                fileName = fileName.substring(0, fileName.lastIndexOf("."));
+            }
+            // 提取-后面的部分作为studentId
+            Long studentId = null;
+            if (fileName.contains("-")) {
+                String studentIdStr = fileName.substring(fileName.lastIndexOf("-") + 1);
+                try {
+                    studentId = Long.parseLong(studentIdStr);
+                } catch (NumberFormatException e) {
+                    logger.warn("无法从文件名 {} 中解析出有效的studentId", file.getOriginalFilename());
+                }
+            }
+
+            // 获取trainProgramId
+            TheoryTrainProgram trainProgram = theoryTrainProgramMapper.selectTheoryTrainProgramBySubjectId(subjectId);
+            Long trainProgramId = (trainProgram != null) ? trainProgram.getId() : null;
 
             for (int i = 1; i <= sheet.getLastRowNum(); i++) { // 从第二行开始读取数据
                 Row row = sheet.getRow(i);

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="TestResultMapper">
+
+    <!-- 插入教师评论数据 -->
+    <insert id="insertTeacherComment" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO teacher_comment_result (
+            subject_id,
+            student_id,
+            train_program_id,
+            teacher_comment_content,
+            teacher_comment_time
+        ) VALUES (
+            #{subjectId},
+            #{studentId},
+            #{trainProgramId},
+            #{teacherCommentContent},
+            #{teacherCommentTime}
+        )
+    </insert>
+
+    <!-- 批量插入教师评论数据 -->
+    <insert id="batchInsertTeacherComments" parameterType="list">
+        INSERT INTO teacher_comment_result (
+            subject_id,
+            student_id,
+            train_program_id,
+            teacher_comment_content,
+            teacher_comment_time
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.subjectId},
+                #{item.studentId},
+                #{item.trainProgramId},
+                #{item.teacherCommentContent},
+                #{item.teacherCommentTime}
+            )
+        </foreach>
+    </insert>
+
+</mapper>

@@ -118,25 +118,32 @@ public class TheoryTrainProgramController {
 
     // 新增：上传Excel并解析插入数据接口
     @PostMapping("/theoryTrainProgram/uploadTestResult")
-    public ResponseEntity<ApiResponse<String>> uploadTestResultExcel(@RequestParam("file") MultipartFile file,
-            @RequestParam("subjectId") Long subjectId, @RequestParam("trainProgramId") Long trainProgramId,
-            @RequestParam("studentId") Long studentId) {
+    public ResponseEntity<ApiResponse<String>> uploadTestResultExcel(@RequestParam("files") MultipartFile[] files,
+            @RequestParam("subjectId") Long subjectId) {
         logger.info("Upload test result excel endpoint accessed");
         try {
-            if (file.isEmpty()) {
+            if (files == null || files.length == 0) {
                 ApiResponse<String> response = ApiResponse.error("上传文件为空");
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
 
-            String fileName = file.getOriginalFilename();
-            if (!fileName.endsWith(".xls") && !fileName.endsWith(".xlsx")) {
-                ApiResponse<String> response = ApiResponse.error("文件格式不正确，请上传Excel文件");
-                return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+            int totalResult = 0;
+            for (MultipartFile file : files) {
+                if (file.isEmpty()) {
+                    continue;
+                }
+
+                String fileName = file.getOriginalFilename();
+                if (!fileName.endsWith(".xls") && !fileName.endsWith(".xlsx")) {
+                    ApiResponse<String> response = ApiResponse.error("文件格式不正确，请上传Excel文件");
+                    return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+                }
+
+                int result = theoryTrainProgramService.importTestResultFromExcel(file, subjectId);
+                totalResult += result;
             }
 
-            int result = theoryTrainProgramService.importTestResultFromExcel(file, subjectId, trainProgramId,
-                    studentId);
-            ApiResponse<String> response = ApiResponse.success("成功导入" + result + "条记录");
+            ApiResponse<String> response = ApiResponse.success("成功导入" + totalResult + "条记录");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
             logger.error("Error occurred while uploading test result excel", e);
