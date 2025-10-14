@@ -1,6 +1,7 @@
 package com.example.simpleDemo.mapper;
 
 import com.example.simpleDemo.entity.Subject;
+import com.example.simpleDemo.entity.Student;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,4 +18,7 @@ public interface SubjectMapper {
     int updateSubject(Subject subject);
 
     int deleteSubjectById(@Param("id") Long id);
+    
+    // 添加根据科目ID查找班级和学生信息的方法
+    List<Student> findClassesAndStudentsBySubjectId(@Param("subjectId") Long subjectId);
 }

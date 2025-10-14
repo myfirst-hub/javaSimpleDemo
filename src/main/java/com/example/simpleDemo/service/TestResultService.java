@@ -2,6 +2,7 @@ package com.example.simpleDemo.service;
 
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.example.simpleDemo.dto.TeacherCommentResultDTO;
 import com.example.simpleDemo.entity.TeacherCommentResult;
 import com.example.simpleDemo.entity.TheoryTrainProgram;
 import com.example.simpleDemo.mapper.TestResultMapper;
@@ -116,5 +118,10 @@ public class TestResultService {
         }
 
         return count;
+    }
+
+    // 通过学生id查询教师评语详情
+    public List<TeacherCommentResultDTO> selectTeacherCommentResultWithDetails(Long studentId) {
+        return testResultMapper.selectTeacherCommentResultWithDetails(studentId);
     }
 }

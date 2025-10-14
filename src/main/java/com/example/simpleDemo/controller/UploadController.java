@@ -22,6 +22,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 // 添加Jackson的ObjectMapper导入
@@ -161,6 +162,68 @@ public class UploadController {
         } catch (Exception e) {
             logger.error("Unexpected error occurred while uploading file", e);
             ApiResponse<String> response = ApiResponse.error("Failed to upload file due to unexpected error");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 插入科目大纲关联表数据
+    @PostMapping("/insert/outline/batch")
+    public ResponseEntity<ApiResponse<String>> insertOutlineRecords(@RequestBody List<SubjectOutline> subjectOutlines) {
+        logger.info("Batch insert outline records endpoint accessed with data size: {}", subjectOutlines.size());
+
+        try {
+            int successCount = 0;
+            for (SubjectOutline subjectOutline : subjectOutlines) {
+                // 插入记录并检查结果
+                int insertResult = uploadService.insertSubjectOutline(subjectOutline);
+                if (insertResult > 0) {
+                    successCount++;
+                    logger.info("Successfully inserted SubjectOutline record with id: {}", subjectOutline.getId());
+                } else {
+                    logger.warn("Failed to insert SubjectOutline record: {}", subjectOutline);
+                }
+            }
+
+            logger.info("Batch insert completed. Success: {}/{}", successCount, subjectOutlines.size());
+            ApiResponse<String> response = ApiResponse
+                    .success("Batch insert completed. Success: " + successCount + "/" + subjectOutlines.size());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred while batch inserting SubjectOutline records", e);
+            ApiResponse<String> response = ApiResponse
+                    .error("Failed to batch insert SubjectOutline records due to unexpected error");
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 插入科目题目文件关联表数据
+    @PostMapping("/insert/question/batch")
+    public ResponseEntity<ApiResponse<String>> insertQuestionRecords(
+            @RequestBody List<SubjectQuestionFile> subjectQuestionFiles) {
+        logger.info("Batch insert question records endpoint accessed with data size: {}", subjectQuestionFiles.size());
+
+        try {
+            int successCount = 0;
+            for (SubjectQuestionFile subjectQuestionFile : subjectQuestionFiles) {
+                // 插入记录并检查结果
+                int insertResult = uploadService.insertSubjectQuestionFile(subjectQuestionFile);
+                if (insertResult > 0) {
+                    successCount++;
+                    logger.info("Successfully inserted SubjectQuestionFile record with id: {}",
+                            subjectQuestionFile.getId());
+                } else {
+                    logger.warn("Failed to insert SubjectQuestionFile record: {}", subjectQuestionFile);
+                }
+            }
+
+            logger.info("Batch insert completed. Success: {}/{}", successCount, subjectQuestionFiles.size());
+            ApiResponse<String> response = ApiResponse
+                    .success("Batch insert completed. Success: " + successCount + "/" + subjectQuestionFiles.size());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Unexpected error occurred while batch inserting SubjectQuestionFile records", e);
+            ApiResponse<String> response = ApiResponse
+                    .error("Failed to batch insert SubjectQuestionFile records due to unexpected error");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

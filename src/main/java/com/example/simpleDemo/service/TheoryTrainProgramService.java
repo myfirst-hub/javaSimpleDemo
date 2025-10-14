@@ -46,13 +46,13 @@ public class TheoryTrainProgramService {
     private SubjectQuestionMapper subjectQuestionMapper;
 
     public PageInfoResult<TheoryTrainProgram> selectTheoryTrainProgramList(Integer pageNum, Integer pageSize,
-            String name, String semester) {
+            String name, String semester, Long[] subjectIds) {
         // 开启分页
         PageHelper.startPage(pageNum, pageSize);
 
         // 查询科目数据
         List<TheoryTrainProgram> theoryTrainPrograms = theoryTrainProgramMapper.selectTheoryTrainProgramList(name,
-                semester);
+                semester, subjectIds);
 
         // 获取分页信息
         PageInfo<TheoryTrainProgram> theoryTrainProgramPageInfo = new PageInfo<>(theoryTrainPrograms);

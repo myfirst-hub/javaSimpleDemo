@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="TestResultMapper">
+<!-- 修改namespace为完整的Mapper接口路径 -->
+<mapper namespace="com.example.simpleDemo.mapper.TestResultMapper">
 
     <!-- 插入教师评论数据 -->
     <insert id="insertTeacherComment" parameterType="map" useGeneratedKeys="true" keyProperty="id">
@@ -38,5 +39,34 @@
             )
         </foreach>
     </insert>
+
+    <!-- 定义TeacherCommentResultDTO的resultMap -->
+    <resultMap id="TeacherCommentResultMap" type="com.example.simpleDemo.dto.TeacherCommentResultDTO">
+        <id property="id" column="id"/>
+        <result property="teacherCommentContent" column="teacher_comment_content"/>
+        <result property="teacherCommentTime" column="teacher_comment_time"/>
+        <result property="studentName" column="student_name"/>
+        <result property="className" column="class_name"/>
+        <result property="teacherName" column="teacher_name"/>
+        <result property="subjectName" column="subject_name"/>
+        <result property="theoryTrainProgramName" column="theory_train_program_name"/>
+    </resultMap>
+
+    <!-- 查询教师评论结果及相关信息 -->
+    <select id="selectTeacherCommentResultWithDetails" resultMap="TeacherCommentResultMap">
+        select tcr.id, tcr.teacher_comment_content, tcr.teacher_comment_time,
+        s.name as student_name, c.name as class_name, c.teacher_name, c.subject_name, ttp.name as theory_train_program_name 
+        from teacher_comment_result tcr
+            inner join students s on s.id = tcr.student_id
+            inner join subjects s2  on s2.id = tcr.subject_id
+            inner join theory_train_program ttp on ttp.id = tcr.train_program_id
+            left join class_student cs on s.id = cs.student_id
+            left join classes c on cs.class_id = c.id
+        <where>
+            <if test="studentId != null">
+                AND tcr.student_id = #{studentId}
+            </if>
+        </where>
+    </select>
 
 </mapper>

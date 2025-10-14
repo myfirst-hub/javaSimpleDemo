@@ -12,7 +12,7 @@ import com.example.simpleDemo.entity.TheoryTestMap;
 @Mapper
 public interface TheoryTrainProgramMapper {
     List<TheoryTrainProgram> selectTheoryTrainProgramList(@Param("name") String name,
-            @Param("semester") String semester);
+            @Param("semester") String semester, @Param("subjectIds") Long[] subjectIds);
 
     // 新增理论培训计划
     int insertTheoryTrainProgram(TheoryTrainProgram theoryTrainProgram);

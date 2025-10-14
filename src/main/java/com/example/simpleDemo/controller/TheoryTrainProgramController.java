@@ -3,6 +3,7 @@ package com.example.simpleDemo.controller;
 import com.example.simpleDemo.entity.TheoryTrainProgram;
 import com.example.simpleDemo.mapper.TheoryTrainProgramMapper;
 import com.example.simpleDemo.service.TheoryTrainProgramService;
+import com.example.simpleDemo.dto.TheoryTrainProgramListDTO;
 import com.example.simpleDemo.utils.ApiResponse;
 import com.example.simpleDemo.utils.PageInfoResult;
 
@@ -22,21 +23,25 @@ public class TheoryTrainProgramController {
     @Autowired
     private TheoryTrainProgramService theoryTrainProgramService;
 
-    @GetMapping("/theoryTrainProgram/list")
+    @PostMapping("/theoryTrainProgram/list")
     public ResponseEntity<ApiResponse<PageInfoResult<TheoryTrainProgram>>> getTrainProgramsWithRelations(
-            @RequestParam(required = true, defaultValue = "1") Integer pageNum,
-            @RequestParam(required = true, defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String semester) {
+            @RequestBody(required = false) TheoryTrainProgramListDTO request) {
+
+        if (request == null) {
+            request = new TheoryTrainProgramListDTO();
+        }
+
         logger.info(
-                "Get train programs with relations endpoint accessed with params: pageNum={}, pageSize={}, name={}, semester={}",
-                pageNum, pageSize, name, semester);
+                "Get train programs with relations endpoint accessed with params: pageNum={}, pageSize={}, name={}, semester={}, subjectIds={}",
+                request.getPageNum(), request.getPageSize(), request.getName(), request.getSemester(),
+                request.getSubjectIds());
         try {
             PageInfoResult<TheoryTrainProgram> result = theoryTrainProgramService.selectTheoryTrainProgramList(
-                    pageNum,
-                    pageSize,
-                    name,
-                    semester);
+                    request.getPageNum() != null ? request.getPageNum() : 1,
+                    request.getPageSize() != null ? request.getPageSize() : 10,
+                    request.getName(),
+                    request.getSemester(),
+                    request.getSubjectIds());
             ApiResponse<PageInfoResult<TheoryTrainProgram>> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {

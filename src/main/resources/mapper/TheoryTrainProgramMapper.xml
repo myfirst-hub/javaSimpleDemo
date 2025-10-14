@@ -31,6 +31,12 @@
             <if test="semester != null and semester != ''">
                 AND semester LIKE CONCAT('%', #{semester}, '%')
             </if>
+            <if test="subjectIds != null and subjectIds.length > 0">
+                AND subject_id IN
+                <foreach item="item" index="index" collection="subjectIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
         ORDER BY created_at DESC
     </select>

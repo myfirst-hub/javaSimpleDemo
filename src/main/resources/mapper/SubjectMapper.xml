@@ -48,4 +48,43 @@
         DELETE FROM subjects WHERE id = #{id}
     </delete>
     
+    <!-- 根据科目查找班级，再通过班级查找学生信息 -->
+    <resultMap id="ClassStudentInfoMap" type="com.example.simpleDemo.entity.Student">
+        <id property="id" column="student_id"/>
+        <result property="name" column="student_name"/>
+        <result property="sex" column="sex"/>
+        <result property="className" column="class_name"/>
+        <result property="height" column="height"/>
+        <result property="weight" column="weight"/>
+        <result property="birthday" column="birthday"/>
+        <result property="nativePlace" column="native_place"/>
+        <result property="nationality" column="nationality"/>
+        <result property="createdAt" column="student_created_at"/>
+        <result property="updatedAt" column="student_updated_at"/>
+    </resultMap>
+    
+    <select id="findClassesAndStudentsBySubjectId" parameterType="long" resultMap="ClassStudentInfoMap">
+        SELECT 
+            s.id as student_id,
+            s.name as student_name,
+            s.sex,
+            s.className as class_name,
+            s.height,
+            s.weight,
+            s.birthday,
+            s.native_place,
+            s.nationality,
+            s.created_at as student_created_at,
+            s.updated_at as student_updated_at,
+            c.id as class_id,
+            c.name as class_name,
+            c.teacher_name
+        FROM subjects sub
+        INNER JOIN classes c ON sub.id = c.subject_id
+        INNER JOIN class_student cs ON c.id = cs.class_id
+        INNER JOIN students s ON cs.student_id = s.id
+        WHERE sub.id = #{subjectId}
+        ORDER BY c.id, s.id
+    </select>
+    
 </mapper>
