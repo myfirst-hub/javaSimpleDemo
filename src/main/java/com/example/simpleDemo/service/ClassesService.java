@@ -34,12 +34,12 @@ public class ClassesService {
      * @param name     班级名称（可选）
      * @return 分页结果
      */
-    public PageInfoResult<Classes> findClasses(int pageNum, int pageSize, String name) {
+    public PageInfoResult<Classes> findClasses(int pageNum, int pageSize, String name, Long teacherId) {
         // 开启分页
         PageHelper.startPage(pageNum, pageSize);
 
         // 查询班级数据
-        List<Classes> classes = classesMapper.findClasses(name, null, null);
+        List<Classes> classes = classesMapper.findClasses(name, null, null, teacherId);
 
         // 获取分页信息
         PageInfo<Classes> classesPageInfo = new PageInfo<>(classes);
@@ -129,7 +129,7 @@ public class ClassesService {
     public int deleteClasses(Long classId) {
         // 先删除班级学生关联
         classStudentService.deleteClassStudentByClassId(classId);
-        
+
         // 删除班级
         return classesMapper.deleteClassById(classId);
     }

@@ -116,23 +116,6 @@ public class TheoryTrainProgramService {
             Sheet sheet = workbook.getSheetAt(0);
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            // 从文件名中提取studentId
-            String fileName = file.getOriginalFilename();
-            // 移除文件扩展名
-            if (fileName.contains(".")) {
-                fileName = fileName.substring(0, fileName.lastIndexOf("."));
-            }
-            // 提取-后面的部分作为studentId
-            Long studentId = null;
-            if (fileName.contains("-")) {
-                String studentIdStr = fileName.substring(fileName.lastIndexOf("-") + 1);
-                try {
-                    studentId = Long.parseLong(studentIdStr);
-                } catch (NumberFormatException e) {
-                    logger.warn("无法从文件名 {} 中解析出有效的studentId", file.getOriginalFilename());
-                }
-            }
-
             // 获取trainProgramId
             TheoryTrainProgram trainProgram = theoryTrainProgramMapper.selectTheoryTrainProgramBySubjectId(subjectId);
             Long trainProgramId = (trainProgram != null) ? trainProgram.getId() : null;
@@ -144,41 +127,102 @@ public class TheoryTrainProgramService {
 
                 TheoryTestResult result = new TheoryTestResult();
 
-                // 读取测试时间（假设在第0列）
-                Cell testTimeCell = row.getCell(0);
+                // 读取学生姓名（假设在第0列）
+                // Cell nameCell = row.getCell(0);
+                // if (nameCell != null) {
+                // result.setStudentName(nameCell.getStringCellValue());
+                // }
+
+                // 读取学号（假设在第1列）并转换为studentId
+                Cell studentIdCell = row.getCell(1);
+                Long studentId = null;
+                if (studentIdCell != null) {
+                    // 检查单元格是否为公式类型
+                    if (studentIdCell.getCellType() == CellType.FORMULA) {
+                        // 根据公式结果类型处理
+                        switch (studentIdCell.getCachedFormulaResultType()) {
+                            case NUMERIC:
+                                studentId = Math.round(studentIdCell.getNumericCellValue());
+                                break;
+                            case STRING:
+                                try {
+                                    String cellValue = studentIdCell.getStringCellValue();
+                                    if (cellValue != null && !cellValue.isEmpty()) {
+                                        studentId = Long.parseLong(cellValue.trim());
+                                    }
+                                } catch (NumberFormatException e) {
+                                    logger.warn("无法从学号 {} 中解析出有效的studentId", studentIdCell.getStringCellValue());
+                                }
+                                break;
+                            default:
+                                logger.warn("不支持的公式结果类型: {}", studentIdCell.getCachedFormulaResultType());
+                        }
+                    } else if (studentIdCell.getCellType() == CellType.NUMERIC) {
+                        studentId = Math.round(studentIdCell.getNumericCellValue());
+                    } else if (studentIdCell.getCellType() == CellType.STRING) {
+                        try {
+                            String cellValue = studentIdCell.getStringCellValue();
+                            if (cellValue != null && !cellValue.isEmpty()) {
+                                studentId = Long.parseLong(cellValue.trim());
+                            }
+                        } catch (NumberFormatException e) {
+                            logger.warn("无法从学号 {} 中解析出有效的studentId", studentIdCell.getStringCellValue());
+                        }
+                    } else {
+                        // 处理其他可能的类型
+                        String cellValue = getCellValueAsString(studentIdCell);
+                        if (cellValue != null && !cellValue.isEmpty()) {
+                            try {
+                                studentId = Long.parseLong(cellValue.trim());
+                            } catch (NumberFormatException e) {
+                                logger.warn("无法从学号 {} 中解析出有效的studentId", cellValue);
+                            }
+                        }
+                    }
+                }
+
+                // 读取测试时间（假设在第2列）
+                Cell testTimeCell = row.getCell(2);
                 if (testTimeCell != null) {
                     if (testTimeCell.getCellType() == CellType.NUMERIC) {
                         result.setTestTime(testTimeCell.getDateCellValue());
                     } else {
-                        result.setTestTime(sdf.parse(testTimeCell.getStringCellValue()));
+                        String cellValue = getCellValueAsString(testTimeCell);
+                        if (cellValue != null && !cellValue.isEmpty()) {
+                            result.setTestTime(sdf.parse(cellValue));
+                        }
                     }
                 }
 
-                // 读取测试名称（假设在第1列）
-                Cell testNameCell = row.getCell(1);
+                // 读取测试名称（假设在第3列）
+                Cell testNameCell = row.getCell(3);
                 if (testNameCell != null) {
-                    result.setTestName(testNameCell.getStringCellValue());
+                    result.setTestName(getCellValueAsString(testNameCell));
                 }
 
-                // 读取属性（第2列到倒数第二列）
+                // 读取属性（第4列到倒数第二列）
                 StringBuilder attributesBuilder = new StringBuilder();
                 attributesBuilder.append("{");
                 boolean first = true;
-                for (int j = 2; j < row.getLastCellNum() - 1; j++) { // 最后一列是总分，不包含
+                // 先获取标题行，用于作为key
+                Row headerRow = sheet.getRow(0);
+                for (int j = 4; j < row.getLastCellNum() - 1; j++) { // 最后一列是总分，不包含
                     Cell cell = row.getCell(j);
-                    String key = "试题编号" + (j - 1); // 试题编号1, 试题编号2...
+                    // 获取对应列的标题作为key
+                    String key = "";
+                    if (headerRow != null) {
+                        Cell headerCell = headerRow.getCell(j);
+                        if (headerCell != null) {
+                            key = getCellValueAsString(headerCell);
+                        }
+                    }
+                    // 如果没有获取到标题，则使用原来的默认命名方式
+                    if (key == null || key.isEmpty()) {
+                        key = "试题编号" + (j - 3); // 试题编号1, 试题编号2...
+                    }
                     String value = "";
                     if (cell != null) {
-                        switch (cell.getCellType()) {
-                            case NUMERIC:
-                                value = String.valueOf(cell.getNumericCellValue());
-                                break;
-                            case STRING:
-                                value = cell.getStringCellValue();
-                                break;
-                            default:
-                                value = "";
-                        }
+                        value = getCellValueAsString(cell);
                     }
                     if (!first) {
                         attributesBuilder.append(",");
@@ -195,7 +239,10 @@ public class TheoryTrainProgramService {
                     if (totalScoreCell.getCellType() == CellType.NUMERIC) {
                         result.setTotalScore(BigDecimal.valueOf(totalScoreCell.getNumericCellValue()));
                     } else {
-                        result.setTotalScore(new BigDecimal(totalScoreCell.getStringCellValue()));
+                        String cellValue = getCellValueAsString(totalScoreCell);
+                        if (cellValue != null && !cellValue.isEmpty()) {
+                            result.setTotalScore(new BigDecimal(cellValue));
+                        }
                     }
                 }
 
@@ -229,5 +276,37 @@ public class TheoryTrainProgramService {
         }
 
         return count;
+    }
+    
+    // 辅助方法：安全地获取单元格的字符串值
+    private String getCellValueAsString(Cell cell) {
+        if (cell == null) {
+            return "";
+        }
+        
+        switch (cell.getCellType()) {
+            case STRING:
+                return cell.getStringCellValue();
+            case NUMERIC:
+                if (DateUtil.isCellDateFormatted(cell)) {
+                    return cell.getDateCellValue().toString();
+                } else {
+                    // 避免科学计数法显示
+                    return String.valueOf((long) cell.getNumericCellValue());
+                }
+            case BOOLEAN:
+                return String.valueOf(cell.getBooleanCellValue());
+            case FORMULA:
+                switch (cell.getCachedFormulaResultType()) {
+                    case NUMERIC:
+                        return String.valueOf((long) cell.getNumericCellValue());
+                    case STRING:
+                        return cell.getStringCellValue();
+                    default:
+                        return "";
+                }
+            default:
+                return "";
+        }
     }
 }

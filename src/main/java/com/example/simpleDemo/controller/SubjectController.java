@@ -88,7 +88,7 @@ public class SubjectController {
   public ResponseEntity<ApiResponse<PageInfoResult<Subject>>> findSubjectsByTeacherId(
       @RequestParam(required = true, defaultValue = "1") Integer pageNum,
       @RequestParam(required = true, defaultValue = "10") Integer pageSize,
-      @RequestParam(required = true) Long teacherId,
+      @RequestParam(required = false) Long teacherId,
       @RequestParam(required = false) String name,
       @RequestParam(required = false) String semester) {
 

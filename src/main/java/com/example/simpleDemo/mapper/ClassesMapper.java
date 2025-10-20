@@ -11,7 +11,7 @@ import com.example.simpleDemo.entity.Classes;
 public interface ClassesMapper {
     // 支持PageHelper的查询方法
     List<Classes> findClasses(@Param("name") String nameString, @Param("teacherName") String teacherName,
-            @Param("subjectName") String subjectName);
+            @Param("subjectName") String subjectName, @Param("teacherId") Long teacherId);
 
     List<Classes> findClassesByTeacherId(@Param("teacherId") Long teacherId);
 

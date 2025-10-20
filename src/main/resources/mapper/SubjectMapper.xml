@@ -31,6 +31,19 @@
         WHERE id = #{id}
     </select>
 
+    <select id="findSubjectByStudentId" resultMap="SubjectResultMap" parameterType="map">
+        select s.id, s.name from students stu
+        inner join
+        class_student cs on cs.student_id = stu.id
+        inner join
+        classes c on c.id = cs.class_id
+        INNER JOIN
+        teachers t on t.id = c.teacher_id
+        inner JOIN
+        subjects s on s.id = c.subject_id
+        where stu.id = #{studentId} and t.id = #{teacherId}
+    </select>
+
     <insert id="insertSubject" parameterType="com.example.simpleDemo.entity.Subject" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO subjects(name, semester, subject_describe)
         VALUES (#{name}, #{semester}, #{subjectDescribe})

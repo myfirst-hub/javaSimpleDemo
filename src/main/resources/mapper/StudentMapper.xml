@@ -17,26 +17,35 @@
     </resultMap>
     
     <select id="findAllStudents" resultMap="StudentResultMap">
-        SELECT id, name, sex, className, height, weight, birthday, native_place, nationality, created_at, updated_at FROM students
+        SELECT s.id, s.name, s.sex, s.height, s.weight, s.birthday, s.native_place, s.nationality, s.created_at, s.updated_at,
+               GROUP_CONCAT(c.name separator '，') as className
+        FROM students s
+        LEFT JOIN class_student cs ON s.id = cs.student_id
+        LEFT JOIN classes c ON cs.class_id = c.id
+        GROUP BY s.id, s.name, s.sex, s.height, s.weight, s.birthday, s.native_place, s.nationality, s.created_at, s.updated_at
     </select>
     
     <select id="findStudents" resultMap="StudentResultMap" parameterType="map">
-        SELECT id, name, sex, className, height, weight, birthday, native_place, nationality, created_at, updated_at 
-        FROM students
+        SELECT s.id, s.name, s.sex, s.height, s.weight, s.birthday, s.native_place, s.nationality, s.created_at, s.updated_at,
+               GROUP_CONCAT(c.name separator '，') as className
+        FROM students s
+        LEFT JOIN class_student cs ON s.id = cs.student_id
+        LEFT JOIN classes c ON cs.class_id = c.id
         <where>
             <if test="name != null and name != ''">
-                AND name LIKE CONCAT('%', #{name}, '%')
+                AND s.name LIKE CONCAT('%', #{name}, '%')
             </if>
             <if test="className != null and className != ''">
-                AND className LIKE CONCAT('%', #{className}, '%')
+                AND s.className LIKE CONCAT('%', #{className}, '%')
             </if>
         </where>
-        ORDER BY id
+        GROUP BY s.id, s.name, s.sex, s.height, s.weight, s.birthday, s.native_place, s.nationality, s.created_at, s.updated_at
+        ORDER BY s.id
     </select>
     
     <insert id="insertStudent" parameterType="com.example.simpleDemo.entity.Student" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO students (name, sex, className, height, weight, birthday, native_place, nationality, created_at, updated_at)
-        VALUES (#{name}, #{sex}, #{className}, #{height}, #{weight}, #{birthday}, #{nativePlace}, #{nationality}, NOW(), NOW())
+        INSERT INTO students (name, sex, height, weight, birthday, native_place, nationality, created_at, updated_at)
+        VALUES (#{name}, #{sex}, #{height}, #{weight}, #{birthday}, #{nativePlace}, #{nationality}, NOW(), NOW())
     </insert>
     
     <update id="updateStudent" parameterType="com.example.simpleDemo.entity.Student">
@@ -56,7 +65,7 @@
     </update>
     
     <select id="findStudentById" parameterType="long" resultMap="StudentResultMap">
-        SELECT id, name, sex, className, height, weight, birthday, native_place, nationality, created_at, updated_at
+        SELECT id, name, sex, height, weight, birthday, native_place, nationality, created_at, updated_at
         FROM students
         WHERE id = #{id}
     </select>
@@ -91,10 +100,10 @@
             students s ON ttm.student_id = s.id
         INNER JOIN
             theory_train_program ttp ON ttm.train_program_id = ttp.id
-        LEFT JOIN 
+        INNER JOIN 
             class_student cs ON s.id = cs.student_id
-        LEFT JOIN 
-            classes c ON cs.class_id = c.id
+        INNER JOIN 
+            classes c ON cs.class_id = c.id and c.subject_id = ttm.subject_id
         <where>
             <if test="studentId != null">
                 s.id = #{studentId}

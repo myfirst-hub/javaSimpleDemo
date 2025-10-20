@@ -2,6 +2,8 @@ package com.example.simpleDemo.controller;
 
 import com.example.simpleDemo.entity.Student;
 import com.example.simpleDemo.entity.StudentInfo;
+import com.example.simpleDemo.entity.Subject;
+import com.example.simpleDemo.mapper.SubjectMapper;
 import com.example.simpleDemo.dto.TheoryTestDetailResultDTO;
 import com.example.simpleDemo.service.StudentService;
 import com.example.simpleDemo.utils.ApiResponse;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,6 +26,9 @@ public class StudentController {
 
     @Autowired
     private StudentService studentService;
+
+    @Autowired
+    private SubjectMapper subjectMapper;
 
     @GetMapping("/students")
     public ResponseEntity<ApiResponse<PageInfoResult<Student>>> getStudents(
@@ -165,7 +171,7 @@ public class StudentController {
      */
     @GetMapping("/students/byTeacherId/list")
     public ResponseEntity<ApiResponse<PageInfoResult<StudentInfo>>> getStudentsByTeacherId(
-            @RequestParam Long teacherId,
+            @RequestParam(required = false) Long teacherId,
             @RequestParam(required = false) String studentName,
             @RequestParam(required = false) String className,
             @RequestParam(required = true, defaultValue = "1") Integer pageNum,
@@ -192,7 +198,8 @@ public class StudentController {
             @RequestParam(required = false) Long studentId,
             @RequestParam(required = false) String studentName,
             @RequestParam(required = false) String className) {
-        logger.info("Get theory test detail by teacher id endpoint accessed with studentId: {}, studentName: {}, className: {}",
+        logger.info(
+                "Get theory test detail by teacher id endpoint accessed with studentId: {}, studentName: {}, className: {}",
                 studentId, studentName, className);
         try {
             List<TheoryTestDetailResultDTO> result = studentService
@@ -203,6 +210,44 @@ public class StudentController {
             logger.error("Error occurred while fetching theory test detail by teacher id", e);
             ApiResponse<List<TheoryTestDetailResultDTO>> response = ApiResponse
                     .error("Failed to fetch theory test detail by teacher id: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 学员导入
+    @PostMapping("/students/import")
+    public ResponseEntity<ApiResponse<String>> importStudents(@RequestParam("files") MultipartFile file) {
+        logger.info("Import students endpoint accessed with file: {}", file.getOriginalFilename());
+        try {
+            int count = studentService.importStudentsFromExcel(file);
+            ApiResponse<String> response = ApiResponse.success("Successfully imported " + count + " students");
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while importing students", e);
+            ApiResponse<String> response = ApiResponse.error("Failed to import students: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 查询学员信息总览
+    @GetMapping("/students/overview")
+    public ResponseEntity<ApiResponse<Object>> getStudentOverview(
+            @RequestParam(required = true) Long id,
+            @RequestParam(required = true) Long teacherId) {
+        logger.info("Get student detail endpoint accessed with params: id={}", id);
+        try {
+            Student studentBaseInfo = studentService.findStudentById(id);
+            List<Subject> subjects = subjectMapper.findSubjectByStudentId(id, teacherId);
+            // 创建包含学员信息的返回对象
+            java.util.Map<String, Object> result = new java.util.HashMap<>();
+            result.put("studentBaseInfo", studentBaseInfo);
+            result.put("subjects", subjects);
+
+            ApiResponse<Object> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching student detail", e);
+            ApiResponse<Object> response = ApiResponse.error("Failed to fetch student detail");
             return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

@@ -33,14 +33,15 @@ public class ClassesController {
     public ResponseEntity<ApiResponse<PageInfoResult<Classes>>> findClasses(
             @RequestParam(required = true, defaultValue = "1") Integer pageNum,
             @RequestParam(required = true, defaultValue = "10") Integer pageSize,
-            @RequestParam(required = false) String name) {
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long teacherId) {
 
-        logger.info("Get classes endpoint accessed with params: pageNum={}, pageSize={}, name={}",
-                pageNum, pageSize, name);
+        logger.info("Get classes endpoint accessed with params: pageNum={}, pageSize={}, name={}, teacherId={}",
+                pageNum, pageSize, name, teacherId);
 
         try {
             PageInfoResult<Classes> result = classesService
-                    .findClasses(pageNum, pageSize, name);
+                    .findClasses(pageNum, pageSize, name, teacherId);
 
             ApiResponse<PageInfoResult<Classes>> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);
