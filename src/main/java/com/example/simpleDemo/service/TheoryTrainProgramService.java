@@ -100,6 +100,7 @@ public class TheoryTrainProgramService {
     }
 
     // 新增：从Excel导入测试结果
+    @Transactional(rollbackFor = Exception.class)
     public int importTestResultFromExcel(MultipartFile file, Long subjectId)
             throws Exception {
         int count = 0;
@@ -120,6 +121,11 @@ public class TheoryTrainProgramService {
             TheoryTrainProgram trainProgram = theoryTrainProgramMapper.selectTheoryTrainProgramBySubjectId(subjectId);
             Long trainProgramId = (trainProgram != null) ? trainProgram.getId() : null;
 
+            // 提取总分列的标题中的 fullScore 值
+            Row headerRow = sheet.getRow(0);
+            Cell totalScoreHeaderCell = headerRow.getCell(headerRow.getLastCellNum() - 1); // 最后一列是总分
+            Integer fullScore = extractFullScoreFromHeader(totalScoreHeaderCell);
+
             for (int i = 1; i <= sheet.getLastRowNum(); i++) { // 从第二行开始读取数据
                 Row row = sheet.getRow(i);
                 if (row == null)
@@ -127,19 +133,12 @@ public class TheoryTrainProgramService {
 
                 TheoryTestResult result = new TheoryTestResult();
 
-                // 读取学生姓名（假设在第0列）
-                // Cell nameCell = row.getCell(0);
-                // if (nameCell != null) {
-                // result.setStudentName(nameCell.getStringCellValue());
-                // }
-
                 // 读取学号（假设在第1列）并转换为studentId
-                Cell studentIdCell = row.getCell(1);
+                Cell studentIdCell = row.getCell(0);
                 Long studentId = null;
                 if (studentIdCell != null) {
                     // 检查单元格是否为公式类型
                     if (studentIdCell.getCellType() == CellType.FORMULA) {
-                        // 根据公式结果类型处理
                         switch (studentIdCell.getCachedFormulaResultType()) {
                             case NUMERIC:
                                 studentId = Math.round(studentIdCell.getNumericCellValue());
@@ -166,10 +165,9 @@ public class TheoryTrainProgramService {
                                 studentId = Long.parseLong(cellValue.trim());
                             }
                         } catch (NumberFormatException e) {
-                            logger.warn("无法从学号 {} 中解析出有效的studentId", studentIdCell.getStringCellValue());
+                            logger.warn("无法从学号 {} 中解析出有效的studentId");
                         }
                     } else {
-                        // 处理其他可能的类型
                         String cellValue = getCellValueAsString(studentIdCell);
                         if (cellValue != null && !cellValue.isEmpty()) {
                             try {
@@ -182,31 +180,60 @@ public class TheoryTrainProgramService {
                 }
 
                 // 读取测试时间（假设在第2列）
-                Cell testTimeCell = row.getCell(2);
+                Cell testTimeCell = row.getCell(3);
+                java.util.Date testTime = null;
                 if (testTimeCell != null) {
                     if (testTimeCell.getCellType() == CellType.NUMERIC) {
-                        result.setTestTime(testTimeCell.getDateCellValue());
+                        testTime = testTimeCell.getDateCellValue();
                     } else {
                         String cellValue = getCellValueAsString(testTimeCell);
                         if (cellValue != null && !cellValue.isEmpty()) {
-                            result.setTestTime(sdf.parse(cellValue));
+                            try {
+                                // 支持 yyyy/MM/dd 格式
+                                SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy/MM/dd");
+                                testTime = sdf1.parse(cellValue);
+                            } catch (Exception e1) {
+                                try {
+                                    // 支持 yyyy-MM-dd 格式
+                                    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
+                                    testTime = sdf2.parse(cellValue);
+                                } catch (Exception e2) {
+                                    logger.warn("无法解析测试时间: {}", cellValue);
+                                }
+                            }
                         }
                     }
                 }
 
                 // 读取测试名称（假设在第3列）
-                Cell testNameCell = row.getCell(3);
+                Cell testNameCell = row.getCell(4);
+                String testName = null;
                 if (testNameCell != null) {
-                    result.setTestName(getCellValueAsString(testNameCell));
+                    testName = getCellValueAsString(testNameCell);
                 }
+
+                // 判断是否已存在同一次考试记录
+                TheoryTestResult existingResult = theoryTrainProgramMapper
+                        .selectTheoryTestResultByStudentIdAndTestInfo(studentId, testName, testTime);
+                if (existingResult != null) {
+                    // 更新已有记录
+                    result.setId(existingResult.getId());
+                    result.setUpdatedAt(java.time.LocalDateTime.now());
+                } else {
+                    // 新增记录
+                    result.setCreatedAt(java.time.LocalDateTime.now());
+                    result.setUpdatedAt(java.time.LocalDateTime.now());
+                }
+
+                // 设置测试时间
+                result.setTestTime(testTime);
+                result.setTestName(testName);
 
                 // 读取属性（第4列到倒数第二列）
                 StringBuilder attributesBuilder = new StringBuilder();
                 attributesBuilder.append("{");
                 boolean first = true;
-                // 先获取标题行，用于作为key
-                Row headerRow = sheet.getRow(0);
-                for (int j = 4; j < row.getLastCellNum() - 1; j++) { // 最后一列是总分，不包含
+                for (int j = 5; j < row.getLastCellNum() - 1; j++) { // 最后一列是总分，不包含
                     Cell cell = row.getCell(j);
                     // 获取对应列的标题作为key
                     String key = "";
@@ -216,9 +243,8 @@ public class TheoryTrainProgramService {
                             key = getCellValueAsString(headerCell);
                         }
                     }
-                    // 如果没有获取到标题，则使用原来的默认命名方式
                     if (key == null || key.isEmpty()) {
-                        key = "试题编号" + (j - 3); // 试题编号1, 试题编号2...
+                        key = "试题编号" + (j - 3);
                     }
                     String value = "";
                     if (cell != null) {
@@ -235,35 +261,43 @@ public class TheoryTrainProgramService {
 
                 // 读取总分（最后一列）
                 Cell totalScoreCell = row.getCell(row.getLastCellNum() - 1);
+                BigDecimal totalScore = null;
                 if (totalScoreCell != null) {
                     if (totalScoreCell.getCellType() == CellType.NUMERIC) {
-                        result.setTotalScore(BigDecimal.valueOf(totalScoreCell.getNumericCellValue()));
+                        totalScore = BigDecimal.valueOf(totalScoreCell.getNumericCellValue());
                     } else {
                         String cellValue = getCellValueAsString(totalScoreCell);
                         if (cellValue != null && !cellValue.isEmpty()) {
-                            result.setTotalScore(new BigDecimal(cellValue));
+                            totalScore = new BigDecimal(cellValue);
                         }
                     }
                 }
+                result.setTotalScore(totalScore);
 
-                // 设置创建和更新时间
-                result.setCreatedAt(java.time.LocalDateTime.now());
-                result.setUpdatedAt(java.time.LocalDateTime.now());
+                // 设置 fullScore
+                if (fullScore != null) {
+                    result.setFullScore(BigDecimal.valueOf(fullScore));
+                } else {
+                    // 使用默认满分
+                    result.setFullScore(BigDecimal.valueOf(100));
+                }
 
-                // 插入数据库并获取ID
-                theoryTrainProgramMapper.insertDynamicTheoryTestResult(result);
-                Long generatedId = result.getId(); // 获取生成的ID
-                logger.info("Generated ID.............: {}", generatedId); // 可选：打印日志
-                TheoryTestMap ttm = new TheoryTestMap();
-                ttm.setTheoryTestId(generatedId);
-                ttm.setStudentId(studentId);
-                ttm.setTrainProgramId(trainProgramId);
-                ttm.setSubjectId(subjectId);
-                // 设置创建和更新时间
-                ttm.setCreatedAt(new java.util.Date());
-                ttm.setUpdatedAt(new java.util.Date());
-                // 插入关联表
-                theoryTrainProgramMapper.insertTheoryTestMap(ttm);
+                // 插入或更新数据库
+                if (result.getId() == null) {
+                    theoryTrainProgramMapper.insertDynamicTheoryTestResult(result);
+                    Long generatedId = result.getId();
+                    logger.info("Generated ID.............: {}", generatedId);
+                    TheoryTestMap ttm = new TheoryTestMap();
+                    ttm.setTheoryTestId(generatedId);
+                    ttm.setStudentId(studentId);
+                    ttm.setTrainProgramId(trainProgramId);
+                    ttm.setSubjectId(subjectId);
+                    ttm.setCreatedAt(new java.util.Date());
+                    ttm.setUpdatedAt(new java.util.Date());
+                    theoryTrainProgramMapper.insertTheoryTestMap(ttm);
+                } else {
+                    theoryTrainProgramMapper.updateDynamicTheoryTestResult(result);
+                }
                 count++;
             }
         } finally {
@@ -277,13 +311,39 @@ public class TheoryTrainProgramService {
 
         return count;
     }
-    
+
+    // 辅助方法：从总分列标题中提取 fullScore
+    private Integer extractFullScoreFromHeader(Cell cell) {
+        if (cell == null)
+            return null;
+        String headerText = getCellValueAsString(cell);
+        if (headerText == null || headerText.isEmpty())
+            return null;
+
+        // 支持多种格式：总分（40）、总分(40)、总分: 40、总分=40 等
+        // 使用 [（(] 匹配中文或英文左括号，[）)] 匹配中文或英文右括号
+        java.util.regex.Pattern pattern = java.util.regex.Pattern
+                .compile("\\b总分\\s*[（(]?([\\d]+)[）)]?|\\s*:\\s*(\\d+)|\\s*=\\s*(\\d+)");
+        java.util.regex.Matcher matcher = pattern.matcher(headerText);
+        if (matcher.find()) {
+            // 获取第一个数字组
+            for (int i = 1; i <= matcher.groupCount(); i++) {
+                String group = matcher.group(i);
+                if (group != null && !group.isEmpty()) {
+                    return Integer.parseInt(group);
+                }
+            }
+        }
+        // 如果未匹配到，返回默认值 100
+        return 100; // 默认满分
+    }
+
     // 辅助方法：安全地获取单元格的字符串值
     private String getCellValueAsString(Cell cell) {
         if (cell == null) {
             return "";
         }
-        
+
         switch (cell.getCellType()) {
             case STRING:
                 return cell.getStringCellValue();

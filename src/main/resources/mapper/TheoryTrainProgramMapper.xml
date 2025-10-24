@@ -128,6 +128,7 @@
             test_name,
             attributes,
             total_score,
+            full_score,
             created_at,
             updated_at
         ) VALUES (
@@ -135,6 +136,7 @@
             #{testName},
             #{attributes},
             #{totalScore},
+            #{fullScore},
             #{createdAt},
             #{updatedAt}
         )
@@ -158,5 +160,55 @@
             #{updatedAt}
         )
     </insert>
+
+    <!-- 更新测试结果数据 -->
+    <update id="updateDynamicTheoryTestResult" parameterType="map">
+        UPDATE theory_test_result
+        SET 
+            test_time = #{testTime},
+            test_name = #{testName},
+            attributes = #{attributes},
+            total_score = #{totalScore},
+            full_score = #{fullScore},
+            updated_at = #{updatedAt}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 新增基于关联表的查询 -->
+    <resultMap id="TheoryTestResultMap" type="com.example.simpleDemo.entity.TheoryTestResult">
+        <id property="id" column="id"/>
+        <result property="testTime" column="test_time"/>
+        <result property="testName" column="test_name"/>
+        <result property="attributes" column="attributes"/>
+        <result property="totalScore" column="total_score"/>
+        <result property="fullScore" column="full_score"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <select id="selectTheoryTestResultByStudentIdAndTestInfo" resultMap="TheoryTestResultMap" parameterType="map">
+        SELECT 
+            ttr.id,
+            ttr.test_time,
+            ttr.test_name,
+            ttr.attributes,
+            ttr.total_score,
+            ttr.full_score,
+            ttr.created_at,
+            ttr.updated_at
+        FROM theory_test_result ttr
+        INNER JOIN theory_test_map tt ON ttr.id = tt.theory_test_id
+        WHERE tt.student_id = #{studentId}
+          AND ttr.test_name = #{testName}
+          AND ttr.test_time = #{testTime}
+    </select>
+
+    <select id="selectTheoryScoresByStudentIdAndSubjectId" resultType="map" parameterType="map">
+        select ttr.total_score, ttr.full_score from theory_test_result ttr
+        left JOIN 
+        theory_test_map ttm on ttm.theory_test_id = ttr.id
+        where
+        ttm.student_id = #{studentId} and ttm.subject_id = #{subjectId}
+    </select>
 
 </mapper>

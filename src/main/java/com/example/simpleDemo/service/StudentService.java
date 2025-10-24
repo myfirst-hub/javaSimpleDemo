@@ -3,6 +3,7 @@ package com.example.simpleDemo.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 
+import org.apache.ibatis.annotations.Param;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -101,31 +102,60 @@ public class StudentService {
         // 获取班级classes，支持班级名称模糊匹配
         List<Classes> classes = classesMapper.findClassesByTeacherId(teacherId);
 
-        List<StudentInfo> students = new ArrayList<>();
+        // 使用Map来存储去重后的学生信息
+        java.util.Map<Long, StudentInfo> studentMap = new java.util.HashMap<>();
 
         for (Classes classObj : classes) {
             // 获取班级下的学生ID列表
             List<Long> ids = classStudentMapper.findStudentIdsByClassId(classObj.getId());
             TheoryTrainProgram ttp = theoryTrainProgramMapper
                     .selectTheoryTrainProgramBySubjectId(classObj.getSubjectId());
+
             for (Long id : ids) {
                 Student student = studentMapper.findStudentById(id);
                 // 支持学生姓名模糊匹配
                 if ((studentName == null || studentName.isEmpty() || student.getName().contains(studentName)) &&
                         (className == null || className.isEmpty() || classObj.getName().contains(className))) {
-                    StudentInfo info = new StudentInfo();
-                    info.setId(student.getId());
-                    info.setName(student.getName());
-                    info.setClassName(classObj.getName());
-                    info.setClassId(classObj.getId());
-                    info.setSubjectId(classObj.getSubjectId());
-                    info.setSubjectName(classObj.getSubjectName());
-                    info.setTrainProgramId(ttp.getId());
-                    info.setTrainProgramName(ttp.getName());
-                    students.add(info);
+
+                    // 如果学生已存在，则拼接信息；否则创建新记录
+                    if (studentMap.containsKey(id)) {
+                        StudentInfo existingInfo = studentMap.get(id);
+                        // 拼接ClassName
+                        existingInfo.setClassName(existingInfo.getClassName() + "，" + classObj.getName());
+                        // 拼接ClassId
+                        // existingInfo.setClassId(existingInfo.getClassId() + "," + classObj.getId());
+                        // 拼接SubjectName
+                        existingInfo.setSubjectName(existingInfo.getSubjectName() + "，" + classObj.getSubjectName());
+                        // 拼接SubjectId
+                        // existingInfo.setSubjectIdStr(existingInfo.getSubjectIdStr() + "," +
+                        // classObj.getSubjectId());
+                        // 拼接TrainProgramName
+                        existingInfo.setTrainProgramName(existingInfo.getTrainProgramName() + "，" + ttp.getName());
+                        // 拼接TrainProgramId
+                        // existingInfo.setTrainProgramIdStr(existingInfo.getTrainProgramIdStr() + "," +
+                        // ttp.getId());
+                    } else {
+                        StudentInfo info = new StudentInfo();
+                        info.setId(student.getId());
+                        info.setName(student.getName());
+                        info.setClassName(classObj.getName());
+                        info.setClassId(classObj.getId());
+                        info.setSubjectId(classObj.getSubjectId());
+                        info.setSubjectName(classObj.getSubjectName());
+                        info.setTrainProgramId(ttp.getId());
+                        info.setTrainProgramName(ttp.getName());
+                        // 初始化用于拼接的字符串字段
+                        // info.setClassIdStr(String.valueOf(classObj.getId()));
+                        // info.setSubjectIdStr(String.valueOf(classObj.getSubjectId()));
+                        // info.setTrainProgramIdStr(String.valueOf(ttp.getId()));
+                        studentMap.put(id, info);
+                    }
                 }
             }
         }
+
+        // 将Map中的值转换为List
+        List<StudentInfo> students = new ArrayList<>(studentMap.values());
 
         // 封装分页结果
         PageInfo<StudentInfo> pageInfo = new PageInfo<>(students);
@@ -133,9 +163,10 @@ public class StudentService {
     }
 
     // 通过学生id查询理论考试详情
-    public List<TheoryTestDetailResultDTO> findTheoryTestDetailByStudentId(Long studentId, String studentName,
+    public List<TheoryTestDetailResultDTO> findTheoryTestDetailByStudentId(Long studentId, Long teacherId,
+            String studentName,
             String className) {
-        return studentMapper.findTheoryTestDetailByStudentId(studentId, studentName, className);
+        return studentMapper.findTheoryTestDetailByStudentId(studentId, teacherId, studentName, className);
     }
 
     // 新增：从Excel导入学生信息

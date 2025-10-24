@@ -108,6 +108,9 @@
             <if test="studentId != null">
                 s.id = #{studentId}
             </if>
+            <if test="teacherId != null">
+                AND c.teacher_id = #{teacherId}
+            </if>
             <if test="studentName != null and studentName != ''">
                 AND s.name LIKE CONCAT('%', #{studentName}, '%')
             </if>

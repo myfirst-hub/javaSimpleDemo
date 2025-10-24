@@ -41,7 +41,14 @@
         teachers t on t.id = c.teacher_id
         inner JOIN
         subjects s on s.id = c.subject_id
-        where stu.id = #{studentId} and t.id = #{teacherId}
+        <where>
+            <if test="studentId != null and studentId != ''">
+                AND stu.id = #{studentId}
+            </if>
+            <if test="teacherId != null and teacherId != ''">
+                AND t.id = #{teacherId}
+            </if>
+        </where>
     </select>
 
     <insert id="insertSubject" parameterType="com.example.simpleDemo.entity.Subject" useGeneratedKeys="true" keyProperty="id">

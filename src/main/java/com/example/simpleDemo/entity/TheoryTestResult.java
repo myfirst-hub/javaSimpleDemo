@@ -10,6 +10,8 @@ public class TheoryTestResult {
     private String testName;
     private String attributes;
     private BigDecimal totalScore;
+    private BigDecimal fullScore;
+    private BigDecimal rateScore;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -46,6 +48,22 @@ public class TheoryTestResult {
         this.attributes = attributes;
     }
 
+    public BigDecimal getRateScore() {
+        return rateScore;
+    }
+
+    public void setRateScore(BigDecimal rateScore) {
+        this.rateScore = rateScore;
+    }
+
+    public BigDecimal getFullScore() {
+        return fullScore;
+    }
+
+    public void setFullScore(BigDecimal fullScore) {
+        this.fullScore = fullScore;
+    }
+
     public BigDecimal getTotalScore() {
         return totalScore;
     }
@@ -77,7 +95,9 @@ public class TheoryTestResult {
                 ", testTime=" + testTime +
                 ", testName='" + testName + '\'' +
                 ", attributes='" + attributes + '\'' +
-                ", totalScore=" + totalScore +
+                ", totalScore=" + totalScore + '\'' +
+                ", fullScore=" + fullScore + '\'' +
+                ", rateScore=" + rateScore +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

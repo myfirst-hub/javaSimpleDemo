@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.simpleDemo.mapper.ComprehensiveTestResultMapper">
+
+    <insert id="insert" parameterType="com.example.simpleDemo.entity.ComprehensiveTestResult" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO comprehensive_test_result (
+            test_time,
+            organization_score,
+            self_drive_score,
+            logic_score,
+            subject_id,
+            class_id,
+            student_id,
+            student_name,
+            created_at,
+            updated_at
+        ) VALUES (
+            #{testTime},
+            #{organizationScore},
+            #{selfDriveScore},
+            #{logicScore},
+            #{subjectId},
+            #{classId},
+            #{studentId},
+            #{studentName},
+            #{createdAt, jdbcType=TIMESTAMP},
+            #{updatedAt, jdbcType=TIMESTAMP}
+        )
+    </insert>
+
+    <!-- 批量插入方法 -->
+    <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO comprehensive_test_result (
+            test_time,
+            organization_score,
+            self_drive_score,
+            logic_score,
+            subject_id,
+            class_id,
+            student_id,
+            student_name,
+            created_at,
+            updated_at
+        ) VALUES
+        <foreach collection="list" item="item" separator=",">
+            (
+                #{item.testTime},
+                #{item.organizationScore},
+                #{item.selfDriveScore},
+                #{item.logicScore},
+                #{item.subjectId},
+                #{item.classId},
+                #{item.studentId},
+                #{item.studentName},
+                #{item.createdAt, jdbcType=TIMESTAMP},
+                #{item.updatedAt, jdbcType=TIMESTAMP}
+            )
+        </foreach>
+    </insert>
+
+    <!-- 定义resultMap，只映射comprehensive_test_result表的字段 -->
+    <resultMap id="comprehensiveTestResultMap" type="com.example.simpleDemo.entity.ComprehensiveTestResult">
+        <id property="id" column="id"/>
+        <result property="testTime" column="test_time"/>
+        <result property="organizationScore" column="organization_score"/>
+        <result property="selfDriveScore" column="self_drive_score"/>
+        <result property="logicScore" column="logic_score"/>
+        <result property="subjectId" column="subject_id"/>
+        <result property="classId" column="class_id"/>
+        <result property="studentId" column="student_id"/>
+        <result property="studentName" column="student_name"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="subjectName" column="subject_name"/>
+        <result property="className" column="class_name"/>
+    </resultMap>
+
+    <select id="selectByStudentIdAndTeacherId" resultMap="comprehensiveTestResultMap">
+        SELECT ctr.*, c.name class_name, c.subject_name FROM comprehensive_test_result ctr        
+        LEFT JOIN classes c ON ctr.class_id = c.id 
+        <where> 
+               <if test="studentId != null"> 
+                   AND ctr.student_id = #{studentId} 
+            </if> 
+            <if test="teacherId != null">
+                AND c.teacher_id = #{teacherId}
+            </if> 
+        </where> 
+        ORDER BY test_time DESC 
+    </select>
+
+    <select id="selectByStudentIdAndSubjectId" resultMap="comprehensiveTestResultMap">
+        SELECT * FROM comprehensive_test_result      
+        <where> 
+            <if test="studentId != null"> 
+                AND student_id = #{studentId} 
+            </if> 
+            <if test="subjectId != null">
+                AND subject_id = #{subjectId}
+            </if> 
+        </where> 
+    </select>
+    
+    <!-- 新增：根据学生ID、科目ID和班级ID查询综合测评结果 -->
+    <select id="selectByStudentIdAndSubjectIdAndClassId" resultMap="comprehensiveTestResultMap">
+        SELECT * FROM comprehensive_test_result
+        <where>
+            <if test="studentId != null">
+                AND student_id = #{studentId}
+            </if>
+            <if test="subjectId != null">
+                AND subject_id = #{subjectId}
+            </if>
+            <if test="classId != null">
+                AND class_id = #{classId}
+            </if>
+        </where>
+    </select>
+    
+    <!-- 新增：批量更新方法 -->
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            UPDATE comprehensive_test_result
+            SET 
+                test_time = #{item.testTime},
+                organization_score = #{item.organizationScore},
+                self_drive_score = #{item.selfDriveScore},
+                logic_score = #{item.logicScore},
+                subject_id = #{item.subjectId},
+                class_id = #{item.classId},
+                student_id = #{item.studentId},
+                student_name = #{item.studentName},
+                updated_at = #{item.updatedAt, jdbcType=TIMESTAMP}
+            WHERE id = #{item.id}
+        </foreach>
+    </update>
+</mapper>

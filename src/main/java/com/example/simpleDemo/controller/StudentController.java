@@ -4,6 +4,7 @@ import com.example.simpleDemo.entity.Student;
 import com.example.simpleDemo.entity.StudentInfo;
 import com.example.simpleDemo.entity.Subject;
 import com.example.simpleDemo.mapper.SubjectMapper;
+import com.example.simpleDemo.mapper.TestResultMapper;
 import com.example.simpleDemo.dto.TheoryTestDetailResultDTO;
 import com.example.simpleDemo.service.StudentService;
 import com.example.simpleDemo.utils.ApiResponse;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class StudentController {
@@ -29,6 +31,9 @@ public class StudentController {
 
     @Autowired
     private SubjectMapper subjectMapper;
+
+    @Autowired
+    private TestResultMapper testResultMapper;
 
     @GetMapping("/students")
     public ResponseEntity<ApiResponse<PageInfoResult<Student>>> getStudents(
@@ -196,6 +201,7 @@ public class StudentController {
     @GetMapping("/students/byTeacherId/Theory/detail")
     public ResponseEntity<ApiResponse<List<TheoryTestDetailResultDTO>>> getTheoryTestDetailByStudentId(
             @RequestParam(required = false) Long studentId,
+            @RequestParam(required = false) Long teacherId,
             @RequestParam(required = false) String studentName,
             @RequestParam(required = false) String className) {
         logger.info(
@@ -203,7 +209,7 @@ public class StudentController {
                 studentId, studentName, className);
         try {
             List<TheoryTestDetailResultDTO> result = studentService
-                    .findTheoryTestDetailByStudentId(studentId, studentName, className);
+                    .findTheoryTestDetailByStudentId(studentId, teacherId, studentName, className);
             ApiResponse<List<TheoryTestDetailResultDTO>> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {
@@ -233,15 +239,18 @@ public class StudentController {
     @GetMapping("/students/overview")
     public ResponseEntity<ApiResponse<Object>> getStudentOverview(
             @RequestParam(required = true) Long id,
-            @RequestParam(required = true) Long teacherId) {
+            @RequestParam(required = false) Long teacherId) {
         logger.info("Get student detail endpoint accessed with params: id={}", id);
         try {
             Student studentBaseInfo = studentService.findStudentById(id);
             List<Subject> subjects = subjectMapper.findSubjectByStudentId(id, teacherId);
+            Map<String, Object> theoryTestResult = testResultMapper.selectTestCountAndTrainHoursByTeacherId(id,
+                    teacherId);
             // 创建包含学员信息的返回对象
             java.util.Map<String, Object> result = new java.util.HashMap<>();
             result.put("studentBaseInfo", studentBaseInfo);
             result.put("subjects", subjects);
+            result.put("theoryTestResult", theoryTestResult);
 
             ApiResponse<Object> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);

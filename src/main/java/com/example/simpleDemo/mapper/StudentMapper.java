@@ -27,7 +27,8 @@ public interface StudentMapper {
     int deleteStudentById(@Param("id") Long id);
 
     // 通过学生id查询理论考试详情
-    List<TheoryTestDetailResultDTO> findTheoryTestDetailByStudentId(@Param("studentId") Long studentId, 
-                                                                   @Param("studentName") String studentName, 
-                                                                   @Param("className") String className);
+    List<TheoryTestDetailResultDTO> findTheoryTestDetailByStudentId(@Param("studentId") Long studentId,
+            @Param("teacherId") Long teacherId,
+            @Param("studentName") String studentName,
+            @Param("className") String className);
 }

@@ -4,6 +4,7 @@ import com.example.simpleDemo.entity.TeacherCommentResult;
 import com.example.simpleDemo.dto.TeacherCommentResultDTO;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -15,4 +16,7 @@ public interface TestResultMapper {
 
     // 通过学生id查询教师评语详情
     List<TeacherCommentResultDTO> selectTeacherCommentResultWithDetails(@Param("studentId") Long studentId);
+
+    Map<String, Object> selectTestCountAndTrainHoursByTeacherId(@Param("studentId") Long studentId,
+            @Param("teacherId") Long teacherId);
 }
