@@ -15,6 +15,7 @@ import com.example.simpleDemo.utils.PageInfoResult;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -192,31 +193,14 @@ public class SubjectController {
     logger.info("Get subject detail endpoint accessed with params: id={}", id);
 
     try {
-      // List<Long> ids = subjectKnowledgeService.findKnowledgeIdsBySubjectId(id);
-
-      // logger.info("Get subject detail endpoint accessed with params: ids={}", ids);
-
-      // List<KnowledgeTree> knowledgeTrees;
-      // int leafCount;
-
-      // 添加对空列表的检查，避免SQL语法错误
-      // if (ids == null || ids.isEmpty()) {
-      // knowledgeTrees = List.of(); // 返回空列表而不是null
-      // leafCount = 0;
-      // } else {
-      // knowledgeTrees = knowledgeTreeService.buildKnowledgeTree(ids);
-      // leafCount = knowledgeTreeService.countLeafNodes(ids);
-      // }
-
       // 根据科目ID查询学生信息
       List<Student> students = subjectMapper.findClassesAndStudentsBySubjectId(id);
-
+      // 调用Mapper方法获取训练信息
+      Map<String, Object> trainInfo = subjectMapper.findTrainInfoBySubjectId(id);
       // 创建包含知识点树和叶子节点计数的返回对象
       java.util.Map<String, Object> result = new java.util.HashMap<>();
-      // result.put("knowledgeTrees", knowledgeTrees);
-      // result.put("leafCount", leafCount);
       result.put("students", students);
-
+      result.put("trainInfo", trainInfo);
       ApiResponse<Object> response = ApiResponse.success(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {

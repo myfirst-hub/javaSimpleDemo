@@ -107,4 +107,12 @@
         ORDER BY c.id, s.id
     </select>
     
+    <!-- 查询指定科目的训练次数和训练时间总和 -->
+    <select id="findTrainInfoBySubjectId" parameterType="long" resultType="map">
+        select COUNT(ttm.id) trainNum, SUM(ttp.train_time) trainTime
+        from theory_test_map ttm
+        left join theory_train_program ttp on ttm.subject_id = ttp.subject_id
+        WHERE ttm.subject_id = #{subjectId}
+    </select>
+    
 </mapper>
