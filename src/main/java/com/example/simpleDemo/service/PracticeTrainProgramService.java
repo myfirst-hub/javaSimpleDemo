@@ -1,41 +1,42 @@
 package com.example.simpleDemo.service;
 
-import com.example.simpleDemo.controller.SubjectController;
-import com.example.simpleDemo.entity.Subject;
-import com.example.simpleDemo.entity.TheoryTestMap;
-import com.example.simpleDemo.entity.TheoryTrainProgram;
-import com.example.simpleDemo.entity.TheoryTestResult;
-import com.example.simpleDemo.mapper.TheoryTrainProgramMapper;
-import com.example.simpleDemo.mapper.UploadMapper;
-import com.example.simpleDemo.mapper.SubjectMapper;
-import com.example.simpleDemo.mapper.SubjectQuestionMapper;
-import com.example.simpleDemo.utils.PageInfoResult;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.example.simpleDemo.utils.UtilCustom;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.example.simpleDemo.entity.PracticeTrainProgram;
+import com.example.simpleDemo.entity.Subject;
+import com.example.simpleDemo.entity.PracticeTestMap;
+import com.example.simpleDemo.entity.PracticeTestResult;
+import com.example.simpleDemo.mapper.SubjectMapper;
+import com.example.simpleDemo.mapper.SubjectQuestionMapper;
+import com.example.simpleDemo.mapper.PracticeTrainProgramMapper;
+import com.example.simpleDemo.mapper.UploadMapper;
+import com.example.simpleDemo.utils.PageInfoResult;
+import com.example.simpleDemo.utils.UtilCustom;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 
 @Service
-public class TheoryTrainProgramService {
-
-    private static final Logger logger = LoggerFactory.getLogger(TheoryTrainProgramService.class);
+public class PracticeTrainProgramService {
+    private static final Logger logger = LoggerFactory.getLogger(PracticeTrainProgramService.class);
 
     @Autowired
-    private TheoryTrainProgramMapper theoryTrainProgramMapper;
+    private PracticeTrainProgramMapper practiceTrainProgramMapper;
 
     @Autowired
     private SubjectMapper subjectMapper;
@@ -49,50 +50,48 @@ public class TheoryTrainProgramService {
     @Autowired
     private UtilCustom utilCustom;
 
-    public PageInfoResult<TheoryTrainProgram> selectTheoryTrainProgramList(Integer pageNum, Integer pageSize,
+    public PageInfoResult<PracticeTrainProgram> selectPracticeTrainProgramList(Integer pageNum, Integer pageSize,
             String name, String semester, Long[] subjectIds) {
         // 开启分页
         PageHelper.startPage(pageNum, pageSize);
 
         // 查询科目数据
-        List<TheoryTrainProgram> theoryTrainPrograms = theoryTrainProgramMapper.selectTheoryTrainProgramList(name,
+        List<PracticeTrainProgram> practiceTrainPrograms = practiceTrainProgramMapper.selectPracticeTrainProgramList(
+                name,
                 semester, subjectIds);
 
         // 获取分页信息
-        PageInfo<TheoryTrainProgram> theoryTrainProgramPageInfo = new PageInfo<>(theoryTrainPrograms);
-        return new PageInfoResult<>(theoryTrainProgramPageInfo);
+        PageInfo<PracticeTrainProgram> practiceTrainProgramPageInfo = new PageInfo<>(practiceTrainPrograms);
+        return new PageInfoResult<>(practiceTrainProgramPageInfo);
     }
 
-    // 新增理论培训计划
-    public int insertTheoryTrainProgram(TheoryTrainProgram theoryTrainProgram) {
+    // 新增实操培训计划
+    public int insertPracticeTrainProgram(PracticeTrainProgram practiceTrainProgram) {
         // 设置创建时间和更新时间
-        theoryTrainProgram.setCreatedAt(new java.util.Date());
-        theoryTrainProgram.setUpdatedAt(new java.util.Date());
-        return theoryTrainProgramMapper.insertTheoryTrainProgram(theoryTrainProgram);
+        practiceTrainProgram.setCreatedAt(new java.util.Date());
+        practiceTrainProgram.setUpdatedAt(new java.util.Date());
+        return practiceTrainProgramMapper.insertPracticeTrainProgram(practiceTrainProgram);
     }
 
-    // 编辑理论培训计划
-    public int updateTheoryTrainProgram(TheoryTrainProgram theoryTrainProgram) {
+    // 编辑实操培训计划
+    public int updatePracticeTrainProgram(PracticeTrainProgram practiceTrainProgram) {
         // 设置更新时间
-        theoryTrainProgram.setUpdatedAt(new java.util.Date());
-        return theoryTrainProgramMapper.updateTheoryTrainProgram(theoryTrainProgram);
+        practiceTrainProgram.setUpdatedAt(new java.util.Date());
+        return practiceTrainProgramMapper.updatePracticeTrainProgram(practiceTrainProgram);
     }
 
-    // 删除理论培训计划
+    // 删除实操培训计划
     @Transactional(rollbackFor = Exception.class)
-    public int deleteTheoryTrainProgram(Long id, Long subjectId) {
+    public int deletePracticeTrainProgram(Long id, Long subjectId) {
         // 删除subject_question_file表中与该科目关联的数据
         uploadMapper.deleteSubjectQuestionFileBySubjectId(subjectId);
 
-        // 删除subject_question表中与该科目关联的数据
-        subjectQuestionMapper.deleteSubjectQuestionBySubjectId(subjectId);
-
-        return theoryTrainProgramMapper.deleteTheoryTrainProgram(id);
+        return practiceTrainProgramMapper.deletePracticeTrainProgram(id);
     }
 
-    // 根据ID查询理论培训计划详情
-    public TheoryTrainProgram selectTheoryTrainProgramById(Long id) {
-        TheoryTrainProgram program = theoryTrainProgramMapper.selectTheoryTrainProgramById(id);
+    // 根据ID查询实操培训计划详情
+    public PracticeTrainProgram selectPracticeTrainProgramById(Long id) {
+        PracticeTrainProgram program = practiceTrainProgramMapper.selectPracticeTrainProgramById(id);
         if (program != null && program.getSubjectId() != null) {
             // 根据subjectId查询科目名称，这里需要根据实际的科目实体和Mapper进行调整
             Subject subject = subjectMapper.findSubjectById(program.getSubjectId());
@@ -122,7 +121,8 @@ public class TheoryTrainProgramService {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
             // 获取trainProgramId
-            TheoryTrainProgram trainProgram = theoryTrainProgramMapper.selectTheoryTrainProgramBySubjectId(subjectId);
+            PracticeTrainProgram trainProgram = practiceTrainProgramMapper
+                    .selectPracticeTrainProgramBySubjectId(subjectId);
             Long trainProgramId = (trainProgram != null) ? trainProgram.getId() : null;
 
             // 提取总分列的标题中的 fullScore 值
@@ -135,7 +135,7 @@ public class TheoryTrainProgramService {
                 if (row == null)
                     continue;
 
-                TheoryTestResult result = new TheoryTestResult();
+                PracticeTestResult result = new PracticeTestResult();
 
                 // 读取学号（假设在第1列）并转换为studentId
                 Cell studentIdCell = row.getCell(0);
@@ -217,8 +217,8 @@ public class TheoryTrainProgramService {
                 }
 
                 // 判断是否已存在同一次考试记录
-                TheoryTestResult existingResult = theoryTrainProgramMapper
-                        .selectTheoryTestResultByStudentIdAndTestInfo(studentId, testName, testTime);
+                PracticeTestResult existingResult = practiceTrainProgramMapper
+                        .selectPracticeTestResultByStudentIdAndTestInfo(studentId, testName, testTime);
                 if (existingResult != null) {
                     // 更新已有记录
                     result.setId(existingResult.getId());
@@ -288,19 +288,19 @@ public class TheoryTrainProgramService {
 
                 // 插入或更新数据库
                 if (result.getId() == null) {
-                    theoryTrainProgramMapper.insertDynamicTheoryTestResult(result);
+                    practiceTrainProgramMapper.insertDynamicPracticeTestResult(result);
                     Long generatedId = result.getId();
                     logger.info("Generated ID.............: {}", generatedId);
-                    TheoryTestMap ttm = new TheoryTestMap();
-                    ttm.setTheoryTestId(generatedId);
+                    PracticeTestMap ttm = new PracticeTestMap();
+                    ttm.setPracticeTestId(generatedId);
                     ttm.setStudentId(studentId);
-                    ttm.setTrainProgramId(trainProgramId);
+                    ttm.setPracticeTrainProgramId(trainProgramId);
                     ttm.setSubjectId(subjectId);
                     ttm.setCreatedAt(new java.util.Date());
                     ttm.setUpdatedAt(new java.util.Date());
-                    theoryTrainProgramMapper.insertTheoryTestMap(ttm);
+                    practiceTrainProgramMapper.insertPracticeTestMap(ttm);
                 } else {
-                    theoryTrainProgramMapper.updateDynamicTheoryTestResult(result);
+                    practiceTrainProgramMapper.updateDynamicPracticeTestResult(result);
                 }
                 count++;
             }

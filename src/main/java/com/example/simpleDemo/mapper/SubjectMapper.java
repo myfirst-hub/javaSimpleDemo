@@ -24,7 +24,10 @@ public interface SubjectMapper {
 
     // 添加根据科目ID查找班级和学生信息的方法
     List<Student> findClassesAndStudentsBySubjectId(@Param("subjectId") Long subjectId);
-    
+
     // 添加根据科目ID查找训练信息的方法
     Map<String, Object> findTrainInfoBySubjectId(@Param("subjectId") Long subjectId);
+
+    // 添加根据科目ID查找训练信息的方法
+    Map<String, Object> findPracticeTrainInfoBySubjectId(@Param("subjectId") Long subjectId);
 }

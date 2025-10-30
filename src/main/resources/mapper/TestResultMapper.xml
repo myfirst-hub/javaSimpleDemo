@@ -83,4 +83,18 @@
         GROUP BY c.subject_id, ttp.train_time
     </select>
 
+    <!-- 根据教师ID统计测试数量和总培训小时数 -->
+    <select id="selectPracticeTestCountAndTrainHoursByTeacherId" resultType="map" parameterType="map">
+        SELECT 
+            COUNT(DISTINCT ttm.practice_test_id) AS practice_test_count,
+            COALESCE(COUNT(DISTINCT ttm.practice_test_id) * ttp.train_time, 0) AS practice_total_train_hours
+        FROM classes c
+        LEFT JOIN practice_test_map ttm ON c.subject_id = ttm.subject_id AND ttm.student_id = #{studentId}
+        LEFT JOIN practice_train_program ttp ON c.subject_id = ttp.subject_id
+        <where>
+            c.teacher_id = #{teacherId}
+        </where>
+        GROUP BY c.subject_id, ttp.train_time
+    </select>
+
 </mapper>

@@ -20,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.example.simpleDemo.entity.ComprehensiveTestResult;
 import com.example.simpleDemo.mapper.ComprehensiveTestResultMapper;
 import com.example.simpleDemo.mapper.TheoryTrainProgramMapper;
+import com.example.simpleDemo.mapper.PracticeTrainProgramMapper;
 
 @Service
 public class ComprehensiveTestResultService {
@@ -31,6 +32,9 @@ public class ComprehensiveTestResultService {
 
     @Autowired
     private TheoryTrainProgramMapper theoryTrainProgramMapper;
+
+    @Autowired
+    private PracticeTrainProgramMapper practiceTrainProgramMapper;
 
     // 新增：从Excel导入综合测评结果
     public int importFromExcel(MultipartFile file, Long subjectId, Long classId) throws Exception {
@@ -179,8 +183,11 @@ public class ComprehensiveTestResultService {
         List<Map<String, Object>> theoryScores = theoryTrainProgramMapper.selectTheoryScoresByStudentIdAndSubjectId(
                 studentId,
                 subjectId);
-        // Map<String, Object> theoryScore = theoryScores.isEmpty() ? null :
-        // theoryScores.get(0);
+
+        List<Map<String, Object>> practiceScores = practiceTrainProgramMapper
+                .selectPracticeScoresByStudentIdAndSubjectId(
+                        studentId,
+                        subjectId);
         // 计算理论总成绩：多个total_score相加除以多个full_score相加，保留两位小数
         BigDecimal totalScoreSum = BigDecimal.ZERO;
         BigDecimal fullScoreSum = BigDecimal.ZERO;
@@ -204,11 +211,37 @@ public class ComprehensiveTestResultService {
                     .multiply(new BigDecimal(100))
                     .setScale(2, BigDecimal.ROUND_HALF_UP);
         }
+
+        // 计算实践总成绩：多个total_score相加除以多个full_score相加，保留两位小数
+        BigDecimal practiceTotalScoreSum = BigDecimal.ZERO;
+        BigDecimal practiceFullScoreSum = BigDecimal.ZERO;
+        BigDecimal practiceFinalScore = BigDecimal.ZERO;
+
+        for (Map<String, Object> score : practiceScores) {
+            Object totalScoreObj = score.get("total_score");
+            Object fullScoreObj = score.get("full_score");
+
+            if (totalScoreObj != null && fullScoreObj != null) {
+                BigDecimal totalScore = new BigDecimal(totalScoreObj.toString());
+                BigDecimal fullScore = new BigDecimal(fullScoreObj.toString());
+
+                practiceTotalScoreSum = practiceTotalScoreSum.add(totalScore);
+                practiceFullScoreSum = practiceFullScoreSum.add(fullScore);
+            }
+        }
+
+        if (practiceFullScoreSum.compareTo(BigDecimal.ZERO) > 0) {
+            practiceFinalScore = practiceTotalScoreSum.divide(practiceFullScoreSum, 4, BigDecimal.ROUND_HALF_UP)
+                    .multiply(new BigDecimal(100))
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+        }
+
         List<ComprehensiveTestResult> results = comprehensiveTestResultMapper
                 .selectByStudentIdAndSubjectId(studentId, subjectId);
         ComprehensiveTestResult result = results.isEmpty() ? null : results.get(0);
         Map<String, Object> mapResult = new java.util.HashMap<>();
         mapResult.put("theoryScore", theoryFinalScore);
+        mapResult.put("practiceScore", practiceFinalScore);
         mapResult.put("comprehensiveTestResult", result);
         return mapResult;
     }

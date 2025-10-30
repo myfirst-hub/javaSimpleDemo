@@ -6,6 +6,7 @@ import com.example.simpleDemo.entity.Subject;
 import com.example.simpleDemo.mapper.SubjectMapper;
 import com.example.simpleDemo.mapper.TestResultMapper;
 import com.example.simpleDemo.dto.TheoryTestDetailResultDTO;
+import com.example.simpleDemo.dto.PracticeTestDetailResultDTO;
 import com.example.simpleDemo.service.StudentService;
 import com.example.simpleDemo.utils.ApiResponse;
 import com.example.simpleDemo.utils.PageInfoResult;
@@ -220,6 +221,29 @@ public class StudentController {
         }
     }
 
+    // 通过学生id查询实操考试详情
+    @GetMapping("/students/byTeacherId/practice/detail")
+    public ResponseEntity<ApiResponse<List<PracticeTestDetailResultDTO>>> getPracticeTestDetailByStudentId(
+            @RequestParam(required = false) Long studentId,
+            @RequestParam(required = false) Long teacherId,
+            @RequestParam(required = false) String studentName,
+            @RequestParam(required = false) String className) {
+        logger.info(
+                "Get theory test detail by teacher id endpoint accessed with studentId: {}, studentName: {}, className: {}",
+                studentId, studentName, className);
+        try {
+            List<PracticeTestDetailResultDTO> result = studentService
+                    .findPracticeTestDetailByStudentId(studentId, teacherId, studentName, className);
+            ApiResponse<List<PracticeTestDetailResultDTO>> response = ApiResponse.success(result);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (Exception e) {
+            logger.error("Error occurred while fetching theory test detail by teacher id", e);
+            ApiResponse<List<PracticeTestDetailResultDTO>> response = ApiResponse
+                    .error("Failed to fetch theory test detail by teacher id: " + e.getMessage());
+            return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     // 学员导入
     @PostMapping("/students/import")
     public ResponseEntity<ApiResponse<String>> importStudents(@RequestParam("files") MultipartFile file) {
@@ -246,11 +270,16 @@ public class StudentController {
             List<Subject> subjects = subjectMapper.findSubjectByStudentId(id, teacherId);
             Map<String, Object> theoryTestResult = testResultMapper.selectTestCountAndTrainHoursByTeacherId(id,
                     teacherId);
+            Map<String, Object> practiceTestResult = testResultMapper.selectPracticeTestCountAndTrainHoursByTeacherId(
+                    id,
+                    teacherId);
+
             // 创建包含学员信息的返回对象
             java.util.Map<String, Object> result = new java.util.HashMap<>();
             result.put("studentBaseInfo", studentBaseInfo);
             result.put("subjects", subjects);
             result.put("theoryTestResult", theoryTestResult);
+            result.put("practiceTestResult", practiceTestResult);
 
             ApiResponse<Object> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);

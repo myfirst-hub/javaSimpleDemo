@@ -41,7 +41,7 @@
         ORDER BY created_at DESC
     </select>
 
-    <!-- 新增理论培训计划 -->
+    <!-- 新增实操培训计划 -->
     <insert id="insertPracticeTrainProgram" parameterType="com.example.simpleDemo.entity.PracticeTrainProgram" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO practice_train_program (
             name,
@@ -62,7 +62,7 @@
         )
     </insert>
 
-    <!-- 编辑理论培训计划 -->
+    <!-- 编辑实操培训计划 -->
     <update id="updatePracticeTrainProgram" parameterType="com.example.simpleDemo.entity.PracticeTrainProgram">
         UPDATE practice_train_program
         <set>
@@ -86,13 +86,43 @@
         WHERE id = #{id}
     </update>
 
-    <!-- 删除理论培训计划 -->
+    <!-- 删除实操培训计划 -->
     <delete id="deletePracticeTrainProgram" parameterType="long">
         DELETE FROM practice_train_program WHERE id = #{id}
     </delete>
 
+    <!-- 根据ID查询实操培训计划详情 -->
+    <select id="selectPracticeTrainProgramById" resultMap="PracticeTrainProgramMap" parameterType="long">
+        SELECT 
+            id,
+            name,
+            semester,
+            train_describe,
+            train_time,
+            subject_id,
+            created_at,
+            updated_at
+        FROM practice_train_program
+        WHERE id = #{id}
+    </select>
+
+    <!-- 根据ID查询理论培训计划详情 -->
+    <select id="selectPracticeTrainProgramBySubjectId" resultMap="PracticeTrainProgramMap" parameterType="long">
+        SELECT 
+            id,
+            name,
+            semester,
+            train_describe,
+            train_time,
+            subject_id,
+            created_at,
+            updated_at
+        FROM practice_train_program
+        WHERE subject_id = #{subjectId}
+    </select>
+
     <!-- 插入测试结果数据 -->
-    <!-- <insert id="insertDynamicPracticeTestResult" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+    <insert id="insertDynamicPracticeTestResult" parameterType="map" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO practice_test_result (
             test_time,
             test_name,
@@ -118,14 +148,14 @@
             practice_test_id,
             student_id,
             subject_id,
-            train_program_id,
+            practice_train_program_id,
             created_at,
             updated_at
         ) VALUES (
             #{practiceTestId},
             #{studentId},
             #{subjectId},
-            #{trainProgramId},
+            #{practiceTrainProgramId},
             #{createdAt},
             #{updatedAt}
         )
@@ -179,6 +209,6 @@
         practice_test_map ttm on ttm.practice_test_id = ttr.id
         where
         ttm.student_id = #{studentId} and ttm.subject_id = #{subjectId}
-    </select> -->
+    </select>
 
 </mapper>

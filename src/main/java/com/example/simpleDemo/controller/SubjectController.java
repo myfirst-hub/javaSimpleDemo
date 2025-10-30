@@ -197,10 +197,13 @@ public class SubjectController {
       List<Student> students = subjectMapper.findClassesAndStudentsBySubjectId(id);
       // 调用Mapper方法获取训练信息
       Map<String, Object> trainInfo = subjectMapper.findTrainInfoBySubjectId(id);
+      // 调用Mapper方法获取实操训练信息
+      Map<String, Object> practiceTrainInfo = subjectMapper.findPracticeTrainInfoBySubjectId(id);
       // 创建包含知识点树和叶子节点计数的返回对象
       java.util.Map<String, Object> result = new java.util.HashMap<>();
       result.put("students", students);
       result.put("trainInfo", trainInfo);
+      result.put("practiceTrainInfo", practiceTrainInfo);
       ApiResponse<Object> response = ApiResponse.success(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {

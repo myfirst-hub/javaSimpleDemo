@@ -22,6 +22,14 @@
         FROM students s
         LEFT JOIN class_student cs ON s.id = cs.student_id
         LEFT JOIN classes c ON cs.class_id = c.id
+        <where>
+            <if test="name != null and name != ''">
+                AND s.name LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="className != null and className != ''">
+                AND s.className LIKE CONCAT('%', #{className}, '%')
+            </if>
+        </where>
         GROUP BY s.id, s.name, s.sex, s.height, s.weight, s.birthday, s.native_place, s.nationality, s.created_at, s.updated_at
     </select>
     
@@ -120,5 +128,53 @@
         </where>
         ORDER BY 
             ttr.id;
+        </select>
+
+        <resultMap id="PracticeTestDetailResultMap" type="com.example.simpleDemo.dto.PracticeTestDetailResultDTO">
+            <id property="id" column="id"/>
+            <result property="testTime" column="test_time"/>
+            <result property="testName" column="test_name"/>
+            <result property="attributes" column="attributes"/>
+            <result property="totalScore" column="total_score"/>
+            <result property="studentName" column="student_name"/>
+            <result property="className" column="class_name"/>
+            <result property="teacherName" column="teacher_name"/>
+            <result property="subjectName" column="subject_name"/>
+            <result property="practiceTrainProgramName" column="practice_train_program_name"/>
+        </resultMap>
+
+        <select id="findPracticeTestDetailByStudentId" resultMap="PracticeTestDetailResultMap">
+            SELECT 
+                ttr.id, ttr.test_time, ttr.test_name, ttr.`attributes`, ttr.total_score, s.name as student_name,
+                c.name as class_name, c.teacher_name, c.subject_name,
+                ttp.name as practice_train_program_name
+            FROM 
+                practice_test_result ttr
+            INNER JOIN 
+                practice_test_map ttm ON ttr.id = ttm.practice_test_id
+            INNER JOIN 
+                students s ON ttm.student_id = s.id
+            INNER JOIN
+                practice_train_program ttp ON ttm.practice_train_program_id = ttp.id
+            INNER JOIN 
+                class_student cs ON s.id = cs.student_id
+            INNER JOIN 
+                classes c ON cs.class_id = c.id and c.subject_id = ttm.subject_id
+            <where>
+                <if test="studentId != null">
+                    s.id = #{studentId}
+                </if>
+                <if test="teacherId != null">
+                    AND c.teacher_id = #{teacherId}
+                </if>
+                <if test="studentName != null and studentName != ''">
+                    AND s.name LIKE CONCAT('%', #{studentName}, '%')
+                </if>
+                <if test="className != null and className != ''">
+                    AND c.name LIKE CONCAT('%', #{className}, '%')
+                </if>
+            </where>
+            ORDER BY 
+                ttr.id;
         </select>
 </mapper>

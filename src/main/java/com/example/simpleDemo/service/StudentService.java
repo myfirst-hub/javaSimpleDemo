@@ -15,12 +15,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.simpleDemo.controller.TeacherController;
 import com.example.simpleDemo.dto.TheoryTestDetailResultDTO;
+import com.example.simpleDemo.dto.PracticeTestDetailResultDTO;
 import com.example.simpleDemo.entity.Classes;
+import com.example.simpleDemo.entity.PracticeTrainProgram;
 import com.example.simpleDemo.entity.Student;
 import com.example.simpleDemo.entity.StudentInfo;
 import com.example.simpleDemo.entity.TheoryTrainProgram;
 import com.example.simpleDemo.mapper.ClassStudentMapper;
 import com.example.simpleDemo.mapper.TheoryTrainProgramMapper;
+import com.example.simpleDemo.mapper.PracticeTrainProgramMapper;
 import com.example.simpleDemo.mapper.ClassesMapper;
 import com.example.simpleDemo.mapper.StudentMapper;
 import com.example.simpleDemo.utils.PageInfoResult;
@@ -46,11 +49,14 @@ public class StudentService {
     @Autowired
     private TheoryTrainProgramMapper theoryTrainProgramMapper;
 
+    @Autowired
+    private PracticeTrainProgramMapper practiceTrainProgramMapper;
+
     private static final Logger logger = LoggerFactory.getLogger(StudentService.class);
 
     // 新增不使用分页查询所有学生的方法
     public List<Student> findAllStudents(String name, String className) {
-        return studentMapper.findStudents(name, className);
+        return studentMapper.findAllStudents(name, className);
     }
 
     public PageInfoResult<Student> findStudentsWithPageHelper(int page, int size, String name, String className) {
@@ -110,7 +116,8 @@ public class StudentService {
             List<Long> ids = classStudentMapper.findStudentIdsByClassId(classObj.getId());
             TheoryTrainProgram ttp = theoryTrainProgramMapper
                     .selectTheoryTrainProgramBySubjectId(classObj.getSubjectId());
-
+            PracticeTrainProgram ptp = practiceTrainProgramMapper
+                    .selectPracticeTrainProgramBySubjectId(classObj.getSubjectId());
             for (Long id : ids) {
                 Student student = studentMapper.findStudentById(id);
                 // 支持学生姓名模糊匹配
@@ -130,7 +137,18 @@ public class StudentService {
                         // existingInfo.setSubjectIdStr(existingInfo.getSubjectIdStr() + "," +
                         // classObj.getSubjectId());
                         // 拼接TrainProgramName
-                        existingInfo.setTrainProgramName(existingInfo.getTrainProgramName() + "，" + ttp.getName());
+                        StringBuilder trainProgramNameBuilder = new StringBuilder();
+                        if (ttp != null && ttp.getName() != null && !ttp.getName().isEmpty()) {
+                            trainProgramNameBuilder.append(ttp.getName());
+                        }
+                        if (ptp != null && ptp.getName() != null && !ptp.getName().isEmpty()) {
+                            if (trainProgramNameBuilder.length() > 0) {
+                                trainProgramNameBuilder.append("，");
+                            }
+                            trainProgramNameBuilder.append(ptp.getName());
+                        }
+                        existingInfo.setTrainProgramName(
+                                existingInfo.getTrainProgramName() + "，" + trainProgramNameBuilder.toString());
                         // 拼接TrainProgramId
                         // existingInfo.setTrainProgramIdStr(existingInfo.getTrainProgramIdStr() + "," +
                         // ttp.getId());
@@ -142,8 +160,18 @@ public class StudentService {
                         info.setClassId(classObj.getId());
                         info.setSubjectId(classObj.getSubjectId());
                         info.setSubjectName(classObj.getSubjectName());
-                        info.setTrainProgramId(ttp.getId());
-                        info.setTrainProgramName(ttp.getName());
+                        StringBuilder trainProgramNameBuilder = new StringBuilder();
+                        if (ttp != null && ttp.getName() != null && !ttp.getName().isEmpty()) {
+                            trainProgramNameBuilder.append(ttp.getName());
+                        }
+                        if (ptp != null && ptp.getName() != null && !ptp.getName().isEmpty()) {
+                            if (trainProgramNameBuilder.length() > 0) {
+                                trainProgramNameBuilder.append("，");
+                            }
+                            trainProgramNameBuilder.append(ptp.getName());
+                        }
+                        info.setTrainProgramName(trainProgramNameBuilder.toString());
+
                         // 初始化用于拼接的字符串字段
                         // info.setClassIdStr(String.valueOf(classObj.getId()));
                         // info.setSubjectIdStr(String.valueOf(classObj.getSubjectId()));
@@ -167,6 +195,13 @@ public class StudentService {
             String studentName,
             String className) {
         return studentMapper.findTheoryTestDetailByStudentId(studentId, teacherId, studentName, className);
+    }
+
+    // 通过学生id查询实操考试详情
+    public List<PracticeTestDetailResultDTO> findPracticeTestDetailByStudentId(Long studentId, Long teacherId,
+            String studentName,
+            String className) {
+        return studentMapper.findPracticeTestDetailByStudentId(studentId, teacherId, studentName, className);
     }
 
     // 新增：从Excel导入学生信息
