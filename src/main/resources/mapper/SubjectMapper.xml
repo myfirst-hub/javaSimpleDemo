@@ -5,6 +5,7 @@
     <resultMap id="SubjectResultMap" type="com.example.simpleDemo.entity.Subject">
         <id property="id" column="id"/>
         <result property="name" column="name"/>
+        <result property="type" column="type"/>
         <result property="semester" column="semester"/>
         <result property="subjectDescribe" column="subject_describe"/>
         <result property="createdAt" column="created_at"/>
@@ -12,7 +13,7 @@
     </resultMap>
 
     <select id="findSubjects" resultMap="SubjectResultMap" parameterType="map">
-        SELECT id, name, semester, subject_describe, created_at, updated_at 
+        SELECT id, type, name, semester, subject_describe, created_at, updated_at 
         FROM subjects
         <where>
             <if test="name != null and name != ''">
@@ -26,7 +27,7 @@
     </select>
 
     <select id="findSubjectById" resultMap="SubjectResultMap" parameterType="long">
-        SELECT id, name, semester, subject_describe, created_at, updated_at
+        SELECT id, type, name, semester, subject_describe, created_at, updated_at
         FROM subjects
         WHERE id = #{id}
     </select>
@@ -38,7 +39,7 @@
         inner join
         classes c on c.id = cs.class_id
         INNER JOIN
-        teachers t on t.id = c.teacher_id
+        users t on t.id = c.teacher_id
         inner JOIN
         subjects s on s.id = c.subject_id
         <where>
@@ -52,13 +53,14 @@
     </select>
 
     <insert id="insertSubject" parameterType="com.example.simpleDemo.entity.Subject" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO subjects(name, semester, subject_describe)
-        VALUES (#{name}, #{semester}, #{subjectDescribe})
+        INSERT INTO subjects(name, type, semester, subject_describe)
+        VALUES (#{name}, #{type}, #{semester}, #{subjectDescribe})
     </insert>
 
     <update id="updateSubject" parameterType="com.example.simpleDemo.entity.Subject">
         UPDATE subjects
         SET name = #{name},
+            type = #{type},
             semester = #{semester},
             subject_describe = #{subjectDescribe}
         WHERE id = #{id}

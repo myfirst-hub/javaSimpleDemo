@@ -37,7 +37,7 @@ public class ComprehensiveTestResultService {
     private PracticeTrainProgramMapper practiceTrainProgramMapper;
 
     // 新增：从Excel导入综合测评结果
-    public int importFromExcel(MultipartFile file, Long subjectId, Long classId) throws Exception {
+    public int importFromExcel(MultipartFile file, Long subjectId) throws Exception {
         int count = 0;
         InputStream inputStream = file.getInputStream();
         Workbook workbook = null;
@@ -105,7 +105,7 @@ public class ComprehensiveTestResultService {
 
                 // 设置其他字段
                 result.setSubjectId(subjectId);
-                result.setClassId(classId);
+                // result.setClassId(classId);
                 result.setCreatedAt(new Date());
                 result.setUpdatedAt(new Date());
 
@@ -116,7 +116,7 @@ public class ComprehensiveTestResultService {
             for (ComprehensiveTestResult result : results) {
                 // 根据学生ID、科目ID和班级ID检查是否已存在记录
                 List<ComprehensiveTestResult> existingResults = comprehensiveTestResultMapper
-                        .selectByStudentIdAndSubjectIdAndClassId(result.getStudentId(), subjectId, classId);
+                        .selectByStudentIdAndSubjectIdAndClassId(result.getStudentId(), subjectId);
 
                 if (!existingResults.isEmpty()) {
                     // 如果存在，准备更新记录
@@ -184,64 +184,53 @@ public class ComprehensiveTestResultService {
                 studentId,
                 subjectId);
 
-        List<Map<String, Object>> practiceScores = practiceTrainProgramMapper
-                .selectPracticeScoresByStudentIdAndSubjectId(
-                        studentId,
-                        subjectId);
-        // 计算理论总成绩：多个total_score相加除以多个full_score相加，保留两位小数
-        BigDecimal totalScoreSum = BigDecimal.ZERO;
-        BigDecimal fullScoreSum = BigDecimal.ZERO;
-        BigDecimal theoryFinalScore = BigDecimal.ZERO;
+        // 按类型分类存储分数总和
+        java.util.Map<String, BigDecimal[]> scoreSums = new java.util.HashMap<>();
+        scoreSums.put("theory", new BigDecimal[]{BigDecimal.ZERO, BigDecimal.ZERO}); // {totalScoreSum, fullScoreSum}
+        scoreSums.put("practice", new BigDecimal[]{BigDecimal.ZERO, BigDecimal.ZERO});
+        scoreSums.put("organization", new BigDecimal[]{BigDecimal.ZERO, BigDecimal.ZERO});
 
         for (Map<String, Object> score : theoryScores) {
             Object totalScoreObj = score.get("total_score");
             Object fullScoreObj = score.get("full_score");
+            Object typeObj = score.get("type");
 
-            if (totalScoreObj != null && fullScoreObj != null) {
+            if (totalScoreObj != null && fullScoreObj != null && typeObj != null) {
+                String type = typeObj.toString();
                 BigDecimal totalScore = new BigDecimal(totalScoreObj.toString());
                 BigDecimal fullScore = new BigDecimal(fullScoreObj.toString());
 
-                totalScoreSum = totalScoreSum.add(totalScore);
-                fullScoreSum = fullScoreSum.add(fullScore);
+                if (scoreSums.containsKey(type)) {
+                    BigDecimal[] sums = scoreSums.get(type);
+                    sums[0] = sums[0].add(totalScore); // 累加总分
+                    sums[1] = sums[1].add(fullScore);   // 累加满分
+                }
             }
         }
 
-        if (fullScoreSum.compareTo(BigDecimal.ZERO) > 0) {
-            theoryFinalScore = totalScoreSum.divide(fullScoreSum, 4, BigDecimal.ROUND_HALF_UP)
-                    .multiply(new BigDecimal(100))
-                    .setScale(2, BigDecimal.ROUND_HALF_UP);
-        }
-
-        // 计算实践总成绩：多个total_score相加除以多个full_score相加，保留两位小数
-        BigDecimal practiceTotalScoreSum = BigDecimal.ZERO;
-        BigDecimal practiceFullScoreSum = BigDecimal.ZERO;
-        BigDecimal practiceFinalScore = BigDecimal.ZERO;
-
-        for (Map<String, Object> score : practiceScores) {
-            Object totalScoreObj = score.get("total_score");
-            Object fullScoreObj = score.get("full_score");
-
-            if (totalScoreObj != null && fullScoreObj != null) {
-                BigDecimal totalScore = new BigDecimal(totalScoreObj.toString());
-                BigDecimal fullScore = new BigDecimal(fullScoreObj.toString());
-
-                practiceTotalScoreSum = practiceTotalScoreSum.add(totalScore);
-                practiceFullScoreSum = practiceFullScoreSum.add(fullScore);
+        // 计算各类型最终得分
+        java.util.Map<String, BigDecimal> finalScores = new java.util.HashMap<>();
+        for (String type : scoreSums.keySet()) {
+            BigDecimal[] sums = scoreSums.get(type);
+            BigDecimal totalScoreSum = sums[0];
+            BigDecimal fullScoreSum = sums[1];
+            
+            BigDecimal finalScore = BigDecimal.ZERO;
+            if (fullScoreSum.compareTo(BigDecimal.ZERO) > 0) {
+                finalScore = totalScoreSum.divide(fullScoreSum, 4, BigDecimal.ROUND_HALF_UP)
+                        .multiply(new BigDecimal(100))
+                        .setScale(2, BigDecimal.ROUND_HALF_UP);
             }
-        }
-
-        if (practiceFullScoreSum.compareTo(BigDecimal.ZERO) > 0) {
-            practiceFinalScore = practiceTotalScoreSum.divide(practiceFullScoreSum, 4, BigDecimal.ROUND_HALF_UP)
-                    .multiply(new BigDecimal(100))
-                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+            finalScores.put(type, finalScore);
         }
 
         List<ComprehensiveTestResult> results = comprehensiveTestResultMapper
                 .selectByStudentIdAndSubjectId(studentId, subjectId);
         ComprehensiveTestResult result = results.isEmpty() ? null : results.get(0);
         Map<String, Object> mapResult = new java.util.HashMap<>();
-        mapResult.put("theoryScore", theoryFinalScore);
-        mapResult.put("practiceScore", practiceFinalScore);
+        mapResult.put("theoryScore", finalScores.get("theory"));
+        mapResult.put("practiceScore", finalScores.get("practice"));
+        mapResult.put("organizationScore", finalScores.get("organization"));
         mapResult.put("comprehensiveTestResult", result);
         return mapResult;
     }

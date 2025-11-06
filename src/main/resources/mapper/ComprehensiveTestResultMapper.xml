@@ -76,8 +76,23 @@
     </resultMap>
 
     <select id="selectByStudentIdAndTeacherId" resultMap="comprehensiveTestResultMap">
-        SELECT ctr.*, c.name class_name, c.subject_name FROM comprehensive_test_result ctr        
-        LEFT JOIN classes c ON ctr.class_id = c.id 
+        SELECT
+            ctr.id,
+            s.name AS student_name,
+            sub.name AS subject_name,
+            sub.type AS subject_type,
+            sub.semester,
+            ctr.organization_score,
+            ctr.self_drive_score,
+            ctr.logic_score,
+            ctr.test_time,
+            c.name AS class_name,
+            c.teacher_name,
+            c.teacher_id
+        FROM comprehensive_test_result ctr
+        INNER JOIN subjects sub ON ctr.subject_id = sub.id
+        INNER JOIN classes c ON ctr.class_id = c.id
+        INNER JOIN students s ON ctr.student_id = s.id
         <where> 
                <if test="studentId != null"> 
                    AND ctr.student_id = #{studentId} 
@@ -86,7 +101,7 @@
                 AND c.teacher_id = #{teacherId}
             </if> 
         </where> 
-        ORDER BY test_time DESC 
+        ORDER BY sub.semester, sub.name, ctr.test_time DESC;
     </select>
 
     <select id="selectByStudentIdAndSubjectId" resultMap="comprehensiveTestResultMap">
@@ -110,9 +125,6 @@
             </if>
             <if test="subjectId != null">
                 AND subject_id = #{subjectId}
-            </if>
-            <if test="classId != null">
-                AND class_id = #{classId}
             </if>
         </where>
     </select>

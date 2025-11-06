@@ -30,8 +30,7 @@ public class ComprehensiveTestResultController {
     @PostMapping("/comprehensive/upload")
     public ResponseEntity<ApiResponse<String>> uploadComprehensiveTestResult(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("subjectId") Long subjectId,
-            @RequestParam("classId") Long classId) {
+            @RequestParam("subjectId") Long subjectId) {
         logger.info("Upload comprehensive test result excel endpoint accessed");
         try {
             if (file == null || file.isEmpty()) {
@@ -45,7 +44,7 @@ public class ComprehensiveTestResultController {
                 return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
             }
 
-            int result = comprehensiveTestResultService.importFromExcel(file, subjectId, classId);
+            int result = comprehensiveTestResultService.importFromExcel(file, subjectId);
             ApiResponse<String> response = ApiResponse.success("成功导入" + result + "条记录");
             return new ResponseEntity<>(response, HttpStatus.OK);
         } catch (Exception e) {

@@ -5,6 +5,7 @@ import java.util.Date;
 public class Subject {
     private Long id;
     private String name;
+    private String type;
     private String semester;
     private String subjectDescribe;
     private Date createdAt;
@@ -46,6 +47,14 @@ public class Subject {
         this.name = name;
     }
 
+    public String getType() {
+        return type;
+    }
+
+    public void seType(String type) {
+        this.type = type;
+    }
+
     public String getSemester() {
         return semester;
     }
@@ -83,6 +92,7 @@ public class Subject {
         return "Subject{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
+                ", type='" + type + '\'' +
                 ", semester='" + semester + '\'' +
                 ", subjectDescribe='" + subjectDescribe + '\'' +
                 ", createdAt=" + createdAt +

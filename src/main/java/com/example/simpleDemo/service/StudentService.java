@@ -116,8 +116,8 @@ public class StudentService {
             List<Long> ids = classStudentMapper.findStudentIdsByClassId(classObj.getId());
             TheoryTrainProgram ttp = theoryTrainProgramMapper
                     .selectTheoryTrainProgramBySubjectId(classObj.getSubjectId());
-            PracticeTrainProgram ptp = practiceTrainProgramMapper
-                    .selectPracticeTrainProgramBySubjectId(classObj.getSubjectId());
+            // PracticeTrainProgram ptp = practiceTrainProgramMapper
+            // .selectPracticeTrainProgramBySubjectId(classObj.getSubjectId());
             for (Long id : ids) {
                 Student student = studentMapper.findStudentById(id);
                 // 支持学生姓名模糊匹配
@@ -141,12 +141,12 @@ public class StudentService {
                         if (ttp != null && ttp.getName() != null && !ttp.getName().isEmpty()) {
                             trainProgramNameBuilder.append(ttp.getName());
                         }
-                        if (ptp != null && ptp.getName() != null && !ptp.getName().isEmpty()) {
-                            if (trainProgramNameBuilder.length() > 0) {
-                                trainProgramNameBuilder.append("，");
-                            }
-                            trainProgramNameBuilder.append(ptp.getName());
-                        }
+                        // if (ptp != null && ptp.getName() != null && !ptp.getName().isEmpty()) {
+                        // if (trainProgramNameBuilder.length() > 0) {
+                        // trainProgramNameBuilder.append("，");
+                        // }
+                        // trainProgramNameBuilder.append(ptp.getName());
+                        // }
                         existingInfo.setTrainProgramName(
                                 existingInfo.getTrainProgramName() + "，" + trainProgramNameBuilder.toString());
                         // 拼接TrainProgramId
@@ -164,12 +164,12 @@ public class StudentService {
                         if (ttp != null && ttp.getName() != null && !ttp.getName().isEmpty()) {
                             trainProgramNameBuilder.append(ttp.getName());
                         }
-                        if (ptp != null && ptp.getName() != null && !ptp.getName().isEmpty()) {
-                            if (trainProgramNameBuilder.length() > 0) {
-                                trainProgramNameBuilder.append("，");
-                            }
-                            trainProgramNameBuilder.append(ptp.getName());
-                        }
+                        // if (ptp != null && ptp.getName() != null && !ptp.getName().isEmpty()) {
+                        // if (trainProgramNameBuilder.length() > 0) {
+                        // trainProgramNameBuilder.append("，");
+                        // }
+                        // trainProgramNameBuilder.append(ptp.getName());
+                        // }
                         info.setTrainProgramName(trainProgramNameBuilder.toString());
 
                         // 初始化用于拼接的字符串字段

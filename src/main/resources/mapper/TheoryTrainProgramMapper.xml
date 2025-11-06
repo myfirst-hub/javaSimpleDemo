@@ -204,11 +204,13 @@
     </select>
 
     <select id="selectTheoryScoresByStudentIdAndSubjectId" resultType="map" parameterType="map">
-        select ttr.total_score, ttr.full_score from theory_test_result ttr
+        select ttr.total_score, ttr.full_score, s.type from theory_test_result ttr
         left JOIN 
         theory_test_map ttm on ttm.theory_test_id = ttr.id
+        inner join
+        subjects s on ttm.subject_id = s.id
         where
-        ttm.student_id = #{studentId} and ttm.subject_id = #{subjectId}
+        ttm.student_id = #{studentId}
     </select>
 
 </mapper>

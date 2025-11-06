@@ -268,18 +268,19 @@ public class StudentController {
         try {
             Student studentBaseInfo = studentService.findStudentById(id);
             List<Subject> subjects = subjectMapper.findSubjectByStudentId(id, teacherId);
-            Map<String, Object> theoryTestResult = testResultMapper.selectTestCountAndTrainHoursByTeacherId(id,
+            List<Map<String, Object>> theoryTestResult = testResultMapper.selectTestCountAndTrainHoursByTeacherId(id,
                     teacherId);
-            Map<String, Object> practiceTestResult = testResultMapper.selectPracticeTestCountAndTrainHoursByTeacherId(
-                    id,
-                    teacherId);
+            // Map<String, Object> practiceTestResult =
+            // testResultMapper.selectPracticeTestCountAndTrainHoursByTeacherId(
+            // id,
+            // teacherId);
 
             // 创建包含学员信息的返回对象
             java.util.Map<String, Object> result = new java.util.HashMap<>();
             result.put("studentBaseInfo", studentBaseInfo);
             result.put("subjects", subjects);
             result.put("theoryTestResult", theoryTestResult);
-            result.put("practiceTestResult", practiceTestResult);
+            // result.put("practiceTestResult", practiceTestResult);
 
             ApiResponse<Object> response = ApiResponse.success(result);
             return new ResponseEntity<>(response, HttpStatus.OK);

@@ -203,7 +203,7 @@ public class SubjectController {
       java.util.Map<String, Object> result = new java.util.HashMap<>();
       result.put("students", students);
       result.put("trainInfo", trainInfo);
-      result.put("practiceTrainInfo", practiceTrainInfo);
+      // result.put("practiceTrainInfo", practiceTrainInfo);
       ApiResponse<Object> response = ApiResponse.success(result);
       return new ResponseEntity<>(response, HttpStatus.OK);
     } catch (Exception e) {
